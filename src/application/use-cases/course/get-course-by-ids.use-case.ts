@@ -29,8 +29,6 @@ export class GetCoursesByIdsUseCase {
 
         const courses = await this.courseRepository.findByIds(dto.courseIds);
 
-        console.log(JSON.stringify(courses, null, 2));
-
         const courseDtos = courses.map(CourseMetadataDto.fromPrimitive);
 
         span.setAttribute("course.length", courseDtos.length);
