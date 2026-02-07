@@ -9,7 +9,7 @@ import { TracingService } from '../observability/tracing/trace.service';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { KAFKA_CLIENT } from './constants';
-import { IKafkaProducer } from 'src/application/services/kafka-producer.interface';
+import { IKafkaProducer, KafkaMessageObject } from 'src/application/services/kafka-producer.interface';
 
 @Injectable()
 export class KafkaProducerImpl
@@ -31,7 +31,7 @@ export class KafkaProducerImpl
     this.logger.info(`Kafka client disconnected ${KafkaProducerImpl.name}`);
   }
 
-  async produce<T = any>(topic: string, message: T) {
+  async produce<T = any>(topic: string, message: KafkaMessageObject<T>) {
     return await this.tracer.startActiveSpan(
       'KafkaProducerImpl.produce',
       async (span) => {
