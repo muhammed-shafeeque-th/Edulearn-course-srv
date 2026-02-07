@@ -6,7 +6,7 @@ import { UpdateQuizUseCase } from "./update-quiz.use-case";
 import { GetQuizzesByCourseUseCase } from "./get-quizes-by-course.use-case";
 import { GetQuizUseCase } from "./get-quiz.use-case";
 import { CreateQuizUseCase } from "./create-quiz.use-case";
-import { KafkaModule } from "src/infrastructure/kafka/kafka.module"
+import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 
 @Module({
   imports: [DatabaseRepositoryModule, RedisModule, KafkaModule],
