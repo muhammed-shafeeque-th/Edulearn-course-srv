@@ -6,6 +6,8 @@ export class DeleteCourseRequestDto implements DeleteCourseRequest {
   @IsNotEmpty()
   courseId: string;
 
+  isAdmin: boolean;
+
   @IsString()
   @IsNotEmpty()
   userId: string;
