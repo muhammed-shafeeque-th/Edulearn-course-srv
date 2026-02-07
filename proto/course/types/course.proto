@@ -54,7 +54,7 @@ message GetCoursesByIdsRequest {
 
 message GetCoursesByIdsResponse {
   oneof result {
-     CoursesResponse success = 1;
+     CoursesListResponse success = 1;
      course.common.Error error = 2;
   }
 }
@@ -90,17 +90,20 @@ message UpdateCourseRequest {
 
 message DeleteCourseRequest {
   string course_id = 1;
-  string user_id = 2;
+  optional string user_id = 2;
+  bool is_admin  = 3;
 
 }
 message UnPublishCourseRequest {
   string course_id = 1;
-  string user_id = 2;
+  optional string user_id = 2;
+  bool is_admin  = 3;
 
 }
 message PublishCourseRequest {
   string course_id = 1;
-  string user_id = 2;
+  optional string user_id = 2;
+  bool is_admin  = 3;
 
 }
 
@@ -116,11 +119,11 @@ message GetEnrolledCoursesRequest {
 
 message CourseData {
   string id = 12;
-  optional string title = 1;
+  string title = 1;
   repeated string  topics = 2;
-  optional string instructor_id = 3;
+  string instructor_id = 3;
   optional string sub_title = 4;
-  optional string category = 5;
+  string category = 5;
   optional string sub_category = 6;
   optional string language = 7;
   optional string subtitle_language = 8;
@@ -136,7 +139,7 @@ message CourseData {
   optional string status = 27;
   optional string slug = 28;
   optional int32 rating = 29;
-  optional int32 numberOfRating = 30;
+  optional int32 number_of_rating = 30;
   optional int32 students = 31;
   repeated course.section.SectionData sections = 19;
   string created_at = 21;
@@ -146,6 +149,42 @@ message CourseData {
   optional int32 discount_price = 24;
   optional string currency = 25;
   optional course.common.User instructor = 26;
+}
+
+message CourseMetadata {
+  string id = 12;
+  string title = 1;
+  repeated string topics = 2;
+   string instructor_id = 3;
+   string sub_title = 4;
+   string category = 5;
+   string sub_category = 6;
+   string language = 7;
+   string subtitle_language = 8;
+   string level = 9;
+   string duration_value = 10;
+   string duration_unit = 11;
+  optional string description = 13;
+  repeated string learning_outcomes = 14;
+  repeated string target_audience = 15;
+  repeated string requirements = 16;
+  optional string thumbnail = 17;
+  optional string trailer = 18;
+  string status = 27;
+  string slug = 28;
+  int32 rating = 29;
+  int32 number_of_rating = 30;
+  int32 students = 31;
+  string created_at = 21;
+  string updated_at = 22;
+  optional string deleted_at = 20;
+  optional int32 price = 23;
+  int32 no_of_lessons = 19;
+  int32 no_of_sections = 40;
+  int32 no_of_quizzes = 41;
+  optional int32 discount_price = 24;
+  optional string currency = 25;
+  course.common.User instructor = 26;
 }
 
 message CourseResponse {
@@ -159,10 +198,20 @@ message CoursesData {
   repeated CourseData courses = 1;
   int32 total = 2;
 }
+message CoursesListData {
+  repeated CourseMetadata courses = 1;
+  int32 total = 2;
+}
 
 message CoursesResponse {
   oneof result {
     CoursesData courses = 1;
+    course.common.Error error = 2;
+  }
+}
+message CoursesListResponse {
+  oneof result {
+    CoursesListData courses = 1;
     course.common.Error error = 2;
   }
 }
