@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { CourseNotFoundException } from "src/domain/exceptions/domain.exceptions";
-import { RedisService } from "src/infrastructure/redis/redis.service";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { CourseDto } from "src/application/dtos/course.dto";
 
@@ -10,7 +9,6 @@ import { CourseDto } from "src/application/dtos/course.dto";
 export class GetCourseBySlugUseCase {
   constructor(
     private readonly courseRepository: ICourseRepository,
-    private readonly redisService: RedisService,
     private readonly logger: LoggingService,
     private readonly tracer: TracingService
   ) {}

@@ -2,6 +2,98 @@ import { Section } from "./section.entity";
 import { User } from "./user.entity";
 import { CourseDomainException } from "../exceptions/domain.exceptions";
 
+export type UserMeta = {
+  id: string;
+  name: string;
+  avatar?: string;
+  email?: string;
+};
+export interface CourseMetadata {
+  id: string;
+  title: string;
+  topics: string[];
+  instructorId: string;
+  subTitle: string;
+  category: string;
+  subCategory: string;
+  language: string;
+  subtitleLanguage: string;
+  level: string;
+  durationValue: string;
+  durationUnit: string;
+  description?: string | undefined;
+  learningOutcomes: string[];
+  targetAudience: string[];
+  requirements: string[];
+  thumbnail?: string | undefined;
+  trailer?: string | undefined;
+  status: string;
+  slug: string;
+  rating: number;
+  numberOfRating: number;
+  students: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | undefined;
+  price?: number | undefined;
+  noOfLessons: number;
+  noOfSections: number;
+  noOfQuizzes: number;
+  discountPrice?: number | undefined;
+  currency?: string | undefined;
+  instructor: UserMeta | User | undefined;
+}
+
+export enum CourseStatus {
+  PUBLISHED = "published",
+  DRAFT = "draft",
+  DELETED = "deleted",
+  UNPUBLISHED = "unpublished",
+}
+
+export interface CourseDetails {
+  title?: string;
+  slug?: string;
+  subTitle?: string;
+  category?: string;
+  subCategory?: string;
+  courseLanguage?: string;
+  subtitleLanguage?: string;
+  level?: string;
+  topics?: string[];
+  duration?: number;
+  durationUnit?: string;
+  description?: string;
+  thumbnail?: string;
+  trailer?: string;
+  discountPrice?: number;
+  price?: number;
+  currency?: string;
+  learningOutcomes?: string[];
+  targetAudience?: string[];
+  requirements?: string[];
+}
+
+interface CourseOptions {
+  numberOfRatings?: number;
+  rating?: number;
+  students?: number;
+  totalLessonCount?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+}
+interface CourseProps {
+  id: string;
+  instructor: User;
+  instructorId: string;
+  idempotencyKey: string;
+  details: CourseDetails;
+  status?: CourseStatus;
+  options?: CourseOptions;
+  sections?: Section[];
+}
+
 export enum CourseStatus {
   PUBLISHED = "published",
   DRAFT = "draft",
@@ -128,7 +220,6 @@ export class Course {
     this.applyDetails(props.details);
   }
 
-  // =================== Getters ===================
   getId(): string {
     return this.id;
   }
@@ -252,17 +343,10 @@ export class Course {
     return true;
   }
 
-  /**
-   * Returns true if the course has at least one section.
-   */
   public hasAtLeastOneSection(): boolean {
     return Array.isArray(this.sections) && this.sections.length > 0;
   }
 
-  /**
-   * Returns true if the course has at least one lesson in total.
-   * Iterates through all sections, returning true if any section has at least one lesson.
-   */
   public hasAtLeastOneLesson(): boolean {
     if (!Array.isArray(this.sections) || this.sections.length === 0)
       return false;
@@ -272,25 +356,14 @@ export class Course {
     });
   }
 
-  /**
-   * Returns true if the course has price set and it's positive.
-   */
   public hasPrice(): boolean {
     return typeof this.price === "number" && this.price > 0;
   }
 
-  /**
-   * Returns true if thumbnail set and is non-empty string.
-   */
   public hasThumbnail(): boolean {
     return typeof this.thumbnail === "string" && this.thumbnail.trim() !== "";
   }
 
-  // =================== Mutations ===================
-
-  /**
-   * Update main course details.
-   */
   public updateDetails(details: CourseDetails): void {
     this.applyDetails(details);
     this.touch();
@@ -328,16 +401,11 @@ export class Course {
       this.courseRequirements = [...details.requirements];
   }
 
-  /**
-   * Publishes the course if it's in draft and meets all validation conditions.
-   * Throws CourseDomainException with reasons if validations are not satisfied.
-   */
   public publishCourse(): void {
     if (this.status === CourseStatus.PUBLISHED) return;
 
     // Compose validation
     if (!this.canBePublished()) {
-      // You may want to add further detail, e.g. why it can't be published:
       const reasons: string[] = [];
       if (!this.hasAtLeastOneSection())
         reasons.push("Course must have at least one section.");
@@ -347,7 +415,7 @@ export class Course {
         reasons.push("Course price must be set and greater than zero.");
       if (!this.hasThumbnail()) reasons.push("Course must have a thumbnail.");
       throw new CourseDomainException(
-        "Course is incomplete: " + reasons.join(" ")
+        "Course is incomplete: " + reasons.join(" "),
       );
     }
 
@@ -357,13 +425,12 @@ export class Course {
 
   /**
    * Mark course as draft.
-   * You may want to prevent changing certain published/deleted courses, up to requirements.
    */
   public draftCourse(): void {
     if (this.status === CourseStatus.DRAFT) return;
     if (this.status === CourseStatus.DELETED) {
       throw new CourseDomainException(
-        "Cannot mark a deleted course as draft. Please restore it first."
+        "Cannot mark a deleted course as draft. Please restore it first.",
       );
     }
     this.status = CourseStatus.DRAFT;
@@ -372,21 +439,17 @@ export class Course {
 
   /**
    * Unpublish the course. Sets status to UNPUBLISHED.
-   * Only works if the current status is PUBLISHED.
    */
   public unpublishCourse(): void {
     if (this.status !== CourseStatus.PUBLISHED) {
       throw new CourseDomainException(
-        "Only a published course can be unpublished."
+        "Only a published course can be unpublished.",
       );
     }
     this.status = CourseStatus.UNPUBLISHED;
     this.touch();
   }
 
-  /**
-   * Soft delete course and update state accordingly.
-   */
   public softDelete(): void {
     if (this.status === CourseStatus.DELETED) return;
     this.status = CourseStatus.DELETED;
@@ -396,12 +459,11 @@ export class Course {
 
   /**
    * Restore soft-deleted course and set status to draft.
-   * Throws if course is not deleted.
    */
   public restore(): void {
     if (this.status !== CourseStatus.DELETED) {
       throw new CourseDomainException(
-        "Can only restore a course that has been deleted."
+        "Can only restore a course that has been deleted.",
       );
     }
     this.status = CourseStatus.DRAFT;
@@ -416,7 +478,7 @@ export class Course {
     if (!section) throw new CourseDomainException("Section is required.");
     if (this.sections.some((s) => s.getId() === section.getId())) {
       throw new CourseDomainException(
-        "Section with this ID already exists in this course."
+        "Section with this ID already exists in this course.",
       );
     }
     this.sections.push(section);
@@ -428,9 +490,6 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Remove a section by ID.
-   */
   public removeSection(sectionId: string): void {
     const idx = this.sections.findIndex((s) => s.getId() === sectionId);
     if (idx === -1) throw new CourseDomainException("Section not found.");
@@ -443,12 +502,9 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Replace (update) a section in the course.
-   */
   public updateSection(updatedSection: Section): void {
     const idx = this.sections.findIndex(
-      (s) => s.getId() === updatedSection.getId()
+      (s) => s.getId() === updatedSection.getId(),
     );
     if (idx === -1) throw new CourseDomainException("Section not found.");
 
@@ -481,7 +537,7 @@ export class Course {
   public incrementEnrollment(n = 1): void {
     if (n < 0)
       throw new CourseDomainException(
-        "Cannot increment student count by negative number"
+        "Cannot increment student count by negative number",
       );
     this.students += n;
     this.touch();
@@ -490,7 +546,7 @@ export class Course {
   public decrementEnrollment(n = 1): void {
     if (n < 0)
       throw new CourseDomainException(
-        "Cannot decrement student count by negative number"
+        "Cannot decrement student count by negative number",
       );
     this.students = Math.max(0, this.students - n);
     this.touch();
@@ -499,7 +555,7 @@ export class Course {
   public rateCourse(newRate: number): void {
     if (!Number.isInteger(newRate) || newRate < 1 || newRate > 5) {
       throw new CourseDomainException(
-        "Rating should be integer between 1 and 5."
+        "Rating should be integer between 1 and 5.",
       );
     }
     const totalRates = this.rating * this.numberOfRatings + newRate;
@@ -508,11 +564,6 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Change an existing rating value to a new rating, and update the course rating accordingly.
-   * @param previousRate - The user's previous rating value to be changed.
-   * @param newRate - The new rating value to update to.
-   */
   public changeRating(previousRate: number, newRate: number): void {
     if (
       !Number.isInteger(previousRate) ||
@@ -520,39 +571,32 @@ export class Course {
       previousRate > 5
     ) {
       throw new CourseDomainException(
-        "Previous rating should be integer between 1 and 5."
+        "Previous rating should be integer between 1 and 5.",
       );
     }
     if (!Number.isInteger(newRate) || newRate < 1 || newRate > 5) {
       throw new CourseDomainException(
-        "New rating should be integer between 1 and 5."
+        "New rating should be integer between 1 and 5.",
       );
     }
     if (this.numberOfRatings === 0) {
       throw new CourseDomainException("No ratings to update.");
     }
-    // Calculate the sum of all ratings
     const ratingsSum = this.rating * this.numberOfRatings;
-    // Subtract the previous rate and add the new rate
     const newRatingsSum = ratingsSum - previousRate + newRate;
     this.rating = Number((newRatingsSum / this.numberOfRatings).toFixed(1));
     this.touch();
   }
 
-  /**
-   * Remove an existing rating from the course.
-   * @param rate - The rating value to remove.
-   */
   public removeRating(rate: number): void {
     if (!Number.isInteger(rate) || rate < 1 || rate > 5) {
       throw new CourseDomainException(
-        "Rating to remove should be integer between 1 and 5."
+        "Rating to remove should be integer between 1 and 5.",
       );
     }
     if (this.numberOfRatings === 0) {
       throw new CourseDomainException("No ratings to remove.");
     }
-    // Adjust the total sum and the count
     const ratingsSum = this.rating * this.numberOfRatings;
     const newRatingsSum = ratingsSum - rate;
     this.numberOfRatings = this.numberOfRatings - 1;
@@ -592,7 +636,6 @@ export class Course {
     this.touch();
   }
 
-  /** Status helpers **/
   public isPublished(): boolean {
     return this.status === "published";
   }
@@ -603,14 +646,10 @@ export class Course {
     return this.status === "draft";
   }
 
-  // ================ Internal ================
   private touch() {
     this.updatedAt = new Date();
   }
 
-  /**
-   * Get a persistence-friendly shallow snapshot of this course.
-   */
   public toSnapshot(): Record<string, unknown> {
     return {
       id: this.id,
@@ -648,9 +687,6 @@ export class Course {
     };
   }
 
-  /**
-   * Converts this course to a primitive (plain) object suitable for serialization (persisting/caching).
-   */
   public toPrimitive(): Record<string, unknown> {
     return {
       id: this.id,
@@ -700,17 +736,14 @@ export class Course {
             : this.deletedAt
           : undefined,
       },
-      sections: this.sections.map((section) => section.getId()),
+      sections: this.sections.map((section) => section.toPrimitive()),
     };
   }
 
-  /**
-   * Recreates a Course instance from primitives (plain object) and instantiated User and Section list.
-   */
   public static fromPrimitive(
-    primitive: any, // type should match output of toPrimitive, but any for flexibility
+    primitive: any,
     instructor: User,
-    sections: Section[]
+    sections: Section[],
   ): Course {
     const details: CourseDetails = {
       title: primitive.details?.title,

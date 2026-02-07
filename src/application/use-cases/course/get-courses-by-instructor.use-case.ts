@@ -3,6 +3,7 @@ import { ICourseRepository } from "../../../domain/repositories/course.repositor
 import { CourseDto } from "../../dtos/course.dto";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { CourseMetadataDto } from "src/application/dtos/courseMeta.dto";
 
 @Injectable()
 export class GetCoursesByInstructorUseCase {
@@ -18,7 +19,7 @@ export class GetCoursesByInstructorUseCase {
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: CourseDto[]; total: number }> {
+  ): Promise<{ courses: CourseMetadataDto[]; total: number }> {
     return await this.tracer.startActiveSpan(
       "GetCoursesByInstructorUseCase.execute",
       async (span) => {
@@ -36,7 +37,7 @@ export class GetCoursesByInstructorUseCase {
             sortBy,
             sortOrder,
           );
-        const courseDtos = courses.map(CourseDto.fromDomain);
+        const courseDtos = courses.map(CourseMetadataDto.fromPrimitive);
 
         span.setAttribute("instructor.course.length", courseDtos.length);
 

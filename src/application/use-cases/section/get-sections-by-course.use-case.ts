@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { SectionDto } from "src/application/dtos/section.dto";
-import { SectionRepository } from "src/domain/repositories/section.repository";
+import { ISectionRepository } from "src/domain/repositories/section.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 
 @Injectable()
 export class GetSectionsByCourseUseCase {
   constructor(
-    private readonly sectionRepository: SectionRepository,
+    private readonly sectionRepository: ISectionRepository,
     private readonly logger: LoggingService,
     private readonly tracer: TracingService,
   ) {}
 
   async execute(courseId: string): Promise<SectionDto[]> {
-    return this.tracer.startActiveSpan(
+    return await this.tracer.startActiveSpan(
       "GetSectionsByCourseUseCase.execute",
       async (span) => {
         span.setAttributes({
