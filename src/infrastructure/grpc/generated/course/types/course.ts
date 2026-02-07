@@ -90,7 +90,7 @@ export interface UpdateCourseRequest {
 
 export interface DeleteCourseRequest {
   courseId: string;
-  userId: string;
+  userId?: string | undefined;
   isAdmin: boolean;
 }
 
@@ -1436,7 +1436,7 @@ export const UpdateCourseRequest: MessageFns<UpdateCourseRequest> = {
 };
 
 function createBaseDeleteCourseRequest(): DeleteCourseRequest {
-  return { courseId: "", userId: "", isAdmin: false };
+  return { courseId: "", userId: undefined, isAdmin: false };
 }
 
 export const DeleteCourseRequest: MessageFns<DeleteCourseRequest> = {
@@ -1444,7 +1444,7 @@ export const DeleteCourseRequest: MessageFns<DeleteCourseRequest> = {
     if (message.courseId !== "") {
       writer.uint32(10).string(message.courseId);
     }
-    if (message.userId !== "") {
+    if (message.userId !== undefined) {
       writer.uint32(18).string(message.userId);
     }
     if (message.isAdmin !== false) {
@@ -1496,7 +1496,7 @@ export const DeleteCourseRequest: MessageFns<DeleteCourseRequest> = {
   fromJSON(object: any): DeleteCourseRequest {
     return {
       courseId: isSet(object.courseId) ? globalThis.String(object.courseId) : "",
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : undefined,
       isAdmin: isSet(object.isAdmin) ? globalThis.Boolean(object.isAdmin) : false,
     };
   },
@@ -1506,7 +1506,7 @@ export const DeleteCourseRequest: MessageFns<DeleteCourseRequest> = {
     if (message.courseId !== "") {
       obj.courseId = message.courseId;
     }
-    if (message.userId !== "") {
+    if (message.userId !== undefined) {
       obj.userId = message.userId;
     }
     if (message.isAdmin !== false) {
@@ -1521,7 +1521,7 @@ export const DeleteCourseRequest: MessageFns<DeleteCourseRequest> = {
   fromPartial<I extends Exact<DeepPartial<DeleteCourseRequest>, I>>(object: I): DeleteCourseRequest {
     const message = createBaseDeleteCourseRequest();
     message.courseId = object.courseId ?? "";
-    message.userId = object.userId ?? "";
+    message.userId = object.userId ?? undefined;
     message.isAdmin = object.isAdmin ?? false;
     return message;
   },
