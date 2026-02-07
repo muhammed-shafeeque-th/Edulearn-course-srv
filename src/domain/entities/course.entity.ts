@@ -94,6 +94,60 @@ interface CourseProps {
   sections?: Section[];
 }
 
+export enum CourseStatus {
+  PUBLISHED = "published",
+  DRAFT = "draft",
+  DELETED = "deleted",
+  UNPUBLISHED = "unpublished",
+}
+
+export interface CourseDetails {
+  title?: string;
+  slug?: string;
+  subTitle?: string;
+  category?: string;
+  subCategory?: string;
+  courseLanguage?: string;
+  subtitleLanguage?: string;
+  level?: string;
+  topics?: string[];
+  duration?: number;
+  durationUnit?: string;
+  description?: string;
+  thumbnail?: string;
+  trailer?: string;
+  discountPrice?: number;
+  price?: number;
+  currency?: string;
+  learningOutcomes?: string[];
+  targetAudience?: string[];
+  requirements?: string[];
+}
+
+interface CourseOptions {
+  numberOfRatings?: number;
+  rating?: number;
+  students?: number;
+  totalLessonCount?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+}
+interface CourseProps {
+  id: string;
+  instructor: User;
+  instructorId: string;
+  idempotencyKey: string;
+  details: CourseDetails;
+  status?: CourseStatus;
+  options?: CourseOptions;
+  sections?: Section[];
+}
+
+/**
+ * Course aggregate root entity.
+ * Encapsulates all state and behavior for a course.
+ */
 export class Course {
   private readonly id: string;
   private instructor: User;
