@@ -1,5 +1,4 @@
-import { Injectable } from "@nestjs/common";
-import { SectionDto } from "src/application/dtos/section.dto";
+import { Injectable} from "@nestjs/common";
 import {
   CourseNotFoundException,
   SectionNotFoundException,
@@ -9,10 +8,10 @@ import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { ISectionRepository } from "src/domain/repositories/section.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
-import { UpdateSectionDto } from "src/presentation/grpc/dtos/section/update-section.dto";
+import { DeleteSectionDto } from "src/presentation/grpc/dtos/section/delete-section.dto";
 
 @Injectable()
-export class UpdateSectionUseCase {
+export class DeleteSectionUseCase {
   constructor(
     private readonly sectionRepository: ISectionRepository,
     private readonly courseRepository: ICourseRepository,
@@ -20,15 +19,15 @@ export class UpdateSectionUseCase {
     private readonly tracer: TracingService
   ) {}
 
-  async execute(dto: UpdateSectionDto): Promise<SectionDto> {
+  async execute(dto: DeleteSectionDto): Promise<void> {
     return await this.tracer.startActiveSpan(
-      "UpdateSectionUseCase.execute",
+      "DeleteSectionUseCase.execute",
       async (span) => {
         span.setAttributes({
           "section.id": dto.sectionId,
         });
-        this.logger.log(`Updating section ${dto.sectionId}`, {
-          ctx: UpdateSectionUseCase.name,
+        this.logger.log(`Deleting section ${dto.sectionId}`, {
+          ctx: DeleteSectionUseCase.name,
         });
         const course = await this.courseRepository.findById(dto.courseId);
         if (!course) {
@@ -53,14 +52,12 @@ export class UpdateSectionUseCase {
         }
         span.setAttribute("section.found", true);
 
-        section.updateDetails(dto);
-        await this.sectionRepository.update(section);
-        span.setAttribute("section.updated", true);
+        await this.sectionRepository.delete(section);
 
-        this.logger.log(`Section ${dto.sectionId} updated`, {
-          ctx: UpdateSectionUseCase.name,
+        span.setAttribute("section.deleted", true);
+        this.logger.log(`Section ${dto.sectionId} deleted`, {
+          ctx: DeleteSectionUseCase.name,
         });
-        return SectionDto.fromDomain(section);
       }
     );
   }
