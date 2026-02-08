@@ -33,10 +33,6 @@ export class CreateEnrollmentFromOrderUseCase {
     private readonly tracer: TracingService
   ) { }
 
-  /**
-   * Processes an OrderCompletedEvent and creates enrollments for all items in the order.
-   * Ensures idempotency and robust error handling.
-   */
   async execute(event: OrderCompletedEvent): Promise<void> {
     const payload = event.payload;
     if (
@@ -50,7 +46,6 @@ export class CreateEnrollmentFromOrderUseCase {
       return;
     }
 
-    // Idempotency: skip if already processed
    
 
     for (const item of payload.items) {
@@ -149,14 +144,11 @@ export class CreateEnrollmentFromOrderUseCase {
           `Failed to create enrollment for user [${payload.userId}] and course [${item.courseId}]: ${error?.message}`,
           error?.stack
         );
-        // Optionally, propagate error or collect failed operations for alerting
       }
     }
   }
 
-  /**
-   * Publishes EnrollmentCreatedEvent and in-app notification event to Kafka.
-   */
+
   private async publishCourseEnrolledEvents(
     enrollment: Enrollment,
     instructorId: string,
