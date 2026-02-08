@@ -44,12 +44,7 @@ export interface CourseMetadata {
   instructor: UserMeta | User | undefined;
 }
 
-export enum CourseStatus {
-  PUBLISHED = "published",
-  DRAFT = "draft",
-  DELETED = "deleted",
-  UNPUBLISHED = "unpublished",
-}
+
 
 export interface CourseDetails {
   title?: string;
@@ -144,10 +139,7 @@ interface CourseProps {
   sections?: Section[];
 }
 
-/**
- * Course aggregate root entity.
- * Encapsulates all state and behavior for a course.
- */
+
 export class Course {
   private readonly id: string;
   private instructor: User;
@@ -183,9 +175,7 @@ export class Course {
   private updatedAt: Date;
   private deletedAt?: Date;
 
-  /**
-   * Create a new Course aggregate.
-   */
+  
   constructor(props: CourseProps) {
     if (!props.details.title?.trim())
       throw new CourseDomainException("Course title is required.");
@@ -324,13 +314,9 @@ export class Course {
     return this.deletedAt ? new Date(this.deletedAt) : undefined;
   }
 
-  // =================== Validation & Lifecycle Methods ===================
 
-  /**
-   * Checks if the course can be published.
-   */
+  
   public canBePublished(): boolean {
-    // Title and slug checks redundant here (enforced at construction)
     if (
       !this.sections ||
       !Array.isArray(this.sections) ||
@@ -404,7 +390,6 @@ export class Course {
   public publishCourse(): void {
     if (this.status === CourseStatus.PUBLISHED) return;
 
-    // Compose validation
     if (!this.canBePublished()) {
       const reasons: string[] = [];
       if (!this.hasAtLeastOneSection())
@@ -423,9 +408,7 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Mark course as draft.
-   */
+ 
   public draftCourse(): void {
     if (this.status === CourseStatus.DRAFT) return;
     if (this.status === CourseStatus.DELETED) {
@@ -437,9 +420,7 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Unpublish the course. Sets status to UNPUBLISHED.
-   */
+
   public unpublishCourse(): void {
     if (this.status !== CourseStatus.PUBLISHED) {
       throw new CourseDomainException(
@@ -457,9 +438,7 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Restore soft-deleted course and set status to draft.
-   */
+  
   public restore(): void {
     if (this.status !== CourseStatus.DELETED) {
       throw new CourseDomainException(
@@ -471,9 +450,7 @@ export class Course {
     this.touch();
   }
 
-  /**
-   * Add a new section to course (must be unique).
-   */
+ 
   public addSection(section: Section): void {
     if (!section) throw new CourseDomainException("Section is required.");
     if (this.sections.some((s) => s.getId() === section.getId())) {
@@ -482,7 +459,6 @@ export class Course {
       );
     }
     this.sections.push(section);
-    // Keep totalLessonCount up-to-date (null safety for getLessons)
     if (typeof section.getLessons === "function") {
       const l = section.getLessons();
       this.totalLessonCount += Array.isArray(l) ? l.length : 0;
@@ -508,7 +484,6 @@ export class Course {
     );
     if (idx === -1) throw new CourseDomainException("Section not found.");
 
-    // Adjust totalLessonCount correctly
     if (typeof this.sections[idx].getLessons === "function") {
       const l = this.sections[idx].getLessons();
       this.totalLessonCount -= Array.isArray(l) ? l.length : 0;
