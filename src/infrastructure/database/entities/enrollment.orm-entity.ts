@@ -1,38 +1,77 @@
-import { EnrollmentStatus } from "src/domain/entities/enrollment.entity";
-import { Entity, Column, PrimaryColumn, Index } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  ManyToOne,
+  OneToMany,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  JoinColumn,
+} from 'typeorm';
+import { CourseOrmEntity } from './course.orm-entity';
+import { ProgressOrmEntity } from './progress.orm-entity';
 
-@Entity("enrollments")
+@Entity('enrollments')
+@Index(['studentId', 'courseId', "deletedAt"], { unique: true })
+@Index(['instructorId'])
 export class EnrollmentOrmEntity {
-  @PrimaryColumn("uuid")
+  @PrimaryColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column()
-  @Index("idx_enrollment_user_id") // Index for queries by user
-  userId: string;
+  @Column('uuid', { name: 'student_id' })
+  studentId: string;
 
-  @Column()
-  @Index("idx_enrollment_course_id") // Index for queries by course
+  @Column('uuid', { name: 'instructor_id', nullable: true })
+  instructorId: string;
+
+  @Column('uuid', { name: 'course_id' })
   courseId: string;
 
-  @Column()
-  createdAt: Date;
+  @Column('uuid', { name: 'order_id' })
+  orderId: string;
 
-  @Column({default: 0, type: "decimal"})
-  progress: number;
+  @Column({ name: 'idempotency_key', nullable: true })
+  idempotencyKey?: string;
 
-  @Column({ type: "enum", enum: [EnrollmentStatus] })
-  status: EnrollmentStatus;
-
-  @Column({ nullable: true })
+  @Column({ type: 'timestamp', name: 'enrolled_at' })
   enrolledAt: Date;
 
-  @Column()
+  @Column({ name: 'status' })
+  status: string;
+
+  @Column({ type: 'float', default: 0, name: 'progress_percent' })
+  progressPercent: number;
+
+  @Column({ type: 'int', default: 0, name: 'total_learning_units' })
+  totalLearningUnits: number;
+
+  @Column({ type: 'int', default: 0, name: 'completed_learning_units' })
+  completedLearningUnits: number;
+
+  @Column({ type: 'timestamp', nullable: true, name: 'completed_at' })
+  completedAt?: Date;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @Column()
-  completedAt: Date
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
 
-  @Column({ nullable: true })
-  @Index("idx_enrollment_deleted_at")
-  deletedAt: Date | null;
+  @ManyToOne(() => CourseOrmEntity, (course) => course.enrollments, {
+    eager: false,
+    onDelete: 'CASCADE', 
+  })
+  @JoinColumn({ name: 'course_id', referencedColumnName: 'id' })
+  course: CourseOrmEntity;
+
+  @OneToMany(() => ProgressOrmEntity, (progress) => progress.enrollment, {
+    cascade: ['insert', 'update'],
+    eager: false,
+  })
+  progressEntries: ProgressOrmEntity[];
 }
