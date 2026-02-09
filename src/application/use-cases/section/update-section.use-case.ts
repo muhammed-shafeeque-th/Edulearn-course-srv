@@ -1,44 +1,67 @@
 import { Injectable } from "@nestjs/common";
 import { SectionDto } from "src/application/dtos/section.dto";
-import { SectionRepository } from "src/domain/repositories/section.repository";
+import {
+  CourseNotFoundException,
+  SectionNotFoundException,
+  UnauthorizedException,
+} from "src/domain/exceptions/domain.exceptions";
+import { ICourseRepository } from "src/domain/repositories/course.repository";
+import { ISectionRepository } from "src/domain/repositories/section.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { UpdateSectionDto } from "src/presentation/grpc/dtos/section/update-section.dto";
 
 @Injectable()
 export class UpdateSectionUseCase {
   constructor(
-    private readonly sectionRepository: SectionRepository,
+    private readonly sectionRepository: ISectionRepository,
+    private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly tracer: TracingService
   ) {}
 
-  async execute(sectionId: string, title: string): Promise<SectionDto> {
-    return this.tracer.startActiveSpan(
+  async execute(dto: UpdateSectionDto): Promise<SectionDto> {
+    return await this.tracer.startActiveSpan(
       "UpdateSectionUseCase.execute",
       async (span) => {
         span.setAttributes({
-          "section.id": sectionId,
+          "section.id": dto.sectionId,
         });
-        this.logger.log(`Updating section ${sectionId}`, {
+        this.logger.log(`Updating section ${dto.sectionId}`, {
           ctx: UpdateSectionUseCase.name,
         });
+        const course = await this.courseRepository.findById(dto.courseId);
+        if (!course) {
+          span.setAttribute("course.found", false);
+          throw new CourseNotFoundException(
+            `Course with ID ${dto.courseId} not found`
+          );
+        }
 
-        const section = await this.sectionRepository.findById(sectionId);
+        if (course.getInstructorId() !== dto.userId) {
+          throw new UnauthorizedException(
+            "You are not authorized to perform this operation"
+          );
+        }
+
+        const section = await this.sectionRepository.findById(dto.sectionId);
         if (!section) {
           span.setAttribute("section.found", false);
-          throw new Error(`Section ${sectionId} not found`);
+          throw new SectionNotFoundException(
+            `Section ${dto.sectionId} not found`
+          );
         }
         span.setAttribute("section.found", true);
 
-        section.updateTitle(title);
-        await this.sectionRepository.save(section);
+        section.updateDetails(dto);
+        await this.sectionRepository.update(section);
         span.setAttribute("section.updated", true);
 
-        this.logger.log(`Section ${sectionId} updated`, {
+        this.logger.log(`Section ${dto.sectionId} updated`, {
           ctx: UpdateSectionUseCase.name,
         });
         return SectionDto.fromDomain(section);
-      },
+      }
     );
   }
 }

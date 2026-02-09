@@ -10,5 +10,7 @@ export abstract class ILessonRepository {
   abstract findByIdempotencyKey(idempotencyKey: string): Promise<Lesson | null>;
   abstract findById(id: string): Promise<Lesson | null>;
   abstract findBySectionId(sectionId: string): Promise<Lesson[]>;
+  abstract findByCourseId(courseId: string): Promise<Lesson[]>;
   abstract delete(lesson: Lesson): Promise<void>;
+  abstract  countByCourseId(courseId: string): Promise<number>;
 }

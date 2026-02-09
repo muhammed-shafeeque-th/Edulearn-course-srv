@@ -5,8 +5,8 @@ import { DeleteLessonUseCase } from "./delete-lesson.use-case";
 import { UpdateLessonUseCase } from "./update-leson.use-case";
 import { GetLessonsBySectionUseCase } from "./get-lessons-by-sections.use-case";
 import { CreateLessonUseCase } from "./create-lesson.use-case";
-import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 import { GetLessonUseCase } from "./get-lesson.use-case";
+import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 
 @Module({
   imports: [DatabaseRepositoryModule, RedisModule, KafkaModule],
