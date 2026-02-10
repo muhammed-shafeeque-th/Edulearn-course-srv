@@ -1,167 +1,110 @@
-# Course Service - EduLearn Microservices Project
+# Course Service
 
-The **Course Service** is a microservice in the EduLearn platform responsible for managing courses, sections, lessons, quizzes, enrollments, and user progress. It is built using **NestJS**, **gRPC** for inter-service communication, **Kafka** for async communication, **Redis** for caching, and **TypeORM** with **PostgreSQL** for persistence. The service adheres to **Clean Architecture**, **SOLID principles**, and **NestJS best practices**.
+The **Course Service** is a microservice in the EduLearn platform responsible for managing courses, sections, lessons, quizzes, enrollments, progress tracking, reviews, certificates, and categories. It is built using **NestJS**, follows **Clean Architecture** principles, and uses **gRPC** for inter-service communication, **Kafka** for async event-driven communication, **Redis** for caching, and **TypeORM** with **PostgreSQL** for persistence.
 
-## Table of Contents
+## 📚 Documentation
 
-- [Features](#features)
-- [Technologies](#technologies)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Running the Service](#running-the-service)
-- [API Documentation](#api-documentation)
-  - [gRPC Endpoints](#grpc-endpoints)
-  - [HTTP Endpoints](#http-endpoints)
-- [Testing](#testing)
-- [Monitoring](#monitoring)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
+This service documentation is organized into several focused documents:
 
-## Features
+- **[Overview](./docs/overview.md)** - Service purpose, scope, responsibilities, and key features
+- **[Architecture](./docs/architecture.md)** - Internal design, layers, patterns, and technical decisions
+- **[API Reference](./docs/api.md)** - Complete gRPC service definitions and endpoint documentation
+- **[Database](./docs/database.md)** - Entity models, relationships, and data ownership
+- **[Events](./docs/events.md)** - Kafka events published and consumed by this service
+- **[Business Flows](./docs/flows.md)** - Key business processes and workflows
+- **[Error Handling](./docs/errors.md)** - Exception types, error codes, and failure scenarios
 
-- **Course Management**: Create, retrieve, and update courses, sections, lessons, and quizzes.
-- **Enrollment**: Enroll users in courses and track their progress.
-- **Progress Tracking**: Update and retrieve user progress for lessons.
-- **Async Communication**: Publish events (e.g., enrollment, lesson completion) to Kafka.
-- **Caching**: Use Redis to cache frequently accessed course data.
-- **Inter-Service Communication**: Communicate with other services (e.g., User Service) via gRPC.
-- **Monitoring**: Expose metrics via Prometheus for observability.
-- **Health Checks**: Provide an HTTP endpoint for monitoring the service's health.
+## 🚀 Quick Start
 
-## Technologies
-
-- **NestJS**: Framework for building scalable Node.js applications.
-- **gRPC**: High-performance RPC framework for inter-service communication.
-- **Kafka**: Distributed event streaming platform for async communication.
-- **Redis**: In-memory data store for caching.
-- **TypeORM**: ORM for PostgreSQL database interactions.
-- **PostgreSQL**: Relational database for persistent storage.
-- **Prometheus**: Monitoring and alerting toolkit for metrics.
-- **Winston**: Logging library for structured logging.
-- **Jest**: Testing framework for unit and integration tests.
-
-## Prerequisites
-
-Before setting up the Course Service, ensure you have the following installed:
+### Prerequisites
 
 - **Node.js** (v18.x or later)
 - **npm** (v9.x or later)
 - **PostgreSQL** (v15.x or later)
 - **Redis** (v7.x or later)
-- **Kafka** (v3.x or later, with Zookeeper)
-- **Docker** (optional, for running dependencies in containers)
+- **Kafka** (v3.x or later)
+- **Docker** (optional, for running dependencies)
 
-You’ll also need:
-
-- A running **User Service** (for gRPC communication to fetch user details).
-- Access to a Kafka broker for async events.
-- Access to a Redis instance for caching.
-
-## Setup
-
-### 1. Clone the Repository
+### Installation
 
 ```bash
-git clone https://github.com/edulearn/course-service.git
-cd course-service
+# Install dependencies
+npm install
+
+# Copy environment file
+cp env.example .env
+
+# Update .env with your configuration
 ```
 
-API Documentation
-gRPC Endpoints
+### Running the Service
 
-The Course Service exposes the following gRPC endpoints. The service definition is available in src/infrastructure/grpc/proto/course.proto.
-Service: CourseService
+```bash
+# Development mode
+npm run start:dev
 
-    URL: localhost:3001
-    Package: course
+# Production mode
+npm run build
+npm run start:prod
+```
 
-Method Request Type Response Type Description
-CreateCourse CreateCourseRequest CourseResponse Creates a new course.
-GetCourse GetCourseRequest CourseResponse Retrieves a course by ID.
-EnrollCourse EnrollCourseRequest EnrollmentResponse Enrolls a user in a course.
-UpdateProgress UpdateProgressRequest ProgressResponse Updates user progress for a lesson.
-AddSection AddSectionRequest SectionResponse Adds a section to a course.
-AddLesson AddLessonRequest LessonResponse Adds a lesson to a section.
-AddQuiz AddQuizRequest QuizResponse Adds a quiz to a course.
-Example: Create a Course
+### Running Tests
 
-Request:
-proto
-message CreateCourseRequest {
-string title = 1;
-string description = 2;
-string instructor_id = 3;
-}
-
-Response:
-proto
-message CourseResponse {
-string id = 1;
-string title = 2;
-string description = 3;
-string instructor_id = 4;
-repeated SectionResponse sections = 5;
-repeated QuizResponse quizzes = 6;
-string created_at = 7;
-string updated_at = 8;
-}
-HTTP Endpoints
-
-The Course Service exposes HTTP endpoints for health checks and metrics.
-Health Check
-
-    Endpoint: GET /health
-    Description: Returns the health status of the service.
-    Response:
-    json
-
-    {
-      "status": "ok",
-      "service": "Course Service",
-      "timestamp": "2025-06-01T03:38:00.000Z"
-    }
-
-Metrics
-
-    Endpoint: GET /health/metrics
-    Description: Exposes Prometheus metrics for monitoring.
-    Response: Prometheus-compatible metrics (text format).
-
-Testing
-Run Unit Tests
-bash
+```bash
+# Unit tests
 npm run test
-Run Integration Tests
 
-Integration tests require a test database (edulearn_test) and running dependencies (PostgreSQL, Redis, Kafka).
-bash
-npm run test:integration
-Monitoring
+# Integration tests
+npm run test:e2e
 
-The Course Service exposes metrics via Prometheus, which can be scraped from the /health/metrics endpoint. Key metrics include:
+# Test coverage
+npm run test:cov
+```
 
-    course_service_grpc_requests_total: Total number of gRPC requests.
-    course_service_grpc_request_duration_seconds: Latency of gRPC requests.
+## 📋 Key Features
 
-To set up monitoring:
+- **Course Management**: Create, update, publish, and manage courses with rich metadata
+- **Content Organization**: Organize courses into sections with lessons and quizzes
+- **Enrollment Management**: Handle user enrollments via order completion events
+- **Progress Tracking**: Track user progress through lessons and quizzes
+- **Reviews & Ratings**: Allow users to submit reviews and ratings for courses
+- **Certificates**: Generate and manage completion certificates
+- **Categories**: Organize courses into categories and subcategories
+- **Event-Driven Architecture**: Publish and consume events via Kafka
+- **Caching**: Use Redis for improved performance
+- **Observability**: Prometheus metrics, OpenTelemetry tracing, and structured logging
 
-    Configure Prometheus to scrape the /health/metrics endpoint.
-    Use Grafana to visualize the me
+## 🏗️ Architecture
+
+The service follows **Clean Architecture** principles with clear separation of concerns:
 
 ```
-course-service/
-├── src/
-│   ├── domain/               # Core business logic (entities, repositories, services)
-│   ├── application/          # Use cases, DTOs, interfaces
-│   ├── infrastructure/       # External integrations (database, Kafka, Redis, gRPC)
-│   ├── presentation/         # gRPC and HTTP controllers
-│   ├── core/                # Constants and types
-│   ├── main.ts              # Application entry point
-│   └── app.module.ts        # Root module
-├── tests/                   # Unit and integration tests
-├── Dockerfile               # Docker configuration
-├── docker-compose.yml       # Docker Compose for dependencies
-├── package.json             # Dependencies and scripts
-└── README.md                # Project documentation
+src/
+├── domain/          # Core business logic (entities, repositories, events)
+├── application/     # Use cases, DTOs, event handlers
+├── infrastructure/  # External integrations (database, Kafka, Redis, gRPC)
+└── presentation/    # gRPC and HTTP controllers
 ```
+
+See [Architecture Documentation](./docs/architecture.md) for detailed information.
+
+## 🔌 Communication
+
+- **gRPC Port**: `50052` (configurable via `GRPC_PORT`)
+- **HTTP Port**: `3002` (configurable via `API_PORT`)
+- **Health Check**: `GET /health`
+- **Metrics**: `GET /health/metrics`
+
+## 📊 Monitoring
+
+- **Prometheus Metrics**: Available at `/health/metrics`
+- **Distributed Tracing**: OpenTelemetry with Jaeger
+- **Structured Logging**: Winston with JSON format
+
+## 🤝 Contributing
+
+Please follow the existing code style and architecture patterns. See the main project documentation for contribution guidelines.
+
+## 📄 License
+
+MIT License - see [LICENSE](./LICENSE) file for details.
