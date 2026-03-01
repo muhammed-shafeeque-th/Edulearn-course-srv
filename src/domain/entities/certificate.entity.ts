@@ -1,6 +1,10 @@
 import { UserDomainException } from "../exceptions/domain.exceptions";
 
 export class Certificate {
+  private completedAt: Date;
+  private readonly issueDate: Date;
+  private createdAt: Date;
+  private updatedAt: Date;
   constructor(
     private readonly id: string,
     private readonly enrollmentId: string,
@@ -8,12 +12,17 @@ export class Certificate {
     private readonly courseId: string,
     private readonly courseTitle: string,
     private studentName: string,
-    private readonly completedAt: Date,
+    completedAt: Date,
     private readonly certificateNumber: string,
-    private readonly issueDate: Date,
-    private createdAt: Date = new Date(),
-    private updatedAt: Date = new Date()
-  ) {}
+     issueDate: Date,
+     createdAt?: Date,
+    updatedAt?: Date,
+  ) {
+    this.completedAt = completedAt ? new Date(completedAt) : new Date()
+    this.issueDate = issueDate ? new Date(issueDate) : new Date()
+    this.createdAt = createdAt ? new Date(createdAt) : new Date()
+    this.updatedAt = updatedAt ? new Date(updatedAt) : new Date()
+  }
 
   // Getters
   getId(): string {
@@ -63,11 +72,15 @@ export class Certificate {
   // Business logic
   updateStudentName(newName: string): void {
     if (!newName || newName.trim().length < 2) {
-      throw new UserDomainException("Student name must be at least 2 characters");
+      throw new UserDomainException(
+        "Student name must be at least 2 characters",
+      );
     }
 
     if (newName.length > 100) {
-      throw new UserDomainException("Student name must be less than 100 characters");
+      throw new UserDomainException(
+        "Student name must be less than 100 characters",
+      );
     }
 
     this.studentName = newName.trim();
