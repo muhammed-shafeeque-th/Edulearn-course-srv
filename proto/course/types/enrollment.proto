@@ -40,10 +40,10 @@ message EnrollmentDetail {
    int32 progress_percent = 4;
    string status = 5;
    string enrolled_at = 6;
-   repeated EnrollmentSection sections = 7;
+   repeated EnrollmentModule modules = 7;
 }
 
-message EnrollmentSection {
+message EnrollmentModule {
    string id = 1;
    string title = 2;
    optional string description = 3;

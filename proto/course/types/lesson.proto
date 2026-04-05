@@ -6,7 +6,7 @@ import "course/common.proto";
 
 // Lesson Messages
 message CreateLessonRequest {
-  string section_id = 2;
+  string module_id = 2;
   string course_id = 1;
   string user_id = 21;
   optional bool is_preview = 3;
@@ -28,7 +28,7 @@ message UpdateLessonRequest {
   string lesson_id = 1;
   string course_id = 21;
   string user_id = 20;
-  string section_id = 2;
+  string module_id = 2;
   optional bool is_preview = 3;
   optional string description = 4;
   optional int32 estimated_duration = 5; 
@@ -53,13 +53,13 @@ message DeleteLessonRequest {
   string user_id = 20;
 }
 
-message GetLessonsBySectionRequest {
-  string section_id = 1;
+message GetLessonsByModuleRequest {
+  string module_id = 1;
 }
 
 message LessonData {
   string id = 1;
-  string section_id = 2;
+  string module_id = 2;
   bool is_preview = 3;
   string description = 4;
   int32 estimated_duration = 5; 
