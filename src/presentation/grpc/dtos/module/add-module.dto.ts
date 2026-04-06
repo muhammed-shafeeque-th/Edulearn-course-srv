@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty } from "class-validator";
 
-export class AddSectionRequestDto {
+export class AddModuleRequestDto {
   @IsString()
   @IsNotEmpty()
   courseId: string;

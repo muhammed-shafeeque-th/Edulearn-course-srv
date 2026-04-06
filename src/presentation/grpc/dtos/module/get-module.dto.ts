@@ -1,14 +1,14 @@
 import { IsString, IsNotEmpty } from "class-validator";
-import { GetSectionRequest } from "src/infrastructure/grpc/generated/course/types/section";
+import { GetModuleRequest } from "src/infrastructure/grpc/generated/course/types/module";
 
-export class GetSectionRequestDto implements GetSectionRequest {
+export class GetModuleRequestDto implements GetModuleRequest {
   @IsString()
   @IsNotEmpty()
   courseId: string;
 
   @IsString()
   @IsNotEmpty()
-  sectionId: string;
+  moduleId: string;
 
   @IsString()
   @IsNotEmpty()
