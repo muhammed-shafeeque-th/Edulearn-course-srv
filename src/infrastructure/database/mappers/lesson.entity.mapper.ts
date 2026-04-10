@@ -11,7 +11,7 @@ export class LessonEntityMapper {
   static toOrmLesson(lesson: Lesson): LessonOrmEntity {
     const orm = new LessonOrmEntity();
     orm.id = lesson.getId();
-    orm.sectionId = lesson.getSectionId();
+    orm.moduleId = lesson.getModuleId();
     orm.title = lesson.getTitle();
     orm.contentType = lesson.getContentType();
     orm.idempotencyKey = lesson.getIdempotencyKey();
@@ -31,7 +31,7 @@ export class LessonEntityMapper {
   static toDomainLesson(orm: LessonOrmEntity): Lesson {
     return new Lesson({
       id: orm.id,
-      sectionId: orm.sectionId,
+      moduleId: orm.moduleId,
       title: orm.title,
       description: orm.description,
       idempotencyKey: orm.idempotencyKey,
@@ -47,5 +47,4 @@ export class LessonEntityMapper {
       deletedAt: orm.deletedAt ? new Date(orm.deletedAt) : undefined,
     });
   }
-
 }

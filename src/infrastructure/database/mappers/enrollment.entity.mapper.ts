@@ -1,7 +1,7 @@
 import { User } from "src/domain/entities/user.entity";
 import { UserOrmEntity } from "../entities/user.entity";
-import { SectionOrmEntity } from "../entities/section.orm-entity";
-import { Section } from "src/domain/entities/section.entity";
+import { ModuleOrmEntity } from "../entities/module.orm-entity";
+import { Module } from "src/domain/entities/module.entity";
 import { ReviewOrmEntity } from "../entities/review.entity";
 import { Review } from "src/domain/entities/review.entity";
 import { QuizOrmEntity } from "../entities/quiz.orm-entity";
@@ -24,13 +24,7 @@ import { CertificateOrmEntity } from "../entities/certificate-orm.entity";
 import { CourseEntityMapper } from "./course.entity.mapper";
 import { ProgressEntityMapper } from "./progress.entity.mapper";
 
-/**
- * EnrollmentEntityMapper handles mapping between domain entities and ORM/database entities.
- * Add new methods as new mappings are needed.
- * Follows best practices: single-responsibility, reusability, null/undef checking, date normalization, and minimal knowledge of property structure.
- */
 export class EnrollmentEntityMapper {
-
   // --- Enrollment Mapping ---
 
   static toOrmEnrollment(enrollment: Enrollment): EnrollmentOrmEntity {
@@ -52,18 +46,22 @@ export class EnrollmentEntityMapper {
     orm.completedLearningUnits = enrollment.getCompletedLearningUnits();
     const progressEntries = enrollment.getProgressEntries();
     if (progressEntries && progressEntries.length) {
-      orm.progressEntries = progressEntries.map(ProgressEntityMapper.toOrmProgress);
+      orm.progressEntries = progressEntries.map(
+        ProgressEntityMapper.toOrmProgress,
+      );
     }
     return orm;
   }
 
   static toDomainEnrollment(
     orm: EnrollmentOrmEntity,
-    opts?: { withProgress: boolean }
+    opts?: { withProgress: boolean },
   ): Enrollment {
     let progressDomain: Progress[] = [];
     if (opts?.withProgress && orm.progressEntries) {
-      progressDomain = orm.progressEntries.map(ProgressEntityMapper.toDomainProgress);
+      progressDomain = orm.progressEntries.map(
+        ProgressEntityMapper.toDomainProgress,
+      );
     }
     const enrollment = new Enrollment(
       orm.id,
@@ -81,7 +79,7 @@ export class EnrollmentEntityMapper {
       orm.deletedAt,
       progressDomain,
       orm.totalLearningUnits,
-      orm.completedLearningUnits
+      orm.completedLearningUnits,
     );
     if (orm.course) {
       const course = CourseEntityMapper.toDomainCourse(orm.course);
@@ -90,6 +88,4 @@ export class EnrollmentEntityMapper {
 
     return enrollment;
   }
-
-
 }

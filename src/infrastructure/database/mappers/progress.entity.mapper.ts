@@ -7,7 +7,6 @@ import { ProgressOrmEntity } from "../entities/progress.orm-entity";
  * Follows best practices: single-responsibility, reusability, null/undef checking, date normalization, and minimal knowledge of property structure.
  */
 export class ProgressEntityMapper {
-
   // --- Progress Mapping ---
 
   static toOrmProgress(progress: Progress): ProgressOrmEntity {
@@ -46,8 +45,7 @@ export class ProgressEntityMapper {
       orm.isPassed,
       orm.createdAt,
       orm.updatedAt,
-      orm.deletedAt
+      orm.deletedAt,
     );
   }
-
 }
