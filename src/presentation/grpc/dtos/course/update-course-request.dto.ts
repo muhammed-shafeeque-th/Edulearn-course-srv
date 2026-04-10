@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, Min } from "class-validator";
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  Min,
+} from "class-validator";
 import { CourseStatus } from "src/domain/entities/course.entity";
 import { UpdateCourseRequest } from "src/infrastructure/grpc/generated/course/types/course";
 
@@ -49,12 +55,10 @@ export class UpdateCourseRequestDto implements UpdateCourseRequest {
 
   trailer?: string;
 
-
-
   @IsOptional()
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: "Price must be type number" }
+    { message: "Price must be type number" },
   )
   @Min(0)
   price?: number;
@@ -62,11 +66,10 @@ export class UpdateCourseRequestDto implements UpdateCourseRequest {
   @IsOptional()
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: "Price must be type number" }
+    { message: "Price must be type number" },
   )
   @Min(0)
   discountPrice: number;
 
-
-  currency?: string
+  currency?: string;
 }
