@@ -5,7 +5,7 @@ package course_service;
 
 import "course/types/course.proto";
 import "course/common.proto";
-import "course/types/section.proto";
+import "course/types/module.proto";
 import "course/types/lesson.proto";
 import "course/types/quiz.proto";
 import "course/types/enrollment.proto";
@@ -13,6 +13,7 @@ import "course/types/progress.proto";
 import "course/types/review.proto";
 import "course/types/certificate.proto";
 import "course/types/stats.proto";
+import "course/types/category.proto";
 
 service CourseService {
   // Course CRUD
@@ -28,19 +29,19 @@ service CourseService {
   rpc GetEnrolledCourses(course.GetEnrolledCoursesRequest) returns (course.CoursesListResponse);
   rpc GetCoursesByIds(course.GetCoursesByIdsRequest) returns (course.GetCoursesByIdsResponse);
 
-  // Section CRUD
-  rpc CreateSection(course.section.CreateSectionRequest) returns (course.section.SectionResponse);
-  rpc GetSection(course.section.GetSectionRequest) returns (course.section.SectionResponse);
-  rpc UpdateSection(course.section.UpdateSectionRequest) returns (course.section.SectionResponse);
-  rpc DeleteSection(course.section.DeleteSectionRequest) returns (course.section.DeleteSectionResponse);
-  rpc GetSectionsByCourse(course.section.GetSectionsByCourseRequest) returns (course.section.SectionsResponse);
+  // Module CRUD
+  rpc CreateModule(course.module.CreateModuleRequest) returns (course.module.ModuleResponse);
+  rpc GetModule(course.module.GetModuleRequest) returns (course.module.ModuleResponse);
+  rpc UpdateModule(course.module.UpdateModuleRequest) returns (course.module.ModuleResponse);
+  rpc DeleteModule(course.module.DeleteModuleRequest) returns (course.module.DeleteModuleResponse);
+  rpc GetModulesByCourse(course.module.GetModulesByCourseRequest) returns (course.module.ModulesResponse);
 
   // Lesson CRUD
   rpc CreateLesson(course.lesson.CreateLessonRequest) returns (course.lesson.LessonResponse);
   rpc GetLesson(course.lesson.GetLessonRequest) returns (course.lesson.LessonResponse);
   rpc UpdateLesson(course.lesson.UpdateLessonRequest) returns (course.lesson.LessonResponse);
   rpc DeleteLesson(course.lesson.DeleteLessonRequest) returns (course.lesson.DeleteLessonResponse);
-  rpc GetLessonsBySection(course.lesson.GetLessonsBySectionRequest) returns (course.lesson.LessonsResponse);
+  rpc GetLessonsByModule(course.lesson.GetLessonsByModuleRequest) returns (course.lesson.LessonsResponse);
 
   // Quiz CRUD
   rpc CreateQuiz(course.quiz.CreateQuizRequest) returns (course.quiz.QuizResponse);
@@ -54,6 +55,14 @@ service CourseService {
   rpc GetCoursesStats(course.common.Empty) returns (course.stats.GetCoursesStatsResponse);
   rpc GetInstructorCourseRatingStats(course.stats.GetInstructorCourseRatingStatsRequest) returns (course.stats.GetInstructorCourseRatingStatsResponse);
 
+
+  // Category CRUD
+  rpc GetAllCategories(course.category.GetAllCategoriesRequest) returns (course.category.CategoriesResponse);
+  rpc CreateCategory(course.category.CreateCategoryRequest) returns (course.category.CategoryResponse);
+  rpc UpdateCategory(course.category.UpdateCategoryRequest) returns (course.category.CategoryResponse);
+  rpc DeleteCategory(course.category.DeleteCategoryRequest) returns (course.category.DeleteCategoryResponse);
+  rpc ToggleCategoryStatus(course.category.ToggleCategoryStatusRequest) returns (course.category.CategoryResponse);
+  rpc GetCategoriesStats(course.category.GetCategoriesStatsRequest) returns (course.category.GetCategoriesStatsResponse);
 }
 
 service EnrollmentService {
@@ -95,6 +104,8 @@ service EnrollmentService {
   rpc GetInstructorCoursesEnrollmentSummery(course.stats.GetInstructorCoursesEnrollmentSummeryRequest) returns (course.stats.GetInstructorCoursesEnrollmentSummeryResponse);
   rpc GetInstructorCourseEnrollmentSummery(course.stats.GetInstructorCourseEnrollmentSummeryRequest) returns (course.stats.GetInstructorCourseEnrollmentSummeryResponse);
   rpc GetInstructorCourseEnrollmentTrend(course.stats.GetInstructorCourseEnrollmentTrendRequest) returns (course.stats.GetInstructorCourseEnrollmentTrendResponse);
+  rpc GetInstructorCourseRevenueSummery(course.stats.GetInstructorCourseRevenueSummeryRequest) returns (course.stats.GetInstructorCourseRevenueSummeryResponse);
+  rpc GetEnrollmentTrend(course.stats.GetEnrollmentTrendRequest) returns (course.stats.GetEnrollmentTrendResponse);
   rpc GetMonthlyCoursesEnrollmentStats(course.stats.GetMonthlyCoursesEnrollmentStatsRequest) returns (course.stats.GetMonthlyCoursesEnrollmentStatsResponse);
   rpc GetRevenueStats(course.stats.GetRevenueStatsRequest) returns (course.stats.GetRevenueStatsResponse);
 }

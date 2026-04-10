@@ -2,14 +2,12 @@ import { UserOrmEntity } from "../entities/user.entity";
 import { CourseOrmEntity } from "../entities/course.orm-entity";
 import { Course, CourseMetadata } from "src/domain/entities/course.entity";
 import { UserEntityMapper } from "./user.entity.mapper";
-import { SectionEntityMapper } from "./section.entity.mapper";
+import { ModuleEntityMapper } from "./module.entity.mapper";
 import { CategoryOrmEntity } from "../entities/category-orm.entity";
 import { Category } from "src/domain/entities/category.entity";
 
 /**
  * CourseEntityMapper handles mapping between domain entities and ORM/database entities.
- * Add new methods as new mappings are needed.
- * Follows best practices: single-responsibility, reusability, null/undef checking, date normalization, and minimal knowledge of property structure.
  */
 export class CourseEntityMapper {
   // --- Course Mapping ---
@@ -53,8 +51,8 @@ export class CourseEntityMapper {
       orm.instructor = UserEntityMapper.toOrmUser(instructor);
     }
 
-    // Sections & their nested objects
-    // orm.sections = (course.getSections() || []).map(CourseEntityMapper.toOrmSection);
+    // Modules & their nested objects
+    // orm.modules = (course.getModules() || []).map(CourseEntityMapper.toOrmModule);
 
     return orm;
   }
@@ -110,7 +108,7 @@ export class CourseEntityMapper {
       discountPrice: raw.course_discount_price ?? undefined,
       currency: raw.course_currency ?? undefined,
 
-      noOfSections: Number(raw.noOfSections ?? 0),
+      noOfModules: Number(raw.noOfModules ?? 0),
       noOfLessons: Number(raw.noOfLessons ?? 0),
       noOfQuizzes: Number(raw.noOfQuizzes ?? 0),
 
@@ -160,8 +158,8 @@ export class CourseEntityMapper {
         updatedAt: orm.updatedAt ? new Date(orm.updatedAt) : undefined,
         deletedAt: orm.deletedAt ? new Date(orm.deletedAt) : undefined,
       },
-      sections: (Array.isArray(orm.sections) ? orm.sections : []).map(
-        SectionEntityMapper.toDomainSection
+      modules: (Array.isArray(orm.modules) ? orm.modules : []).map(
+        ModuleEntityMapper.toDomainModule,
       ),
     });
   }
@@ -175,6 +173,10 @@ export class CourseEntityMapper {
     orm.idempotencyKey = category.getIdempotencyKey();
     orm.slug = category.getSlug();
     orm.description = category.getDescription();
+    orm.icon = category.getIcon();
+    orm.color = category.getColor();
+    orm.isActive = category.getIsActive();
+    orm.order = category.getOrder();
     if (category.getParentId()) {
       orm.parent = { id: category.getParentId() } as CategoryOrmEntity;
     }
@@ -182,16 +184,23 @@ export class CourseEntityMapper {
   }
 
   static toDomainCategory(orm: CategoryOrmEntity): Category {
-    return new Category(
-      orm.id,
-      orm.name,
-      orm.slug,
-      orm.idempotencyKey,
-      orm.description,
-      orm.parent?.id,
-      orm.createdAt,
-      orm.updatedAt
-    );
+    return new Category(orm.id, orm.name, orm.slug, {
+      idempotencyKey: orm.idempotencyKey,
+      description: orm.description,
+      icon: orm.icon,
+      color: orm.color,
+      isActive: orm.isActive,
+      order: orm.order,
+      parentId: orm.parent?.id,
+      courseCount: orm.courses
+        ? orm.courses.length
+        : Number((orm as any).courseCount) || 0,
+      createdAt: orm.createdAt,
+      updatedAt: orm.updatedAt,
+      deletedAt: orm.deletedAt,
+      subcategories: orm.subcategories
+        ? orm.subcategories.map(CourseEntityMapper.toDomainCategory)
+        : [],
+    });
   }
-
 }

@@ -12,7 +12,7 @@ export class QuizEntityMapper {
   static toOrmQuiz(quiz: Quiz): QuizOrmEntity {
     const orm = new QuizOrmEntity();
     orm.id = quiz.getId();
-    orm.sectionId = quiz.getSectionId();
+    orm.moduleId = quiz.getModuleId();
     orm.courseId = quiz.getCourseId();
     orm.title = quiz.getTitle();
     orm.description = quiz.getDescription();
@@ -22,7 +22,7 @@ export class QuizEntityMapper {
     orm.maxAttempts = quiz.getMaxAttempts();
     orm.isRequired = quiz.getIsRequired();
     orm.questions = (quiz.getQuestions() || []).map((question) =>
-      question.toPrimitive()
+      question.toPrimitive(),
     );
     orm.createdAt = quiz.getCreatedAt();
     orm.updatedAt = quiz.getUpdatedAt();
@@ -47,7 +47,7 @@ export class QuizEntityMapper {
 
     return new Quiz({
       id: orm.id,
-      sectionId: orm.sectionId,
+      moduleId: orm.moduleId,
       courseId: orm.courseId,
       idempotencyKey: orm.idempotencyKey,
       title: orm.title,
@@ -62,5 +62,4 @@ export class QuizEntityMapper {
       deletedAt: orm.deletedAt ? new Date(orm.deletedAt) : undefined,
     });
   }
-
 }

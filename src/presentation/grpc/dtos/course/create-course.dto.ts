@@ -32,8 +32,6 @@ export class CreateCourseRequestDto implements CreateCourseRequest {
 
   instructor: InstructorDto;
 
-
-
   @IsOptional()
   @IsString({ message: "category must be a string" })
   durationUnit: string;
@@ -64,7 +62,7 @@ export class CreateCourseRequestDto implements CreateCourseRequest {
 class InstructorDto implements User {
   @IsString()
   avatar: string;
-  
+
   @IsOptional()
   email?: string;
 
@@ -73,6 +71,4 @@ class InstructorDto implements User {
 
   @IsString()
   name: string;
-
-
 }
