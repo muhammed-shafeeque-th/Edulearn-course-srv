@@ -1,10 +1,13 @@
 import { IsString, IsNotEmpty, IsArray } from "class-validator";
-import { Question, UpdateQuizRequest } from "src/infrastructure/grpc/generated/course/types/quiz";
+import {
+  Question,
+  UpdateQuizRequest,
+} from "src/infrastructure/grpc/generated/course/types/quiz";
 export class UpdateQuizDto implements UpdateQuizRequest {
   @IsString()
   @IsNotEmpty()
   quizId: string;
-  
+
   @IsString()
   @IsNotEmpty()
   userId: string;
@@ -29,6 +32,6 @@ export class UpdateQuizDto implements UpdateQuizRequest {
 
   @IsString()
   @IsNotEmpty()
-  sectionId: string;
+  moduleId: string;
   timeLimit: number;
 }
