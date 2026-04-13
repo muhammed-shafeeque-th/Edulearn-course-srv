@@ -1,6 +1,6 @@
-import { Section } from "./section.entity";
+import { Module } from "./module.entity";
 import { User } from "./user.entity";
-import { CourseDomainException } from "../exceptions/domain.exceptions";
+import { CourseDomainException } from "../exceptions/course.exceptions";
 
 export type UserMeta = {
   id: string;
@@ -37,14 +37,12 @@ export interface CourseMetadata {
   deletedAt?: string | undefined;
   price?: number | undefined;
   noOfLessons: number;
-  noOfSections: number;
+  noOfModules: number;
   noOfQuizzes: number;
   discountPrice?: number | undefined;
   currency?: string | undefined;
   instructor: UserMeta | User | undefined;
 }
-
-
 
 export interface CourseDetails {
   title?: string;
@@ -86,7 +84,7 @@ interface CourseProps {
   details: CourseDetails;
   status?: CourseStatus;
   options?: CourseOptions;
-  sections?: Section[];
+  modules?: Module[];
 }
 
 export enum CourseStatus {
@@ -136,9 +134,8 @@ interface CourseProps {
   details: CourseDetails;
   status?: CourseStatus;
   options?: CourseOptions;
-  sections?: Section[];
+  modules?: Module[];
 }
-
 
 export class Course {
   private readonly id: string;
@@ -170,12 +167,11 @@ export class Course {
   private totalLessonCount: number = 0;
   private rating: number = 0;
   private students: number = 0;
-  private sections: Section[] = [];
+  private modules: Module[] = [];
   private createdAt: Date;
   private updatedAt: Date;
   private deletedAt?: Date;
 
-  
   constructor(props: CourseProps) {
     if (!props.details.title?.trim())
       throw new CourseDomainException("Course title is required.");
@@ -186,7 +182,7 @@ export class Course {
     this.instructorId = props.instructorId;
     this.status = props.status ?? CourseStatus.DRAFT;
     this.idempotencyKey = props.idempotencyKey;
-    this.sections = props.sections ?? [];
+    this.modules = props.modules ?? [];
     this.createdAt = props.options?.createdAt
       ? new Date(props.options.createdAt)
       : new Date();
@@ -301,8 +297,8 @@ export class Course {
   getTotalLessonCount(): number {
     return this.totalLessonCount;
   }
-  getSections(): Section[] {
-    return [...this.sections];
+  getModules(): Module[] {
+    return [...this.modules];
   }
   getCreatedAt(): Date {
     return new Date(this.createdAt);
@@ -314,13 +310,11 @@ export class Course {
     return this.deletedAt ? new Date(this.deletedAt) : undefined;
   }
 
-
-  
   public canBePublished(): boolean {
     if (
-      !this.sections ||
-      !Array.isArray(this.sections) ||
-      this.sections.length === 0
+      !this.modules ||
+      !Array.isArray(this.modules) ||
+      this.modules.length === 0
     )
       return false;
     if (!this.hasAtLeastOneLesson()) return false;
@@ -329,15 +323,14 @@ export class Course {
     return true;
   }
 
-  public hasAtLeastOneSection(): boolean {
-    return Array.isArray(this.sections) && this.sections.length > 0;
+  public hasAtLeastOneModule(): boolean {
+    return Array.isArray(this.modules) && this.modules.length > 0;
   }
 
   public hasAtLeastOneLesson(): boolean {
-    if (!Array.isArray(this.sections) || this.sections.length === 0)
-      return false;
-    return this.sections.some((section: Section) => {
-      const lessons = section.getLessons?.();
+    if (!Array.isArray(this.modules) || this.modules.length === 0) return false;
+    return this.modules.some((module: Module) => {
+      const lessons = module.getLessons?.();
       return Array.isArray(lessons) && lessons.length > 0;
     });
   }
@@ -392,8 +385,8 @@ export class Course {
 
     if (!this.canBePublished()) {
       const reasons: string[] = [];
-      if (!this.hasAtLeastOneSection())
-        reasons.push("Course must have at least one section.");
+      if (!this.hasAtLeastOneModule())
+        reasons.push("Course must have at least one module.");
       if (!this.hasAtLeastOneLesson())
         reasons.push("Course must have at least one lesson.");
       if (!this.hasPrice())
@@ -408,7 +401,6 @@ export class Course {
     this.touch();
   }
 
- 
   public draftCourse(): void {
     if (this.status === CourseStatus.DRAFT) return;
     if (this.status === CourseStatus.DELETED) {
@@ -419,7 +411,6 @@ export class Course {
     this.status = CourseStatus.DRAFT;
     this.touch();
   }
-
 
   public unpublishCourse(): void {
     if (this.status !== CourseStatus.PUBLISHED) {
@@ -438,7 +429,6 @@ export class Course {
     this.touch();
   }
 
-  
   public restore(): void {
     if (this.status !== CourseStatus.DELETED) {
       throw new CourseDomainException(
@@ -450,26 +440,25 @@ export class Course {
     this.touch();
   }
 
- 
-  public addSection(section: Section): void {
-    if (!section) throw new CourseDomainException("Section is required.");
-    if (this.sections.some((s) => s.getId() === section.getId())) {
+  public addModule(module: Module): void {
+    if (!module) throw new CourseDomainException("Module is required.");
+    if (this.modules.some((s) => s.getId() === module.getId())) {
       throw new CourseDomainException(
-        "Section with this ID already exists in this course.",
+        "Module with this ID already exists in this course.",
       );
     }
-    this.sections.push(section);
-    if (typeof section.getLessons === "function") {
-      const l = section.getLessons();
+    this.modules.push(module);
+    if (typeof module.getLessons === "function") {
+      const l = module.getLessons();
       this.totalLessonCount += Array.isArray(l) ? l.length : 0;
     }
     this.touch();
   }
 
-  public removeSection(sectionId: string): void {
-    const idx = this.sections.findIndex((s) => s.getId() === sectionId);
-    if (idx === -1) throw new CourseDomainException("Section not found.");
-    const removed = this.sections.splice(idx, 1)[0];
+  public removeModule(moduleId: string): void {
+    const idx = this.modules.findIndex((s) => s.getId() === moduleId);
+    if (idx === -1) throw new CourseDomainException("Module not found.");
+    const removed = this.modules.splice(idx, 1)[0];
     if (typeof removed.getLessons === "function") {
       const l = removed.getLessons();
       this.totalLessonCount -= Array.isArray(l) ? l.length : 0;
@@ -478,19 +467,19 @@ export class Course {
     this.touch();
   }
 
-  public updateSection(updatedSection: Section): void {
-    const idx = this.sections.findIndex(
-      (s) => s.getId() === updatedSection.getId(),
+  public updateModule(updatedModule: Module): void {
+    const idx = this.modules.findIndex(
+      (s) => s.getId() === updatedModule.getId(),
     );
-    if (idx === -1) throw new CourseDomainException("Section not found.");
+    if (idx === -1) throw new CourseDomainException("Module not found.");
 
-    if (typeof this.sections[idx].getLessons === "function") {
-      const l = this.sections[idx].getLessons();
+    if (typeof this.modules[idx].getLessons === "function") {
+      const l = this.modules[idx].getLessons();
       this.totalLessonCount -= Array.isArray(l) ? l.length : 0;
     }
-    this.sections[idx] = updatedSection;
-    if (typeof updatedSection.getLessons === "function") {
-      const l = updatedSection.getLessons();
+    this.modules[idx] = updatedModule;
+    if (typeof updatedModule.getLessons === "function") {
+      const l = updatedModule.getLessons();
       this.totalLessonCount += Array.isArray(l) ? l.length : 0;
     }
     this.touch();
@@ -654,7 +643,7 @@ export class Course {
       totalLessonCount: this.totalLessonCount,
       rating: this.rating,
       students: this.students,
-      sections: this.sections.map((s) => s.getId()),
+      modules: this.modules.map((s) => s.getId()),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
@@ -711,14 +700,14 @@ export class Course {
             : this.deletedAt
           : undefined,
       },
-      sections: this.sections.map((section) => section.toPrimitive()),
+      modules: this.modules.map((module) => module.toPrimitive()),
     };
   }
 
   public static fromPrimitive(
     primitive: any,
     instructor: User,
-    sections: Section[],
+    modules: Module[],
   ): Course {
     const details: CourseDetails = {
       title: primitive.details?.title,
@@ -773,7 +762,7 @@ export class Course {
       status: primitive.status,
       details,
       options,
-      sections,
+      modules,
     });
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { CourseNotFoundException } from "src/domain/exceptions/domain.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
@@ -11,12 +11,12 @@ export class CheckCourseEnrollmentUseCase {
     private readonly enrollmentRepository: IEnrollmentRepository,
     private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(
     courseId: string,
-    userId: string
+    userId: string,
   ): Promise<{ enrolled: boolean }> {
     return this.tracer.startActiveSpan(
       "CheckCourseEnrollmentUseCase.execute",
@@ -26,7 +26,7 @@ export class CheckCourseEnrollmentUseCase {
 
           this.logger.log(
             `Checking enrollment for user ${userId} in course ${courseId}`,
-            { ctx: CheckCourseEnrollmentUseCase.name }
+            { ctx: CheckCourseEnrollmentUseCase.name },
           );
 
           // Ensure course exists before checking enrollment
@@ -37,19 +37,18 @@ export class CheckCourseEnrollmentUseCase {
               ctx: CheckCourseEnrollmentUseCase.name,
             });
             throw new CourseNotFoundException(
-              `Course not found with given Id ${courseId}`
+              `Course not found with given Id ${courseId}`,
             );
           }
 
-          const enrollment =
-            await this.enrollmentRepository.getByUserAndCourse(
-              userId,
-              courseId
-            );
+          const enrollment = await this.enrollmentRepository.getByUserAndCourse(
+            userId,
+            courseId,
+          );
 
           this.logger.log(
             `Enrollment check for user ${userId} in course ${courseId} completed`,
-            { ctx: CheckCourseEnrollmentUseCase.name }
+            { ctx: CheckCourseEnrollmentUseCase.name },
           );
 
           return { enrolled: Boolean(enrollment) };
@@ -59,11 +58,11 @@ export class CheckCourseEnrollmentUseCase {
             {
               ctx: CheckCourseEnrollmentUseCase.name,
               error,
-            }
+            },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }
