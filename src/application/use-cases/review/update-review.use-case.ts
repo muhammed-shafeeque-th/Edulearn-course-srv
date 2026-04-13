@@ -1,16 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { ReviewDto } from "src/application/dtos/review.dto";
+import { ReviewNotFoundException } from "src/domain/exceptions/certificate.exceptions";
 import {
   CourseNotFoundException,
-  EnrollmentNotFoundException,
-  ReviewNotFoundException,
-} from "src/domain/exceptions/domain.exceptions";
+} from "src/domain/exceptions/course.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { UpdateReviewRequest } from "src/infrastructure/grpc/generated/course/types/review";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 @Injectable()
 export class UpdateReviewUseCase {
@@ -19,8 +20,8 @@ export class UpdateReviewUseCase {
     private readonly enrollmentRepository: IEnrollmentRepository,
     private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
-  ) { }
+    private readonly tracer: TracingService,
+  ) {}
 
   async execute(dto: UpdateReviewRequest): Promise<ReviewDto> {
     return await this.tracer.startActiveSpan(
@@ -35,10 +36,10 @@ export class UpdateReviewUseCase {
         if (!enrollment) {
           this.logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
-            { ctx: UpdateReviewUseCase.name }
+            { ctx: UpdateReviewUseCase.name },
           );
           throw new EnrollmentNotFoundException(
-            `Enrollment with ID ${enrollmentId} not found`
+            `Enrollment with ID ${enrollmentId} not found`,
           );
         }
         const courseId = enrollment.getCourseId();
@@ -51,18 +52,20 @@ export class UpdateReviewUseCase {
 
         this.logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
-          { ctx: UpdateReviewUseCase.name }
+          { ctx: UpdateReviewUseCase.name },
         );
 
         // Check if course exists
-        const course = await this.courseRepository.findById(courseId, { withSections: false });
+        const course = await this.courseRepository.findById(courseId, {
+          withModules: false,
+        });
         if (!course) {
           this.logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
-            { ctx: UpdateReviewUseCase.name }
+            { ctx: UpdateReviewUseCase.name },
           );
           throw new CourseNotFoundException(
-            `Course with ID ${courseId} not found`
+            `Course with ID ${courseId} not found`,
           );
         }
 
@@ -73,10 +76,10 @@ export class UpdateReviewUseCase {
         ) {
           this.logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
-            { ctx: UpdateReviewUseCase.name }
+            { ctx: UpdateReviewUseCase.name },
           );
-          throw new EnrollmentNotFoundException(
-            `Enrollment-user-course mismatch`
+          throw new UnauthorizedException(
+            `Enrollment-user-course mismatch`,
           );
         }
 
@@ -107,7 +110,7 @@ export class UpdateReviewUseCase {
           ctx: UpdateReviewUseCase.name,
         });
         return ReviewDto.fromDomain(review);
-      }
+      },
     );
   }
 }
