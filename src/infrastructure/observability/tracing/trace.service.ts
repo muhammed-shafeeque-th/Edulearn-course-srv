@@ -22,7 +22,7 @@ export class TracingService {
   startActiveSpan<T>(
     name: string,
     fn: (span: Span) => T | Promise<T>,
-    attributes?: Attributes
+    attributes?: Attributes,
   ): T | Promise<T> {
     return this.tracer.startActiveSpan(name, (span) => {
       if (attributes) {
@@ -63,6 +63,7 @@ export class TracingService {
         span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
         throw error;
       } finally {
+        span.end();
         // For synchronous functions, end the span here
         // Only end the span if result is not a Promise
         // We cannot call fn(span) again here, so we rely on the above logic
@@ -74,7 +75,7 @@ export class TracingService {
   startSpan(
     name: string,
     attributes?: Attributes | Record<string | any, string | any>,
-    contextOverride?: Context
+    contextOverride?: Context,
   ): Span {
     const ctx = contextOverride || context.active();
     const span = this.tracer.startSpan(name, { attributes }, ctx);
