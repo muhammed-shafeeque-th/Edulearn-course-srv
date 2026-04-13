@@ -1,6 +1,6 @@
-import { Controller } from "@nestjs/common";
+import { Controller, UseFilters } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
-import { DomainException } from "src/domain/exceptions/domain.exceptions";
+import { DomainException } from "src/domain/exceptions/domain.exception";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { Error } from "src/infrastructure/grpc/generated/course/common";
@@ -22,8 +22,10 @@ import {
   UpdateReviewRequest,
 } from "src/infrastructure/grpc/generated/course/types/review";
 import { GetReviewByEnrollmentUseCase } from "src/application/use-cases/review/get-review-by-enrollment.use-case";
+import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 
 @Controller()
+@UseFilters(GrpcExceptionFilter)
 export class ReviewGrpcController {
   constructor(
     private readonly createReviewUseCase: AddReviewUseCase,
@@ -33,12 +35,12 @@ export class ReviewGrpcController {
     private readonly updateReviewUseCase: UpdateReviewUseCase,
     private readonly deleteReviewUseCase: DeleteReviewUseCase,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   private createErrorResponse(error: DomainException): Error {
     return {
-      code: error.errorCode,
+      code: error.code,
       message: error.message,
       details:
         "serializeError" in error && typeof error.serializeError === "function"
@@ -51,7 +53,7 @@ export class ReviewGrpcController {
   @GrpcMethod("EnrollmentService", "SubmitCourseReview")
   async createReview(
     data: SubmitCourseReviewRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
       return await this.tracer.startActiveSpan(
@@ -60,23 +62,17 @@ export class ReviewGrpcController {
           span.setAttribute("enrollment.id", data.enrollmentId);
           span.setAttribute("user.id", data.userId);
 
-
           const reviewDto = await this.createReviewUseCase.execute(data);
           return {
             review: reviewDto.toGrpcResponse(),
           };
-        }
+        },
       );
     } catch (error) {
       this.logger.error(`Failed to create review: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -84,7 +80,7 @@ export class ReviewGrpcController {
   @GrpcMethod("EnrollmentService", "GetReview")
   async getReview(
     data: GetReviewRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
       return await this.tracer.startActiveSpan(
@@ -96,25 +92,20 @@ export class ReviewGrpcController {
           return {
             review: reviewDto.toGrpcResponse(),
           };
-        }
+        },
       );
     } catch (error) {
       this.logger.error(`Failed to get review: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
   @GrpcMethod("EnrollmentService", "GetReviewByEnrollment")
   async getReviewByEnrollment(
     data: GetReviewByEnrollmentRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
       return await this.tracer.startActiveSpan(
@@ -128,18 +119,13 @@ export class ReviewGrpcController {
           return {
             review: reviewDto.toGrpcResponse(),
           };
-        }
+        },
       );
     } catch (error) {
       this.logger.error(`Failed to get review: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -147,7 +133,7 @@ export class ReviewGrpcController {
   @GrpcMethod("EnrollmentService", "UpdateReview")
   async updateReview(
     data: UpdateReviewRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
       return await this.tracer.startActiveSpan(
@@ -159,18 +145,13 @@ export class ReviewGrpcController {
           return {
             review: reviewDto.toGrpcResponse(),
           };
-        }
+        },
       );
     } catch (error) {
       this.logger.error(`Failed to update review: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -178,7 +159,7 @@ export class ReviewGrpcController {
   @GrpcMethod("EnrollmentService", "DeleteReview")
   async deleteReview(
     data: DeleteReviewRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<DeleteReviewResponse> {
     try {
       return await this.tracer.startActiveSpan(
@@ -188,18 +169,13 @@ export class ReviewGrpcController {
 
           await this.deleteReviewUseCase.execute(data);
           return { success: { deleted: true } };
-        }
+        },
       );
     } catch (error) {
       this.logger.error(`Failed to delete review: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -207,7 +183,7 @@ export class ReviewGrpcController {
   @GrpcMethod("EnrollmentService", "GetReviewsByCourse")
   async getReviewsByCourse(
     data: GetReviewsByCourseRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ReviewsResponse> {
     try {
       return await this.tracer.startActiveSpan(
@@ -225,7 +201,7 @@ export class ReviewGrpcController {
               data.pagination?.page,
               data.pagination?.pageSize,
               data.pagination?.sortBy,
-              (data.pagination?.sortOrder as any) || "DESC"
+              (data.pagination?.sortOrder as any) || "DESC",
             );
           return {
             reviews: {
@@ -233,18 +209,13 @@ export class ReviewGrpcController {
               total,
             },
           };
-        }
+        },
       );
     } catch (error) {
       this.logger.error(`Failed to get reviews by course: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
