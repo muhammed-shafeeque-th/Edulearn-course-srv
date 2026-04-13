@@ -1,7 +1,7 @@
 import {
   EnrollmentDomainException,
-  ProgressNotFoundException,
-} from "../exceptions/domain.exceptions";
+} from "../exceptions/enrollment.exceptions";
+import { ProgressNotFoundException } from "../exceptions/progress.exceptions";
 import { Course } from "./course.entity";
 import { UnitType, Progress } from "./progress.entity";
 
@@ -235,12 +235,10 @@ export class Enrollment {
     this.progressEntries.forEach((p) => p.softDelete());
   }
 
-
   // getMilestones(): ReadonlyArray<Milestone> {
   //   return this.milestones.slice();
   // }
 
- 
   // registerLessonCompletedMilestone(lessonId: string): void {
   //   const already = this.milestones.some(
   //     (m) => m.type === 'LESSON_COMPLETED' && m.metadata?.lessonId === lessonId,

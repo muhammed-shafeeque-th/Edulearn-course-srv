@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { EnrollmentNotFoundException } from "src/domain/exceptions/domain.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
@@ -27,7 +27,9 @@ export class DeleteEnrollmentUseCase {
         const enrollment =
           await this.enrollmentRepository.getById(enrollmentId);
         if (!enrollment) {
-          throw new EnrollmentNotFoundException(`Enrollment ${enrollmentId} not found`);
+          throw new EnrollmentNotFoundException(
+            `Enrollment ${enrollmentId} not found`,
+          );
         }
 
         await this.enrollmentRepository.remove(enrollment);

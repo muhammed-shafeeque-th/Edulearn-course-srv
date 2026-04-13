@@ -7,9 +7,6 @@ import {
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 
-/**
- * Use case to fetch enrollment trend for a specific course and instructor.
- */
 @Injectable()
 export class GetInstructorCourseEnrollmentTrendUseCase {
   constructor(
@@ -33,32 +30,36 @@ export class GetInstructorCourseEnrollmentTrendUseCase {
         span.setAttribute("course.id", data.courseId);
         this.logger.log(
           `Fetching course enrollment trend for instructor ${data.instructorId}, course ${data.courseId}`,
-          { ctx: GetInstructorCourseEnrollmentTrendUseCase.name }
+          { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
         );
 
         try {
-          const trend = await this.enrollmentRepository.getInstructorCourseEnrollmentTrend(
-            data.instructorId,
-            data.courseId,
-            data.from,
-            data.to
-          );
+          const trend =
+            await this.enrollmentRepository.getInstructorCourseEnrollmentTrend(
+              data.instructorId,
+              data.courseId,
+              data.from,
+              data.to,
+            );
 
           if (!trend) {
             span.setAttribute("trend.found", false);
             this.logger.warn(
               `No enrollment trend found for instructor ${data.instructorId} on course ${data.courseId}`,
-              { ctx: GetInstructorCourseEnrollmentTrendUseCase.name }
+              { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
             );
             return null;
           }
 
           span.setAttribute("trend.found", true);
-          span.setAttribute("trend.length", Array.isArray(trend.trend) ? trend.trend.length : 0);
+          span.setAttribute(
+            "trend.length",
+            Array.isArray(trend.trend) ? trend.trend.length : 0,
+          );
 
           this.logger.log(
             `Successfully fetched enrollment trend for instructor ${data.instructorId}, course ${data.courseId}`,
-            { ctx: GetInstructorCourseEnrollmentTrendUseCase.name }
+            { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
           );
 
           return trend;
@@ -66,11 +67,11 @@ export class GetInstructorCourseEnrollmentTrendUseCase {
           span.setAttribute("error", true);
           this.logger.error(
             `Error fetching enrollment trend: ${error instanceof Error ? error.message : error}`,
-            { ctx: GetInstructorCourseEnrollmentTrendUseCase.name, error }
+            { ctx: GetInstructorCourseEnrollmentTrendUseCase.name, error },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }

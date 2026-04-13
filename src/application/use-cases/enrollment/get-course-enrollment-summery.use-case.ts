@@ -16,7 +16,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase {
     private readonly enrollmentRepository: IEnrollmentRepository,
     private readonly logger: LoggingService,
     private readonly tracer: TracingService,
-  ) { }
+  ) {}
 
   /**
    * Executes the use case to get an instructor's enrollment summary for a specific course.
@@ -36,19 +36,20 @@ export class GetInstructorCourseEnrollmentSummeryUseCase {
 
           this.logger.log(
             `Fetching course enrollment summary for instructor ${data.instructorId}, course ${data.courseId}`,
-            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name }
+            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
           );
 
-          const summary = await this.enrollmentRepository.getInstructorCourseEnrollmentSummery(
-            data.instructorId,
-            data.courseId
-          );
+          const summary =
+            await this.enrollmentRepository.getInstructorCourseEnrollmentSummery(
+              data.instructorId,
+              data.courseId,
+            );
 
           if (!summary) {
             span.setAttribute("summary.found", false);
             this.logger.warn(
               `No enrollment summary found for instructor ${data.instructorId} on course ${data.courseId}`,
-              { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name }
+              { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
             );
             return null;
           }
@@ -60,7 +61,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase {
 
           this.logger.log(
             `Successfully fetched enrollment summary for instructor ${data.instructorId}, course ${data.courseId}`,
-            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name }
+            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
           );
 
           return summary;
@@ -68,11 +69,11 @@ export class GetInstructorCourseEnrollmentSummeryUseCase {
           span.setAttribute("error", true);
           this.logger.error(
             `Error fetching enrollment summary: ${error instanceof Error ? error.message : error}`,
-            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name, error }
+            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name, error },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }

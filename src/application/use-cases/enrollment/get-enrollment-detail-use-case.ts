@@ -2,13 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { Progress, UnitType } from "src/domain/entities/progress.entity";
 import {
   CourseNotFoundException,
-  EnrollmentNotFoundException,
-  NotAuthorizedException,
-} from "src/domain/exceptions/domain.exceptions";
+} from "src/domain/exceptions/course.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 interface LessonDetailDTO {
   id: string;
@@ -49,7 +49,7 @@ export interface QuizDetailDTO {
   completedAt?: string;
 }
 
-interface SectionDetailDTO {
+interface ModuleDetailDTO {
   id: string;
   title: string;
   description?: string;
@@ -66,7 +66,7 @@ export interface EnrollmentDetailDTO {
   progressPercent: number;
   status: string;
   enrolledAt: string;
-  sections: SectionDetailDTO[];
+  modules: ModuleDetailDTO[];
 }
 
 @Injectable()
@@ -75,12 +75,12 @@ export class GetEnrollmentDetailUseCase {
     private readonly enrollmentRepo: IEnrollmentRepository,
     private readonly courseRepo: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(
     enrollmentId: string,
-    userId: string
+    userId: string,
   ): Promise<EnrollmentDetailDTO> {
     return this.tracer.startActiveSpan(
       `${GetEnrollmentDetailUseCase.name}.execute`,
@@ -96,34 +96,33 @@ export class GetEnrollmentDetailUseCase {
             includeProgressSummary: true,
           });
 
-
           if (!enrollment) {
             this.logger.warn(
               `Enrollment [${enrollmentId}] not found for user [${userId}]`,
-              { ctx: GetEnrollmentDetailUseCase.name }
+              { ctx: GetEnrollmentDetailUseCase.name },
             );
             throw new EnrollmentNotFoundException(
-              `Enrollment not found with id ${enrollmentId}`
+              `Enrollment not found with id ${enrollmentId}`,
             );
           }
           if (enrollment.getStudentId() !== userId) {
             this.logger.warn(
               `User [${userId}] not authorized to access enrollment [${enrollmentId}]`,
-              { ctx: GetEnrollmentDetailUseCase.name }
+              { ctx: GetEnrollmentDetailUseCase.name },
             );
-            throw new NotAuthorizedException(
-              `User ${userId} is not authorized to access enrollment ${enrollmentId}`
+            throw new UnauthorizedException(
+              `User ${userId} is not authorized to access enrollment ${enrollmentId}`,
             );
           }
 
           const course = await this.courseRepo.findById(
-            enrollment.getCourseId()
+            enrollment.getCourseId(),
           );
 
           if (!course) {
             this.logger.warn(
               `Course not found for enrollment [${enrollmentId}] (user [${userId}])`,
-              { ctx: GetEnrollmentDetailUseCase.name }
+              { ctx: GetEnrollmentDetailUseCase.name },
             );
             throw new CourseNotFoundException("Course not found");
           }
@@ -135,16 +134,16 @@ export class GetEnrollmentDetailUseCase {
             progressMap.set(`${p.getUnitType()}:${p.getUnitId()}`, p);
           });
 
-          const sections: SectionDetailDTO[] = course
-            .getSections()
+          const modules: ModuleDetailDTO[] = course
+            .getModules()
             .sort((a, b) => a.getOrder() - b.getOrder())
-            .map((section) => {
-              const lessons = section
+            .map((module) => {
+              const lessons = module
                 .getLessons()
                 .sort((a, b) => a.getOrder() - b.getOrder())
                 .map<LessonDetailDTO>((lesson) => {
                   const p = progressMap.get(
-                    `${UnitType.LESSON}:${lesson.getId()}`
+                    `${UnitType.LESSON}:${lesson.getId()}`,
                   );
                   return {
                     id: lesson.getId(),
@@ -157,17 +156,17 @@ export class GetEnrollmentDetailUseCase {
                 });
 
               let quiz: QuizDetailDTO | undefined = undefined;
-              const sectionQuiz = section.getQuiz();
-              if (sectionQuiz) {
+              const moduleQuiz = module.getQuiz();
+              if (moduleQuiz) {
                 const qProgress = progressMap.get(
-                  `${UnitType.QUIZ}:${sectionQuiz.getId()}`
+                  `${UnitType.QUIZ}:${moduleQuiz.getId()}`,
                 );
                 quiz = {
-                  id: sectionQuiz.getId(),
-                  title: sectionQuiz.getTitle(),
-                  description: sectionQuiz.getDescription(),
-                  timeLimit: sectionQuiz.getTimeLimit(),
-                  questions: sectionQuiz.getQuestions().map((question) => ({
+                  id: moduleQuiz.getId(),
+                  title: moduleQuiz.getTitle(),
+                  description: moduleQuiz.getDescription(),
+                  timeLimit: moduleQuiz.getTimeLimit(),
+                  questions: moduleQuiz.getQuestions().map((question) => ({
                     id: question.getId(),
                     type: question.getType(),
                     question: question.getQuestion(),
@@ -180,8 +179,8 @@ export class GetEnrollmentDetailUseCase {
                     score: question.getPoint(),
                     timeLimit: question.getTimeLimit(),
                   })),
-                  requirePassingScore: sectionQuiz.getIsRequired(),
-                  passingScore: sectionQuiz.getPassingScore(),
+                  requirePassingScore: moduleQuiz.getIsRequired(),
+                  passingScore: moduleQuiz.getPassingScore(),
                   completed: !!qProgress && qProgress.isCompleted(),
                   passed: qProgress?.getPassed(),
                   score: qProgress?.getScore(),
@@ -190,11 +189,11 @@ export class GetEnrollmentDetailUseCase {
               }
 
               return {
-                id: section.getId(),
-                title: section.getTitle(),
-                description: section.getDescription(),
-                order: section.getOrder(),
-                isPublished: section.getIsPublished(),
+                id: module.getId(),
+                title: module.getTitle(),
+                description: module.getDescription(),
+                order: module.getOrder(),
+                isPublished: module.getIsPublished(),
                 lessons,
                 quiz,
               };
@@ -212,16 +211,16 @@ export class GetEnrollmentDetailUseCase {
             progressPercent: enrollment.getProgressPercent(),
             status: enrollment.getStatus(),
             enrolledAt: enrollment.getEnrolledAt().toISOString(),
-            sections,
+            modules,
           };
         } catch (error) {
           this.logger.error(
             `Failed to get enrollment detail [${enrollmentId}] for user [${userId}]`,
-            { err: error, ctx: GetEnrollmentDetailUseCase.name }
+            { err: error, ctx: GetEnrollmentDetailUseCase.name },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }

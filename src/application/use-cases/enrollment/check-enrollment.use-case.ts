@@ -8,12 +8,12 @@ export class CheckEnrollmentUseCase {
   constructor(
     private readonly enrollmentRepository: IEnrollmentRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(
     enrollmentId: string,
-    userId: string
+    userId: string,
   ): Promise<{ enrolled: boolean }> {
     return await this.tracer.startActiveSpan(
       "CheckEnrollmentUseCase.execute",
@@ -27,14 +27,14 @@ export class CheckEnrollmentUseCase {
 
         const enrollment = await this.enrollmentRepository.getByIdAndUser(
           enrollmentId,
-          userId
+          userId,
         );
 
         this.logger.log(`Enrollments by id ${enrollmentId} fetched`, {
           ctx: CheckEnrollmentUseCase.name,
         });
         return { enrolled: !!enrollment };
-      }
+      },
     );
   }
 }

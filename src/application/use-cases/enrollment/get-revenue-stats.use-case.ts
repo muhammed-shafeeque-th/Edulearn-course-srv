@@ -23,17 +23,14 @@ export class GetRevenueStatsUseCase {
    * @param data - The request containing year.
    * @returns The revenue statistics for enrollments in that year.
    */
-  async execute(
-    data: GetRevenueStatsRequest,
-  ): Promise<RevenueStats | null> {
+  async execute(data: GetRevenueStatsRequest): Promise<RevenueStats | null> {
     return this.tracer.startActiveSpan(
       "GetRevenueStatsUseCase.execute",
       async (span) => {
         span.setAttribute("year", data.year);
-        this.logger.log(
-          `Fetching revenue stats for year ${data.year}`,
-          { ctx: GetRevenueStatsUseCase.name }
-        );
+        this.logger.log(`Fetching revenue stats for year ${data.year}`, {
+          ctx: GetRevenueStatsUseCase.name,
+        });
 
         try {
           if (!data.year || !/^\d{4}$/.test(data.year)) {
@@ -41,12 +38,12 @@ export class GetRevenueStatsUseCase {
           }
 
           const stats = await this.enrollmentRepository.getRevenueStatus(
-            data.year
+            data.year,
           );
 
           this.logger.log(
             `Successfully fetched revenue stats for year ${data.year}`,
-            { ctx: GetRevenueStatsUseCase.name }
+            { ctx: GetRevenueStatsUseCase.name },
           );
 
           return stats;
@@ -54,11 +51,11 @@ export class GetRevenueStatsUseCase {
           span.setAttribute("error", true);
           this.logger.error(
             `Error fetching revenue stats: ${error instanceof Error ? error.message : error}`,
-            { ctx: GetRevenueStatsUseCase.name, error }
+            { ctx: GetRevenueStatsUseCase.name, error },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }
