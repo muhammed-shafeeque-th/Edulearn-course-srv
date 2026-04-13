@@ -7,7 +7,7 @@ import {
   OneToMany,
   JoinColumn,
 } from "typeorm";
-import { SectionOrmEntity } from "./section.orm-entity";
+import { ModuleOrmEntity } from "./module.orm-entity";
 import { ContentType } from "src/domain/entities/lesson.entity";
 import { ProgressOrmEntity } from "./progress.orm-entity";
 
@@ -65,15 +65,15 @@ export class LessonOrmEntity {
   // @Column({ name: "learning_objectives", array: true })
   // learningObjectives: string[];
 
-  @Column("uuid", { name: "section_id" })
-  sectionId: string;
+  @Column("uuid", { name: "module_id" })
+  moduleId: string;
 
-  @ManyToOne(() => SectionOrmEntity, (section) => section.lessons, {
+  @ManyToOne(() => ModuleOrmEntity, (module) => module.lessons, {
     eager: false,
   })
-  @JoinColumn({ name: "section_id" })
-  @Index("idx_lesson_section_id")
-  section: SectionOrmEntity;
+  @JoinColumn({ name: "module_id" })
+  @Index("idx_lesson_module_id")
+  module: ModuleOrmEntity;
 
   @OneToMany(() => ProgressOrmEntity, (progress) => progress.lesson, {
     cascade: true,
