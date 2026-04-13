@@ -7,7 +7,7 @@ export class AddLessonRequestDto {
 
   @IsString()
   @IsNotEmpty()
-  sectionId: string;
+  moduleId: string;
 
   @IsString()
   @IsNotEmpty()
