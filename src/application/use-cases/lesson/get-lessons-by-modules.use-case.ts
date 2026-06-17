@@ -5,30 +5,30 @@ import { LoggingService } from "src/infrastructure/observability/logging/logging
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 
 @Injectable()
-export class GetLessonsBySectionUseCase {
+export class GetLessonsByModuleUseCase {
   constructor(
     private readonly lessonRepository: ILessonRepository,
     private readonly logger: LoggingService,
     private readonly tracer: TracingService,
   ) {}
 
-  async execute(sectionId: string): Promise<LessonDto[]> {
+  async execute(moduleId: string): Promise<LessonDto[]> {
     return await this.tracer.startActiveSpan(
-      "GetLessonsBySectionUseCase.execute",
+      "GetLessonsByModuleUseCase.execute",
       async (span) => {
         span.setAttributes({
-          "section.id": sectionId,
+          "module.id": moduleId,
         });
-        this.logger.log(`Fetching lessons with sectionId ${sectionId}`, {
-          ctx: GetLessonsBySectionUseCase.name,
+        this.logger.log(`Fetching lessons with moduleId ${moduleId}`, {
+          ctx: GetLessonsByModuleUseCase.name,
         });
 
-        const lessons = await this.lessonRepository.findBySectionId(sectionId);
+        const lessons = await this.lessonRepository.findByModuleId(moduleId);
 
-        span.setAttribute("section.lesson.count", lessons.length);
+        span.setAttribute("module.lesson.count", lessons.length);
 
         this.logger.log(`Lessons ${lessons.length} fetched`, {
-          ctx: GetLessonsBySectionUseCase.name,
+          ctx: GetLessonsByModuleUseCase.name,
         });
         return lessons.map(LessonDto.fromDomain);
       },

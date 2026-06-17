@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { LessonDto } from "src/application/dtos/lesson.dto";
-import { LessonNotFoundException } from "src/domain/exceptions/domain.exceptions";
+import { LessonNotFoundException } from "src/domain/exceptions/lesson.exceptions";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";

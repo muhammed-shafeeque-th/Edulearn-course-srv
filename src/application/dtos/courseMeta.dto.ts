@@ -33,7 +33,7 @@ export class CourseMetadataDto {
   deletedAt?: string | undefined;
   price?: number | undefined;
   noOfLessons: number;
-  noOfSections: number;
+  noOfModules: number;
   noOfQuizzes: number;
   discountPrice?: number | undefined;
   currency?: string | undefined;
@@ -69,7 +69,7 @@ export class CourseMetadataDto {
     dto.deletedAt = meta.deletedAt;
     dto.price = meta.price;
     dto.noOfLessons = meta.noOfLessons;
-    dto.noOfSections = meta.noOfSections;
+    dto.noOfModules = meta.noOfModules;
     dto.noOfQuizzes = meta.noOfQuizzes;
     dto.discountPrice = meta.discountPrice;
     dto.currency = meta.currency;
@@ -115,7 +115,7 @@ export class CourseMetadataDto {
       instructorId: this.instructorId,
       noOfLessons: this.noOfLessons,
       noOfQuizzes: this.noOfQuizzes,
-      noOfSections: this.noOfSections,
+      noOfModules: this.noOfModules,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

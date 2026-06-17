@@ -9,13 +9,18 @@ export class GetCoursesStatsUseCase {
     private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
     private readonly tracer: TracingService,
-  ) { }
+  ) {}
 
   /**
    * Fetch overall statistics about courses.
    * @returns An object containing statistics for all courses in the system.
    */
-  async execute(): Promise<{ totalCourses: number, draftCourses: number; publishedCourses: number; unPublishedCourses: number; }> {
+  async execute(): Promise<{
+    totalCourses: number;
+    draftCourses: number;
+    publishedCourses: number;
+    unPublishedCourses: number;
+  }> {
     return await this.tracer.startActiveSpan(
       "GetCoursesStatsUseCase.execute",
       async (span) => {

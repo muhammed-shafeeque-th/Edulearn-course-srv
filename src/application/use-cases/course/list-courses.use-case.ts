@@ -15,11 +15,11 @@ export class ListCoursesUseCase {
   constructor(
     private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(
-    params: GetCoursesParamsDto
+    params: GetCoursesParamsDto,
   ): Promise<{ courses: CourseMetadataDto[]; total: number }> {
     return await this.tracer.startActiveSpan(
       "ListCoursesUseCase.execute",
@@ -39,7 +39,7 @@ export class ListCoursesUseCase {
           ctx: ListCoursesUseCase.name,
         });
         return { courses: courseDtos, total };
-      }
+      },
     );
   }
 
@@ -47,7 +47,7 @@ export class ListCoursesUseCase {
    * Maps the incoming DTO params to a sanitized and validated query object
    */
   private mapQueryFilters(params: GetCoursesParamsDto): GetCourseParams {
-    // Allowed sort fields (whitelist to avoid SQL injection etc.)
+    // Allowed sort fields (whitelist to avoid SQL injection)
     const ALLOWED_SORT_FIELDS = [
       "updatedAt",
       "createdAt",
@@ -57,14 +57,13 @@ export class ListCoursesUseCase {
     ];
     const ALLOWED_SORT_ORDERS = ["ASC", "DESC"];
 
-    // Updated sort options (used for UI or allowed sort inputs if relevant)
     // Maps sort option keywords to backend field/order values
     const SORT_OPTION_MAP: Record<
       string,
       { sortBy: string; sortOrder: "ASC" | "DESC" }
     > = {
       latest: { sortBy: "updatedAt", sortOrder: "DESC" },
-      popular: { sortBy: "rating", sortOrder: "DESC" }, // Adjust backend field as needed
+      popular: { sortBy: "rating", sortOrder: "DESC" },
       rating: { sortBy: "rating", sortOrder: "DESC" },
       "price-low": { sortBy: "price", sortOrder: "ASC" },
       "price-high": { sortBy: "price", sortOrder: "DESC" },
@@ -99,7 +98,6 @@ export class ListCoursesUseCase {
     let search: string | undefined = filters?.search;
     if (typeof search === "string") {
       // Remove dangerous characters, keep alphanum and space/basic punctuation
-      // (adapt this as needed for your requirements)
       search = search
         .replace(/[;"'`\\]/g, "") // Remove special SQL-like chars
         .replace(/--/g, "") // Remove SQL comment pattern

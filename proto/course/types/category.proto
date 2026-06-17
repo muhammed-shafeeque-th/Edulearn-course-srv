@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package course.category;
+
+import "course/common.proto";
+
+// ===========================================================================
+//                          CATEGORY MESSAGES
+// ===========================================================================
+
+message GetAllCategoriesRequest {
+  optional bool include_deleted = 1;
+  optional bool active_only = 2;
+}
+
+message CreateCategoryRequest {
+  string name = 1;
+  string slug = 2;
+  optional string description = 3;
+  optional string icon = 4;
+  optional string color = 5;
+  optional string parent_id = 6;
+  optional int32 order = 7;
+}
+
+message UpdateCategoryRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string slug = 3;
+  optional string description = 4;
+  optional string icon = 5;
+  optional string color = 6;
+  optional string parent_id = 7;
+  optional int32 order = 8;
+}
+
+message DeleteCategoryRequest {
+  string id = 1;
+}
+message GetCategoriesStatsRequest {
+  optional int32 top = 1;
+}
+
+message ToggleCategoryStatusRequest {
+  string id = 1;
+}
+
+message CategoryData {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  optional string description = 4;
+  optional string icon = 5;
+  optional string color = 6;
+  bool is_active = 7;
+  optional string parent_id = 8;
+  int32 course_count = 9;
+  int32 order = 10;
+  string created_at = 11;
+  string updated_at = 12;
+  optional string deleted_at = 13;
+  repeated CategoryData subcategories = 14;
+}
+
+message CategoryResponse {
+  oneof result {
+    CategoryData category = 1;
+    course.common.Error error = 2;
+  }
+}
+message GetCategoriesStatsResponse {
+  oneof result {
+    CategoriesStats stats = 1;
+    course.common.Error error = 2;
+  }
+}
+
+message CategoriesData {
+  repeated CategoryData categories = 1;
+  int32 total = 2;
+}
+
+message CategoriesStats {
+  repeated CategoryStats stats = 1;
+}
+message CategoryStats {
+  string category = 1;
+  int32 count = 2;
+}
+
+message CategoriesResponse {
+  oneof result {
+    CategoriesData categories = 1;
+    course.common.Error error = 2;
+  }
+}
+
+message DeleteCategoryResponse {
+  oneof result {
+    course.common.DeleteSuccess success = 1;
+    course.common.Error error = 2;
+  }
+}

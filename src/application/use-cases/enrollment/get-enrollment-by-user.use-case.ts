@@ -23,11 +23,11 @@ export class GetEnrollmentsByUserUseCase {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
 
-        const enrollments = await this.enrollmentRepository.listEnrollmentsByUser(userId, {
-          includeCourse: true,
-          includeProgressSummary: true,
-        });
-
+        const enrollments =
+          await this.enrollmentRepository.listEnrollmentsByUser(userId, {
+            includeCourse: true,
+            includeProgressSummary: true,
+          });
 
         this.logger.log(`Enrollments of user ${userId} fetched`, {
           ctx: GetEnrollmentsByUserUseCase.name,

@@ -6,9 +6,9 @@ import {
   ValidateNested,
   IsNumber,
   Min,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import BaseEventDto from './base-event.dto';
+} from "class-validator";
+import { Type } from "class-transformer";
+import BaseEventDto from "./base-event.dto";
 
 class OrderCompletedItemDto {
   @IsNotEmpty({ message: "Course ID is required" })
@@ -22,7 +22,6 @@ class OrderCompletedItemDto {
 }
 
 export class OrderCompletedEventPayload {
-
   @IsNotEmpty({ message: "Order ID is required" })
   @IsString({ message: "Order ID must be a string" })
   orderId: string;
@@ -45,9 +44,7 @@ export class OrderCompletedEventPayload {
   @Min(0, { message: "Total must be at least 0" })
   amount: number;
 
-  currency: string
+  currency: string;
 }
 
-export default class OrderCompletedEventDTO extends BaseEventDto<OrderCompletedEventPayload> { }
-
-
+export default class OrderCompletedEventDTO extends BaseEventDto<OrderCompletedEventPayload> {}

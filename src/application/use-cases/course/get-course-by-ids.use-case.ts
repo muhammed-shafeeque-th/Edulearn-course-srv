@@ -11,11 +11,11 @@ export class GetCoursesByIdsUseCase {
   constructor(
     private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(
-    dto: GetCourseByIdsRequestDto
+    dto: GetCourseByIdsRequestDto,
   ): Promise<{ courses: CourseMetadataDto[] }> {
     return await this.tracer.startActiveSpan(
       "GetCoursesByIdsUseCase.execute",
@@ -24,7 +24,7 @@ export class GetCoursesByIdsUseCase {
           `Fetching  courses for ${dto.courseIds.length} courses`,
           {
             ctx: GetCoursesByIdsUseCase.name,
-          }
+          },
         );
 
         const courses = await this.courseRepository.findByIds(dto.courseIds);
@@ -37,7 +37,7 @@ export class GetCoursesByIdsUseCase {
           ctx: GetCoursesByIdsUseCase.name,
         });
         return { courses: courseDtos };
-      }
+      },
     );
   }
 }

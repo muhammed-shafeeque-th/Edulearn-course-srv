@@ -1,4 +1,4 @@
-import { LessonDomainException } from "../exceptions/domain.exceptions";
+import { LessonDomainException } from "../exceptions/lesson.exceptions";
 
 export enum ContentType {
   VIDEO = "video",
@@ -11,16 +11,16 @@ export enum ContentType {
 export interface ContentMetadata {
   s3Url?: string;
   fileName?: string;
-  fileSize?: number; 
-  duration?: number; 
+  fileSize?: number;
+  duration?: number;
   mimeType?: string;
   thumbnailUrl?: string;
-  [key: string]: any; 
+  [key: string]: any;
 }
 
 export interface LessonProps {
   id: string;
-  sectionId: string;
+  moduleId: string;
   title: string;
   description?: string;
   idempotencyKey?: string;
@@ -37,12 +37,10 @@ export interface LessonProps {
 }
 
 export class Lesson {
-  
   private readonly id: string;
-  private readonly sectionId: string;
+  private readonly moduleId: string;
   private readonly idempotencyKey?: string;
 
-  
   private title: string;
   private description?: string;
   private contentType?: ContentType;
@@ -53,7 +51,6 @@ export class Lesson {
   private isPublished: boolean;
   private duration?: number;
 
-  
   private createdAt: Date;
   private updatedAt: Date;
   private deletedAt?: Date;
@@ -61,13 +58,13 @@ export class Lesson {
   constructor(props: LessonProps) {
     if (!props.id?.trim())
       throw new LessonDomainException("Lesson ID is required.");
-    if (!props.sectionId?.trim())
-      throw new LessonDomainException("Section ID is required.");
+    if (!props.moduleId?.trim())
+      throw new LessonDomainException("Module ID is required.");
     if (!props.title?.trim())
       throw new LessonDomainException("Lesson title is required.");
 
     this.id = props.id.trim();
-    this.sectionId = props.sectionId.trim();
+    this.moduleId = props.moduleId.trim();
     this.idempotencyKey = props.idempotencyKey;
     this.title = props.title.trim();
     this.description = props.description?.trim();
@@ -83,14 +80,12 @@ export class Lesson {
     this.deletedAt = props.deletedAt ? new Date(props.deletedAt) : undefined;
   }
 
-  
-
   getId(): string {
     return this.id;
   }
 
-  getSectionId(): string {
-    return this.sectionId;
+  getModuleId(): string {
+    return this.moduleId;
   }
 
   getIdempotencyKey(): string | undefined {
@@ -142,15 +137,13 @@ export class Lesson {
     return this.deletedAt;
   }
 
-  
-
   updateDetails(
     details: Partial<
       Omit<
         LessonProps,
-        "id" | "sectionId" | "createdAt" | "updatedAt" | "deletedAt"
+        "id" | "moduleId" | "createdAt" | "updatedAt" | "deletedAt"
       >
-    >
+    >,
   ): void {
     if (details.title !== undefined && details.title.trim().length > 0) {
       this.title = details.title.trim();
@@ -225,7 +218,7 @@ export class Lesson {
   toPrimitive() {
     return {
       id: this.id,
-      sectionId: this.sectionId,
+      moduleId: this.moduleId,
       idempotencyKey: this.idempotencyKey,
       title: this.title,
       description: this.description,

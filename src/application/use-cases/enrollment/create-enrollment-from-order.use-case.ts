@@ -1,7 +1,5 @@
 import {
   Injectable,
-  NotFoundException,
-  InternalServerErrorException,
 } from "@nestjs/common";
 import {
   Enrollment,
@@ -13,10 +11,7 @@ import { IEnrollmentRepository } from "src/domain/repositories/enrollment.reposi
 import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
-import OrderCompletedEventDTO from "src/presentation/kafka/dtos/order-complete.event-dto";
-import {
-  EnrollmentCreatedEvent,
-} from "src/domain/events/enrollment.events";
+import { EnrollmentCreatedEvent } from "src/domain/events/enrollment.events";
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { v4 as uuidV4 } from "uuid";
 import { IEventProcessRepository } from "src/domain/repositories/event-process-repository.interface";
@@ -30,8 +25,8 @@ export class CreateEnrollmentFromOrderUseCase {
     private readonly courseRepo: ICourseRepository,
     private readonly kafkaProducer: IKafkaProducer,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
-  ) { }
+    private readonly tracer: TracingService,
+  ) {}
 
   async execute(event: OrderCompletedEvent): Promise<void> {
     const payload = event.payload;
@@ -46,19 +41,17 @@ export class CreateEnrollmentFromOrderUseCase {
       return;
     }
 
-   
-
     for (const item of payload.items) {
       try {
         // Skip/deduplicate if enrollment already exists
         const existing = await this.enrollmentRepo.getByUserAndCourse(
           payload.userId,
           item.courseId,
-          { includeCourse: false, includeProgressSummary: false }
+          { includeCourse: false, includeProgressSummary: false },
         );
         if (existing) {
           this.logger.warn(
-            `User [${payload.userId}] already enrolled into course [${item.courseId}], skipping.`
+            `User [${payload.userId}] already enrolled into course [${item.courseId}], skipping.`,
           );
           continue;
         }
@@ -66,7 +59,7 @@ export class CreateEnrollmentFromOrderUseCase {
         const course = await this.courseRepo.findById(item.courseId);
         if (!course) {
           this.logger.warn(
-            `Course [${item.courseId}] not found, skipping enrollment.`
+            `Course [${item.courseId}] not found, skipping enrollment.`,
           );
           continue;
         }
@@ -74,19 +67,19 @@ export class CreateEnrollmentFromOrderUseCase {
         const enrollmentId = uuidV4();
         const progressEntries: Progress[] = [];
 
-        for (const section of course.getSections()) {
-          for (const lesson of section.getLessons()) {
+        for (const module of course.getModules()) {
+          for (const lesson of module.getLessons()) {
             progressEntries.push(
               new Progress(
                 uuidV4(),
                 enrollmentId,
                 lesson.getId(),
                 undefined,
-                UnitType.LESSON
-              )
+                UnitType.LESSON,
+              ),
             );
           }
-          const quiz = section.getQuiz();
+          const quiz = module.getQuiz();
           if (quiz) {
             progressEntries.push(
               new Progress(
@@ -94,15 +87,15 @@ export class CreateEnrollmentFromOrderUseCase {
                 enrollmentId,
                 undefined,
                 quiz.getId(),
-                UnitType.QUIZ
-              )
+                UnitType.QUIZ,
+              ),
             );
           }
         }
 
         const totalLearningUnits = progressEntries.length;
 
-        const idempotencyKey = uuidV4()
+        const idempotencyKey = uuidV4();
 
         const enrollment = new Enrollment(
           enrollmentId,
@@ -120,12 +113,12 @@ export class CreateEnrollmentFromOrderUseCase {
           undefined,
           progressEntries,
           totalLearningUnits,
-          0
+          0,
         );
 
         await this.enrollmentRepo.upsert(enrollment);
         this.logger.log(
-          `Enrollment [${enrollmentId}] created for user [${payload.userId}] in course [${item.courseId}].`
+          `Enrollment [${enrollmentId}] created for user [${payload.userId}] in course [${item.courseId}].`,
         );
 
         course.incrementEnrollment();
@@ -135,24 +128,21 @@ export class CreateEnrollmentFromOrderUseCase {
         await this.publishCourseEnrolledEvents(
           enrollment,
           course.getInstructorId(),
-          payload.amount
+          payload.amount,
         );
-
-      
       } catch (error) {
         this.logger.error(
           `Failed to create enrollment for user [${payload.userId}] and course [${item.courseId}]: ${error?.message}`,
-          error?.stack
+          error?.stack,
         );
       }
     }
   }
 
-
   private async publishCourseEnrolledEvents(
     enrollment: Enrollment,
     instructorId: string,
-    amount: number
+    amount: number,
   ): Promise<void> {
     try {
       await this.kafkaProducer.produce<EnrollmentCreatedEvent>(
@@ -165,7 +155,6 @@ export class CreateEnrollmentFromOrderUseCase {
             source: "course-service",
             eventType: "EnrollmentCreatedEvent",
             payload: {
-
               courseId: enrollment.getCourseId(),
               enrolledAt: enrollment.getEnrolledAt().toISOString(),
               enrollmentId: enrollment.getId(),
@@ -175,13 +164,13 @@ export class CreateEnrollmentFromOrderUseCase {
               timestamp: Date.now(),
               studentId: enrollment.getStudentId(),
             },
-          }
-        }
+          },
+        },
       );
     } catch (error) {
       this.logger.error(
         "Failed to publish EnrollmentCreatedEvent to Kafka",
-        error?.stack
+        error?.stack,
       );
       throw error;
     }
@@ -190,7 +179,6 @@ export class CreateEnrollmentFromOrderUseCase {
       await this.kafkaProducer.produce<InAppNotificationEvent>(
         KafkaTopics.NotificationInAppChannel,
         {
-
           key: enrollment.getCourseId(),
           value: {
             eventId: uuidV4(),
@@ -198,7 +186,6 @@ export class CreateEnrollmentFromOrderUseCase {
             source: "course-service",
             eventType: "CourseEnrollmentEvent",
             payload: {
-
               userId: enrollment.getStudentId(),
               title: "Enrollment Successful! 🎓",
               message: `You've been successfully enrolled in your new course. Start learning now!`,
@@ -210,7 +197,7 @@ export class CreateEnrollmentFromOrderUseCase {
               category: "enrollment",
             },
           },
-        }
+        },
       );
     } catch (error) {
       this.logger.error("Error while publishing InAppNotification event", {

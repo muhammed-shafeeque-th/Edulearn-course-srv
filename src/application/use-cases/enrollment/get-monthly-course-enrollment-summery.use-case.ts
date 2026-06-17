@@ -34,45 +34,51 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase {
 
         this.logger.log(
           `Fetching monthly courses enrollment stats for year ${data.year}`,
-          { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name }
+          { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
         );
 
         try {
           // This should return an array of MonthlyCoursesEnrollment
-          const stats: MonthlyCoursesEnrollment[] | null = await this.enrollmentRepository.getMonthlyCourseEnrollmentStats(
-            data.year
-          );
+          const trend: MonthlyCoursesEnrollment[] | null =
+            await this.enrollmentRepository.getMonthlyCourseEnrollmentStats(
+              data.year,
+            );
 
-          if (!stats || stats.length === 0) {
-            span.setAttribute("stats.found", false);
+          if (!trend || trend.length === 0) {
+            span.setAttribute("trend.found", false);
             this.logger.warn(
-              `No monthly courses enrollment stats found for year ${data.year}`,
-              { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name }
+              `No monthly courses enrollment trend found for year ${data.year}`,
+              { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
             );
             return null;
           }
 
-          span.setAttribute("stats.found", true);
-          span.setAttribute("stats.length", stats.length);
+          span.setAttribute("trend.found", true);
+          span.setAttribute("trend.length", trend.length);
 
           this.logger.log(
-            `Successfully fetched ${stats.length} monthly courses enrollment stats for year ${data.year}`,
-            { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name }
+            `Successfully fetched ${trend.length} monthly courses enrollment trend for year ${data.year}`,
+            { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
           );
 
-          // Return as expected by protobuf contract: { stats }
-          return { stats };
+          // Return as expected by protobuf contract: { trend }
+          return {
+            trend: trend.map((trend) => ({
+              month: trend.month,
+              enrollments: trend.count,
+            })),
+          };
         } catch (error) {
           span.setAttribute("error", true);
           this.logger.error(
             `Error fetching monthly courses enrollment stats: ${
               error instanceof Error ? error.message : error
             }`,
-            { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name, error }
+            { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name, error },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }

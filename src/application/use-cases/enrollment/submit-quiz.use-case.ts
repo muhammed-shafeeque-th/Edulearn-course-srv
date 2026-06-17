@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import {
   EnrollmentNotFoundException,
-  NotAuthorizedException,
-  QuizNotFoundException,
-} from "src/domain/exceptions/domain.exceptions";
+} from "src/domain/exceptions/enrollment.exceptions";
+import { QuizNotFoundException } from "src/domain/exceptions/quiz.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IQuizRepository } from "src/domain/repositories/quiz.repository";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 export interface SubmitQuizCommandDTO {
   enrollmentId: string;
@@ -28,7 +28,7 @@ export interface SubmitQuizResultDTO {
 export class SubmitQuizUseCase {
   constructor(
     private readonly enrollmentRepo: IEnrollmentRepository,
-    private readonly quizRepo: IQuizRepository
+    private readonly quizRepo: IQuizRepository,
   ) {}
 
   async execute(cmd: SubmitQuizCommandDTO): Promise<SubmitQuizResultDTO> {
@@ -41,7 +41,7 @@ export class SubmitQuizUseCase {
       throw new EnrollmentNotFoundException("Enrollment not found");
     }
     if (enrollment.getStudentId() !== cmd.userId) {
-      throw new NotAuthorizedException();
+      throw new UnauthorizedException();
     }
 
     const quiz = await this.quizRepo.findById(cmd.quizId);
@@ -59,7 +59,7 @@ export class SubmitQuizUseCase {
       quiz.getId(),
       cmd.score,
       passed,
-      requirePassingScore
+      requirePassingScore,
     );
 
     await this.enrollmentRepo.upsert(enrollment);

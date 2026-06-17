@@ -4,14 +4,14 @@ import { LoggingService } from "src/infrastructure/observability/logging/logging
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import {
   CourseNotFoundException,
-  UnauthorizedException,
-} from "src/domain/exceptions/domain.exceptions";
+} from "src/domain/exceptions/course.exceptions";
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
 import { v4 as uuidV4 } from "uuid";
 import { CourseDto } from "src/application/dtos/course.dto";
 import { UnPublishCourseRequest } from "src/infrastructure/grpc/generated/course/types/course";
 import { CourseUnPublishedEvent } from "src/domain/events/course-lifecycle.events";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 @Injectable()
 export class UnPublishCourseUseCase {
@@ -19,8 +19,8 @@ export class UnPublishCourseUseCase {
     private readonly courseRepository: ICourseRepository,
     private readonly eventProducer: IKafkaProducer,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
-  ) { }
+    private readonly tracer: TracingService,
+  ) {}
 
   /**
    * Unpublishes an existing course if the user is authorized.
@@ -36,7 +36,7 @@ export class UnPublishCourseUseCase {
       async (span) => {
         const { courseId, isAdmin, userId } = cmd;
 
-        this.logger.info("Attempting to unpublish course", {
+        this.logger.debug("Attempting to unpublish course", {
           ctx: UnPublishCourseUseCase.name,
           courseId,
           userId,
@@ -75,7 +75,7 @@ export class UnPublishCourseUseCase {
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", warnMsg);
           throw new UnauthorizedException(
-            "You are not authorized to unpublish this course"
+            "You are not authorized to unpublish this course",
           );
         }
 
@@ -107,12 +107,12 @@ export class UnPublishCourseUseCase {
                   status: course.getStatus(),
                   title: course.getTitle(),
                   updatedAt: course.getUpdatedAt()?.toISOString?.() || "",
-                }
-              }
-            }
+                },
+              },
+            },
           );
 
-          this.logger.info("Course unpublished successfully.", {
+          this.logger.debug("Course unpublished successfully.", {
             ctx: UnPublishCourseUseCase.name,
             courseId,
             userId,
@@ -130,7 +130,7 @@ export class UnPublishCourseUseCase {
           });
           throw error;
         }
-      }
+      },
     );
   }
 }

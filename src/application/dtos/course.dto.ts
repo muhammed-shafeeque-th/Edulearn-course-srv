@@ -1,5 +1,5 @@
 import { Course, CourseStatus } from "src/domain/entities/course.entity";
-import { SectionDto } from "./section.dto";
+import { ModuleDto } from "./module.dto";
 import {
   CourseData,
   CourseMetadata,
@@ -39,7 +39,7 @@ export class CourseDto {
   numberOfRatings?: number;
   rating?: number;
   students?: number;
-  sections: SectionDto[];
+  modules: ModuleDto[];
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -78,7 +78,7 @@ export class CourseDto {
     dto.learningOutcomes = course.getWhatYouWillLearn();
     dto.targetAudience = course.getTargetAudience();
     dto.courseRequirements = course.getCourseRequirements();
-    dto.sections = course.getSections().map(SectionDto.fromDomain);
+    dto.modules = course.getModules().map(ModuleDto.fromDomain);
     dto.createdAt = course.getCreatedAt();
     dto.updatedAt = course.getUpdatedAt();
     dto.deletedAt = course.getDeletedAt();
@@ -122,12 +122,10 @@ export class CourseDto {
       trailer: this.trailer,
       level: this.level,
       instructorId: this.instructorId,
-      sections: this.sections?.map((section) => section.toGrpcResponse()),
+      modules: this.modules?.map((module) => module.toGrpcResponse()),
       createdAt: this.createdAt?.toISOString?.(),
       updatedAt: this.updatedAt?.toISOString?.(),
       deletedAt: this.deletedAt ? this.deletedAt?.toISOString?.() : null,
     };
   };
-
- 
 }

@@ -4,14 +4,14 @@ import { LoggingService } from "src/infrastructure/observability/logging/logging
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import {
   CourseNotFoundException,
-  UnauthorizedException,
-} from "src/domain/exceptions/domain.exceptions";
+} from "src/domain/exceptions/course.exceptions";
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
 import { v4 as uuidV4 } from "uuid";
 import { CourseDto } from "src/application/dtos/course.dto";
 import { PublishCourseRequest } from "src/infrastructure/grpc/generated/course/types/course";
 import { CoursePublishedEvent } from "src/domain/events/course-lifecycle.events";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 @Injectable()
 export class PublishCourseUseCase {
@@ -19,8 +19,8 @@ export class PublishCourseUseCase {
     private readonly courseRepository: ICourseRepository,
     private readonly eventProducer: IKafkaProducer,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
-  ) { }
+    private readonly tracer: TracingService,
+  ) {}
 
   /**
    * Publishes a course if the user is authorized (isAdmin or instructor of the course).
@@ -36,7 +36,7 @@ export class PublishCourseUseCase {
       async (span) => {
         const { courseId, userId, isAdmin } = cmd;
 
-        this.logger.info("Attempting to publish course", {
+        this.logger.debug("Attempting to publish course", {
           ctx: PublishCourseUseCase.name,
           courseId,
           userId,
@@ -76,7 +76,7 @@ export class PublishCourseUseCase {
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", warnMsg);
           throw new UnauthorizedException(
-            "You are not authorized to publish this course"
+            "You are not authorized to publish this course",
           );
         }
 
@@ -108,12 +108,12 @@ export class PublishCourseUseCase {
                   status: course.getStatus(),
                   title: course.getTitle(),
                   updatedAt: course.getUpdatedAt()?.toISOString?.() || "",
-                }
-              }
-            }
+                },
+              },
+            },
           );
 
-          this.logger.info("Course published successfully.", {
+          this.logger.debug("Course published successfully.", {
             ctx: PublishCourseUseCase.name,
             courseId,
             userId,
@@ -124,7 +124,7 @@ export class PublishCourseUseCase {
           span?.setAttribute("error", true);
           span?.setAttribute(
             "error.message",
-            error?.message ?? "Unknown error"
+            error?.message ?? "Unknown error",
           );
           this.logger.error(
             `Failed to publish course ${courseId}: ${error?.message}`,
@@ -133,11 +133,11 @@ export class PublishCourseUseCase {
               error,
               courseId,
               userId,
-            }
+            },
           );
           throw error;
         }
-      }
+      },
     );
   }
 }

@@ -1,9 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import {
-  CourseNotFoundException,
-  EnrollmentNotFoundException,
-  ReviewNotFoundException,
-} from "src/domain/exceptions/domain.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
+import { ReviewNotFoundException } from "src/domain/exceptions/review.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
@@ -18,7 +16,7 @@ export class DeleteReviewUseCase {
     private readonly enrollmentRepository: IEnrollmentRepository,
     private readonly courseRepository: ICourseRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(dto: DeleteReviewRequest): Promise<void> {
@@ -39,10 +37,10 @@ export class DeleteReviewUseCase {
         if (!enrollment) {
           this.logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
-            { ctx: DeleteReviewUseCase.name }
+            { ctx: DeleteReviewUseCase.name },
           );
           throw new EnrollmentNotFoundException(
-            `Enrollment with ID ${enrollmentId} not found`
+            `Enrollment with ID ${enrollmentId} not found`,
           );
         }
         const courseId = enrollment.getCourseId();
@@ -55,7 +53,7 @@ export class DeleteReviewUseCase {
 
         this.logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
-          { ctx: DeleteReviewUseCase.name }
+          { ctx: DeleteReviewUseCase.name },
         );
 
         // Check if course exists
@@ -63,10 +61,10 @@ export class DeleteReviewUseCase {
         if (!course) {
           this.logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
-            { ctx: DeleteReviewUseCase.name }
+            { ctx: DeleteReviewUseCase.name },
           );
           throw new CourseNotFoundException(
-            `Course with ID ${courseId} not found`
+            `Course with ID ${courseId} not found`,
           );
         }
 
@@ -77,10 +75,10 @@ export class DeleteReviewUseCase {
         ) {
           this.logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
-            { ctx: DeleteReviewUseCase.name }
+            { ctx: DeleteReviewUseCase.name },
           );
           throw new EnrollmentNotFoundException(
-            `Enrollment-user-course mismatch`
+            `Enrollment-user-course mismatch`,
           );
         }
 
@@ -107,7 +105,7 @@ export class DeleteReviewUseCase {
         this.logger.log(`Review ${reviewId} deleted`, {
           ctx: DeleteReviewUseCase.name,
         });
-      }
+      },
     );
   }
 }

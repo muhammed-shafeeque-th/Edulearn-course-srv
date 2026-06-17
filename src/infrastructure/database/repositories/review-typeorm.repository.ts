@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
-import { IReviewRepository, ReviewBreakDown } from "../../../domain/repositories/review.repository";
+import {
+  IReviewRepository,
+  ReviewBreakDown,
+} from "../../../domain/repositories/review.repository";
 import { Review } from "../../../domain/entities/review.entity";
 import { ReviewOrmEntity } from "../entities/review.entity";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
@@ -11,7 +14,6 @@ import { ReviewEntityMapper } from "../mappers/review.entity.mapper";
 import { UserOrmEntity } from "../entities/user.entity";
 import { UserEntityMapper } from "../mappers/user.entity.mapper";
 
-
 @Injectable()
 export class ReviewTypeOrmRepository implements IReviewRepository {
   constructor(
@@ -20,9 +22,8 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
     private readonly logger: LoggingService,
     private readonly metrics: MetricsService,
     private readonly tracer: TracingService,
-    private readonly dataSource: DataSource
-
-  ) { }
+    private readonly dataSource: DataSource,
+  ) {}
 
   async save(review: Review): Promise<void> {
     return await this.tracer.startActiveSpan(
@@ -49,9 +50,11 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
             if (!domainUser) {
               this.logger.error(
                 `User entity missing for review with id ${review.getId()} and userId ${review.getUserId()}`,
-                { ctx: ReviewTypeOrmRepository.name }
+                { ctx: ReviewTypeOrmRepository.name },
               );
-              throw new Error("User entity must be provided on Review domain object when user is missing");
+              throw new Error(
+                "User entity must be provided on Review domain object when user is missing",
+              );
             }
             user = UserEntityMapper.toOrmUser(domainUser);
             await userRepo.save(user);
@@ -60,7 +63,10 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
           ormEntity.user = user;
           ormEntity.userId = user.id;
 
-          const end = this.metrics.measureDBOperationDuration("review.save", "INSERT");
+          const end = this.metrics.measureDBOperationDuration(
+            "review.save",
+            "INSERT",
+          );
           let result: ReviewOrmEntity | null = null;
 
           try {
@@ -71,7 +77,7 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
             end();
             this.logger.error(
               `Failed to save review ${review.getId()}: ${error?.message}`,
-              { ctx: ReviewTypeOrmRepository.name, error }
+              { ctx: ReviewTypeOrmRepository.name, error },
             );
             span.setAttribute("review.saved", false);
             throw error;
@@ -80,7 +86,7 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
           if (!result) {
             this.logger.warn(
               `Save operation returned null or undefined for review ${review.getId()}`,
-              { ctx: ReviewTypeOrmRepository.name }
+              { ctx: ReviewTypeOrmRepository.name },
             );
           } else {
             this.logger.debug("Review has been successfully saved to DB", {
@@ -88,10 +94,8 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
             });
             span.setAttribute("review.saved", true);
           }
-
-
         });
-      }
+      },
     );
   }
 
@@ -106,8 +110,15 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
 
         span.setAttribute("redis.cache.review.hit", false);
 
-        const end = this.metrics.measureDBOperationDuration("review.findOne", "SELECT");
-        const ormEntity = await this.repo.findOne({ where: { id } });
+        const end = this.metrics.measureDBOperationDuration(
+          "review.findOne",
+          "SELECT",
+        );
+        const ormEntity = await this.repo.findOne({
+          where: { id },
+          
+          relations: ["user"],
+        });
         end();
         this.metrics.incrementDBRequestCounter("SELECT");
 
@@ -225,14 +236,13 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
         if (!result || !("affected" in result) || result.affected === 0) {
           this.logger.warn(
             `Delete operation did not affect any rows for review ${review.getId()}`,
-            { ctx: ReviewTypeOrmRepository.name }
+            { ctx: ReviewTypeOrmRepository.name },
           );
         }
 
-        this.logger.debug(
-          `Deleted review ${review.getId()}`,
-          { ctx: ReviewTypeOrmRepository.name },
-        );
+        this.logger.debug(`Deleted review ${review.getId()}`, {
+          ctx: ReviewTypeOrmRepository.name,
+        });
       },
     );
   }
@@ -246,13 +256,12 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
           "review.enrollment.id": enrollmentId,
         });
 
-
         const end = this.metrics.measureDBOperationDuration(
           "review.findByEnrollmentId",
           "SELECT",
         );
         const ormEntity = await this.repo.findOne({
-          where: { enrollmentId }
+          where: { enrollmentId },
         });
         end();
         this.metrics.incrementDBRequestCounter("SELECT");
@@ -264,7 +273,7 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
         span.setAttribute("db.cache.review.status", "Found");
         const review = ReviewEntityMapper.toDomainReview(ormEntity);
         return review;
-      }
+      },
     );
   }
 
@@ -275,13 +284,13 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
         span.setAttribute("db.review.operation", "SELECT_BREAKDOWN");
         span.setAttribute("review.course.id", courseId);
 
-
         const end = this.metrics.measureDBOperationDuration(
           "review.getCourseRatingsBreakdown",
-          "SELECT"
+          "SELECT",
         );
 
-        const qb = this.repo.createQueryBuilder("review")
+        const qb = this.repo
+          .createQueryBuilder("review")
           .select("review.rating", "rating")
           .addSelect("COUNT(*)", "count")
           .where("review.courseId = :courseId", { courseId })
@@ -302,13 +311,12 @@ export class ReviewTypeOrmRepository implements IReviewRepository {
 
         this.logger.debug(
           `Calculated  ratings breakdown for course ${courseId}`,
-          { ctx: ReviewTypeOrmRepository.name }
+          { ctx: ReviewTypeOrmRepository.name },
         );
         span.setAttribute("db.ratings_breakdown.fetched", true);
 
         return breakdown;
-      }
+      },
     );
   }
-
 }

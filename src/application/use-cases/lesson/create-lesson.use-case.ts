@@ -9,37 +9,37 @@ import {
 import { LessonCreatedEvent } from "src/domain/events/lesson.events";
 import {
   CourseNotFoundException,
-  SectionNotFoundException,
-  UnauthorizedException,
-} from "src/domain/exceptions/domain.exceptions";
+} from "src/domain/exceptions/course.exceptions";
+import { ModuleNotFoundException } from "src/domain/exceptions/module.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
-import { ISectionRepository } from "src/domain/repositories/section.repository";
+import { IModuleRepository } from "src/domain/repositories/module.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { CreateLessonDto } from "src/presentation/grpc/dtos/lesson/create-lesson.dto";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { v4 as uuidV4 } from "uuid";
 
 @Injectable()
 export class CreateLessonUseCase {
   constructor(
-    private readonly sectionRepository: ISectionRepository,
+    private readonly moduleRepository: IModuleRepository,
     private readonly courseRepository: ICourseRepository,
     private readonly eventEmitter: EventEmitter2,
     private readonly lessonRepository: ILessonRepository,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly tracer: TracingService,
   ) {}
 
   async execute(
     dto: CreateLessonDto,
-    idempotencyKey: string
+    idempotencyKey: string,
   ): Promise<LessonDto> {
     return await this.tracer.startActiveSpan(
       "CreateLessonUseCase.execute",
       async (span) => {
         span.setAttributes({
-          "section.id": dto.sectionId,
+          "module.id": dto.moduleId,
           "lesson.title": dto.title,
         });
 
@@ -48,41 +48,39 @@ export class CreateLessonUseCase {
           await this.lessonRepository.findByIdempotencyKey(idempotencyKey);
         if (existingLesson) {
           span.setAttribute("idempotency.duplicate", true);
-          this.logger.info(
-            `Lesson creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateLessonUseCase.name}`
+          this.logger.debug(
+            `Lesson creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateLessonUseCase.name}`,
           );
           return LessonDto.fromDomain(existingLesson);
         }
 
-        this.logger.log(`Creating lesson for section ${dto.sectionId}`, {
+        this.logger.log(`Creating lesson for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         const course = await this.courseRepository.findById(dto.courseId);
         if (!course) {
           span.setAttribute("course.found", false);
           throw new CourseNotFoundException(
-            `Course with ID ${dto.courseId} not found`
+            `Course with ID ${dto.courseId} not found`,
           );
         }
 
         if (course.getInstructorId() !== dto.userId) {
           throw new UnauthorizedException(
-            "You are not authorized to perform this operation"
+            "You are not authorized to perform this operation",
           );
         }
 
-        const section = await this.sectionRepository.findById(dto.sectionId);
-        if (!section) {
-          span.setAttribute("section.found", false);
-          throw new SectionNotFoundException(
-            `Section ${dto.sectionId} not found`
-          );
+        const module = await this.moduleRepository.findById(dto.moduleId);
+        if (!module) {
+          span.setAttribute("module.found", false);
+          throw new ModuleNotFoundException(`Module ${dto.moduleId} not found`);
         }
-        span.setAttribute("section.found", true);
+        span.setAttribute("module.found", true);
         const lessonId = uuidV4();
         const lesson = new Lesson({
           id: lessonId,
-          sectionId: dto.sectionId,
+          moduleId: dto.moduleId,
           title: dto.title,
           description: dto.description,
           idempotencyKey: idempotencyKey,
@@ -94,21 +92,21 @@ export class CreateLessonUseCase {
           isPublished: dto.isPublished,
           duration: dto.estimatedDuration,
         });
-        
+
         await this.lessonRepository.save(lesson);
         span.setAttribute("lesson.saved", true);
 
         // Emit application event AFTER persistence succeeds
         this.eventEmitter.emit(
           LessonCreatedEvent.name,
-          new LessonCreatedEvent(dto.courseId)
+          new LessonCreatedEvent(dto.courseId),
         );
 
-        this.logger.log(`Lesson created for section ${dto.sectionId}`, {
+        this.logger.log(`Lesson created for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         return LessonDto.fromDomain(lesson);
-      }
+      },
     );
   }
 }

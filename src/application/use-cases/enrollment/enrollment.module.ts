@@ -3,7 +3,7 @@ import { DatabaseRepositoryModule } from "src/infrastructure/database/database-r
 import { RedisModule } from "src/infrastructure/redis/redis.module";
 import { GetEnrollmentsByUserUseCase } from "./get-enrollment-by-user.use-case";
 import { GetEnrollmentsByCourseUseCase } from "./get-enrollment-by-course.use-case";
-import { UpdateEnrollmentUseCase } from "../progress/update-enrollment.use-case";
+// import { UpdateEnrollmentUseCase } from "../progress/update-enrollment.use-case";
 import { DeleteEnrollmentUseCase } from "./delete-enrollment.use-case";
 import { GrpcInfrastructureModule } from "src/infrastructure/grpc/grpc.module";
 import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
@@ -17,18 +17,25 @@ import { GetInstructorCoursesEnrollmentSummeryUseCase } from "./get-courses-enro
 import { GetInstructorCourseEnrollmentSummeryUseCase } from "./get-course-enrollment-summery.use-case";
 import { GetInstructorCourseEnrollmentTrendUseCase } from "./get-course-enrollment-trend.use-case";
 import { GetRevenueStatsUseCase } from "./get-revenue-stats.use-case";
+import { GetEnrollmentTrendUseCase } from "./get-enrollment-trend.use-case";
 
 @Module({
-  imports: [DatabaseRepositoryModule, RedisModule, KafkaModule, GrpcInfrastructureModule],
+  imports: [
+    DatabaseRepositoryModule,
+    RedisModule,
+    KafkaModule,
+    GrpcInfrastructureModule,
+  ],
   providers: [
     GetEnrollmentDetailUseCase,
     CreateEnrollmentFromOrderUseCase,
     GetEnrollmentUseCase,
+    GetEnrollmentTrendUseCase,
     GetEnrollmentsByUserUseCase,
     CheckEnrollmentUseCase,
     CheckCourseEnrollmentUseCase,
     GetEnrollmentsByCourseUseCase,
-    UpdateEnrollmentUseCase,
+    // UpdateEnrollmentUseCase,
     DeleteEnrollmentUseCase,
     GetMonthlyCoursesEnrollmentStatsUseCase,
     GetInstructorCoursesEnrollmentSummeryUseCase,
@@ -40,11 +47,12 @@ import { GetRevenueStatsUseCase } from "./get-revenue-stats.use-case";
     GetEnrollmentDetailUseCase,
     CreateEnrollmentFromOrderUseCase,
     GetEnrollmentUseCase,
+    GetEnrollmentTrendUseCase,
     GetEnrollmentsByUserUseCase,
     CheckEnrollmentUseCase,
     CheckCourseEnrollmentUseCase,
     GetEnrollmentsByCourseUseCase,
-    UpdateEnrollmentUseCase,
+    // UpdateEnrollmentUseCase,
     DeleteEnrollmentUseCase,
     GetMonthlyCoursesEnrollmentStatsUseCase,
     GetInstructorCoursesEnrollmentSummeryUseCase,

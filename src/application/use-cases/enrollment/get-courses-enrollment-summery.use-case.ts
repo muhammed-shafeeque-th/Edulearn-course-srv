@@ -1,5 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { IEnrollmentRepository, InstructorCoursesEnrollmentSummery } from "src/domain/repositories/enrollment.repository";
+import {
+  IEnrollmentRepository,
+  InstructorCoursesEnrollmentSummery,
+} from "src/domain/repositories/enrollment.repository";
 import { GetInstructorCoursesEnrollmentSummeryRequest } from "src/infrastructure/grpc/generated/course/types/stats";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
@@ -27,18 +30,22 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase {
 
         this.logger.log(
           `Fetching courses enrollment summary for instructor ${data.instructorId}`,
-          { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name }
+          { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );
 
-        const summary = await this.enrollmentRepository.getInstructorCoursesEnrollmentSummery(
-          data.instructorId
+        const summary =
+          await this.enrollmentRepository.getInstructorCoursesEnrollmentSummery(
+            data.instructorId,
+          );
+        console.log(
+          "Instructor enrollment Summery : " + JSON.stringify(summary, null, 2),
         );
 
         if (!summary) {
           span.setAttribute("summary.found", false);
           this.logger.warn(
             `No enrollment summary found for instructor ${data.instructorId}`,
-            { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name }
+            { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
           );
           return null;
         }
@@ -51,11 +58,11 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase {
 
         this.logger.log(
           `Successfully fetched enrollment summary for instructor ${data.instructorId}`,
-          { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name }
+          { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );
 
         return summary;
-      }
+      },
     );
   }
 }
