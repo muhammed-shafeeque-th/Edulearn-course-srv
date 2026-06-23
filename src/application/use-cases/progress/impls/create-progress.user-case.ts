@@ -1,55 +1,51 @@
 import { Injectable } from "@nestjs/common";
 import { ProgressDto } from "src/application/dtos/progress.dto";
-import {
-  Progress,
-  UnitType,
-} from "src/domain/entities/progress.entity";
-import {
-  EnrollmentNotFoundException,
-  LessonNotFoundException,
-  ProgressEntryAlreadyExistException,
-} from "src/domain/exceptions/domain.exceptions";
+import { Progress, UnitType } from "src/domain/entities/progress.entity";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
+import { LessonNotFoundException } from "src/domain/exceptions/lesson.exceptions";
+import { ProgressEntryAlreadyExistException } from "src/domain/exceptions/progress.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
 import { IProgressRepository } from "src/domain/repositories/progress.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { v4 as uuidv4 } from "uuid";
+import { ICreateProgressUseCase } from "../interfaces/create-progress.interface";
 
 @Injectable()
-export class CreateProgressUseCase {
+export class CreateProgressUseCase implements ICreateProgressUseCase {
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly lessonRepository: ILessonRepository,
-    private readonly progressRepository: IProgressRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _lessonRepository: ILessonRepository,
+    private readonly _progressRepository: IProgressRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(enrollmentId: string, lessonId: string): Promise<ProgressDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "CreateProgressUseCase.execute",
       async (span) => {
         span.setAttributes({
           "enrollment.id": enrollmentId,
           "lesson.id": lessonId,
         });
-        this.logger.log(
+         this._logger.log(
           `Creating progress for enrollment ${enrollmentId}, lesson ${lessonId}`,
-          { ctx: CreateProgressUseCase.name }
+          { ctx: CreateProgressUseCase.name },
         );
 
         const enrollment =
-          await this.enrollmentRepository.getById(enrollmentId);
+          await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
           span.setAttribute("enrollment.found", true);
           throw new EnrollmentNotFoundException(
-            `Enrollment ${enrollmentId} not found`
+            `Enrollment ${enrollmentId} not found`,
           );
         }
         span.setAttribute("enrollment.found", false);
 
-        const lesson = await this.lessonRepository.findById(lessonId);
+        const lesson = await this._lessonRepository.findById(lessonId);
         if (!lesson) {
           span.setAttribute("lesson.found", true);
           throw new LessonNotFoundException(`Lesson ${lessonId} not found`);
@@ -57,14 +53,14 @@ export class CreateProgressUseCase {
         span.setAttribute("lesson.found", false);
 
         const existingProgress =
-          await this.progressRepository.findByEnrollmentIdAndLessonId(
+          await this._progressRepository.findByEnrollmentIdAndLessonId(
             enrollmentId,
-            lessonId
+            lessonId,
           );
         if (existingProgress) {
           span.setAttribute("progress.alreadyExist", true);
           throw new ProgressEntryAlreadyExistException(
-            `Progress entry already exists for lesson ${lesson} and enrollment ${enrollment}`
+            `Progress entry already exists for lesson ${lesson} and enrollment ${enrollment}`,
           );
         }
         span.setAttribute("progress.alreadyExist", false);
@@ -74,16 +70,16 @@ export class CreateProgressUseCase {
           enrollmentId,
           lessonId,
           undefined,
-          UnitType.LESSON
+          UnitType.LESSON,
         );
-        await this.progressRepository.save(progress);
+        await this._progressRepository.save(progress);
 
         span.setAttribute("progress.saved", true);
-        this.logger.log(`Progress created for enrollment ${enrollmentId}`, {
+         this._logger.log(`Progress created for enrollment ${enrollmentId}`, {
           ctx: CreateProgressUseCase.name,
         });
         return ProgressDto.fromDomain(progress);
-      }
+      },
     );
   }
 }

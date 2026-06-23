@@ -1,22 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import { ProgressDto } from "src/application/dtos/progress.dto";
-import { EnrollmentNotFoundException, LessonNotFoundException, ProgressNotFoundException } from "src/domain/exceptions/domain.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
 import { IProgressRepository } from "src/domain/repositories/progress.repository";
-import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { IEventProducer } from "@/application/adaptors/event-producer.interface";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { LessonNotFoundException } from "src/domain/exceptions/lesson.exceptions";
+import { ProgressNotFoundException } from "src/domain/exceptions/progress.exceptions";
+import { IUpdateProgressUseCase } from "../interfaces/update-progress.interface";
 
 @Injectable()
-export class UpdateProgressUseCase {
+export class UpdateProgressUseCase implements IUpdateProgressUseCase {
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly lessonRepository: ILessonRepository,
-    private readonly progressRepository: IProgressRepository,
-    private readonly kafkaProducer: IKafkaProducer,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _lessonRepository: ILessonRepository,
+    private readonly _progressRepository: IProgressRepository,
+    private readonly _kafkaProducer: IEventProducer,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(
@@ -24,27 +27,29 @@ export class UpdateProgressUseCase {
     lessonId: string,
     completed: boolean,
   ): Promise<ProgressDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "UpdateProgressUseCase.execute",
       async (span) => {
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
 
-        this.logger.log(
+         this._logger.log(
           `Updating progress for enrollment ${enrollmentId}, lesson ${lessonId}`,
           { ctx: UpdateProgressUseCase.name },
         );
 
         const enrollment =
-          await this.enrollmentRepository.getById(enrollmentId);
+          await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
           span.setAttribute("enrollment.found", false);
-          throw new EnrollmentNotFoundException(`Enrollment ${enrollmentId} not found`);
+          throw new EnrollmentNotFoundException(
+            `Enrollment ${enrollmentId} not found`,
+          );
         }
         span.setAttribute("enrollment.found", true);
 
-        const lesson = await this.lessonRepository.findById(lessonId);
+        const lesson = await this._lessonRepository.findById(lessonId);
         if (!lesson) {
           span.setAttribute("lesson.found", false);
           throw new LessonNotFoundException(`Lesson ${lessonId} not found`);
@@ -52,7 +57,7 @@ export class UpdateProgressUseCase {
         span.setAttribute("lesson.found", true);
 
         let progress =
-          await this.progressRepository.findByEnrollmentIdAndLessonId(
+          await this._progressRepository.findByEnrollmentIdAndLessonId(
             enrollmentId,
             lessonId,
           );
@@ -64,7 +69,7 @@ export class UpdateProgressUseCase {
 
         if (completed) {
           // progress.markQuizCompleted();
-          // await this.kafkaProducer.produce("course-events", {
+          // await this._kafkaProducer.produce("course-events", {
           //   event: "LESSON_COMPLETED",
           //   userId: enrollment.getUserId(),
           //   courseId: enrollment.getCourseId(),
@@ -76,10 +81,10 @@ export class UpdateProgressUseCase {
           span.setAttribute("event.sent.type", "LESSON_COMPLETED");
         }
 
-        await this.progressRepository.save(progress);
+        await this._progressRepository.save(progress);
         span.setAttribute("progress.saved", true);
 
-        this.logger.log(`Progress updated for enrollment ${enrollmentId}`, {
+         this._logger.log(`Progress updated for enrollment ${enrollmentId}`, {
           ctx: UpdateProgressUseCase.name,
         });
         return ProgressDto.fromDomain(progress);
