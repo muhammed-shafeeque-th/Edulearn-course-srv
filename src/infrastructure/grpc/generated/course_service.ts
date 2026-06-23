@@ -159,19 +159,27 @@ export const CourseServiceService = {
     path: "/course_service.CourseService/CreateCourse",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: CreateCourseRequest): Buffer => Buffer.from(CreateCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CreateCourseRequest => CreateCourseRequest.decode(value),
-    responseSerialize: (value: CourseResponse): Buffer => Buffer.from(CourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CourseResponse => CourseResponse.decode(value),
+    requestSerialize: (value: CreateCourseRequest): Buffer =>
+      Buffer.from(CreateCourseRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): CreateCourseRequest =>
+      CreateCourseRequest.decode(value),
+    responseSerialize: (value: CourseResponse): Buffer =>
+      Buffer.from(CourseResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CourseResponse =>
+      CourseResponse.decode(value),
   },
   getCourse: {
     path: "/course_service.CourseService/GetCourse",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetCourseRequest): Buffer => Buffer.from(GetCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCourseRequest => GetCourseRequest.decode(value),
-    responseSerialize: (value: CourseResponse): Buffer => Buffer.from(CourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CourseResponse => CourseResponse.decode(value),
+    requestSerialize: (value: GetCourseRequest): Buffer =>
+      Buffer.from(GetCourseRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetCourseRequest =>
+      GetCourseRequest.decode(value),
+    responseSerialize: (value: CourseResponse): Buffer =>
+      Buffer.from(CourseResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CourseResponse =>
+      CourseResponse.decode(value),
   },
   getCourseBySlug: {
     path: "/course_service.CourseService/GetCourseBySlug",
@@ -179,36 +187,51 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetCourseBySlugRequest): Buffer =>
       Buffer.from(GetCourseBySlugRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCourseBySlugRequest => GetCourseBySlugRequest.decode(value),
-    responseSerialize: (value: CourseResponse): Buffer => Buffer.from(CourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CourseResponse => CourseResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetCourseBySlugRequest =>
+      GetCourseBySlugRequest.decode(value),
+    responseSerialize: (value: CourseResponse): Buffer =>
+      Buffer.from(CourseResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CourseResponse =>
+      CourseResponse.decode(value),
   },
   getCourses: {
     path: "/course_service.CourseService/GetCourses",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetCoursesRequest): Buffer => Buffer.from(GetCoursesRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCoursesRequest => GetCoursesRequest.decode(value),
-    responseSerialize: (value: CoursesListResponse): Buffer => Buffer.from(CoursesListResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CoursesListResponse => CoursesListResponse.decode(value),
+    requestSerialize: (value: GetCoursesRequest): Buffer =>
+      Buffer.from(GetCoursesRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetCoursesRequest =>
+      GetCoursesRequest.decode(value),
+    responseSerialize: (value: CoursesListResponse): Buffer =>
+      Buffer.from(CoursesListResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CoursesListResponse =>
+      CoursesListResponse.decode(value),
   },
   updateCourse: {
     path: "/course_service.CourseService/UpdateCourse",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UpdateCourseRequest): Buffer => Buffer.from(UpdateCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateCourseRequest => UpdateCourseRequest.decode(value),
-    responseSerialize: (value: CourseResponse): Buffer => Buffer.from(CourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CourseResponse => CourseResponse.decode(value),
+    requestSerialize: (value: UpdateCourseRequest): Buffer =>
+      Buffer.from(UpdateCourseRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): UpdateCourseRequest =>
+      UpdateCourseRequest.decode(value),
+    responseSerialize: (value: CourseResponse): Buffer =>
+      Buffer.from(CourseResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CourseResponse =>
+      CourseResponse.decode(value),
   },
   publishCourse: {
     path: "/course_service.CourseService/PublishCourse",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: PublishCourseRequest): Buffer => Buffer.from(PublishCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): PublishCourseRequest => PublishCourseRequest.decode(value),
-    responseSerialize: (value: CourseResponse): Buffer => Buffer.from(CourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CourseResponse => CourseResponse.decode(value),
+    requestSerialize: (value: PublishCourseRequest): Buffer =>
+      Buffer.from(PublishCourseRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): PublishCourseRequest =>
+      PublishCourseRequest.decode(value),
+    responseSerialize: (value: CourseResponse): Buffer =>
+      Buffer.from(CourseResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CourseResponse =>
+      CourseResponse.decode(value),
   },
   unPublishCourse: {
     path: "/course_service.CourseService/UnPublishCourse",
@@ -216,19 +239,25 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: UnPublishCourseRequest): Buffer =>
       Buffer.from(UnPublishCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UnPublishCourseRequest => UnPublishCourseRequest.decode(value),
-    responseSerialize: (value: CourseResponse): Buffer => Buffer.from(CourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CourseResponse => CourseResponse.decode(value),
+    requestDeserialize: (value: Buffer): UnPublishCourseRequest =>
+      UnPublishCourseRequest.decode(value),
+    responseSerialize: (value: CourseResponse): Buffer =>
+      Buffer.from(CourseResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CourseResponse =>
+      CourseResponse.decode(value),
   },
   deleteCourse: {
     path: "/course_service.CourseService/DeleteCourse",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: DeleteCourseRequest): Buffer => Buffer.from(DeleteCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteCourseRequest => DeleteCourseRequest.decode(value),
+    requestSerialize: (value: DeleteCourseRequest): Buffer =>
+      Buffer.from(DeleteCourseRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): DeleteCourseRequest =>
+      DeleteCourseRequest.decode(value),
     responseSerialize: (value: DeleteCourseResponse): Buffer =>
       Buffer.from(DeleteCourseResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteCourseResponse => DeleteCourseResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteCourseResponse =>
+      DeleteCourseResponse.decode(value),
   },
   getCoursesByInstructor: {
     path: "/course_service.CourseService/GetCoursesByInstructor",
@@ -236,9 +265,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetCoursesByInstructorRequest): Buffer =>
       Buffer.from(GetCoursesByInstructorRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCoursesByInstructorRequest => GetCoursesByInstructorRequest.decode(value),
-    responseSerialize: (value: CoursesListResponse): Buffer => Buffer.from(CoursesListResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CoursesListResponse => CoursesListResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetCoursesByInstructorRequest =>
+      GetCoursesByInstructorRequest.decode(value),
+    responseSerialize: (value: CoursesListResponse): Buffer =>
+      Buffer.from(CoursesListResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CoursesListResponse =>
+      CoursesListResponse.decode(value),
   },
   getEnrolledCourses: {
     path: "/course_service.CourseService/GetEnrolledCourses",
@@ -246,9 +278,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetEnrolledCoursesRequest): Buffer =>
       Buffer.from(GetEnrolledCoursesRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetEnrolledCoursesRequest => GetEnrolledCoursesRequest.decode(value),
-    responseSerialize: (value: CoursesListResponse): Buffer => Buffer.from(CoursesListResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CoursesListResponse => CoursesListResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetEnrolledCoursesRequest =>
+      GetEnrolledCoursesRequest.decode(value),
+    responseSerialize: (value: CoursesListResponse): Buffer =>
+      Buffer.from(CoursesListResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CoursesListResponse =>
+      CoursesListResponse.decode(value),
   },
   getCoursesByIds: {
     path: "/course_service.CourseService/GetCoursesByIds",
@@ -256,48 +291,65 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetCoursesByIdsRequest): Buffer =>
       Buffer.from(GetCoursesByIdsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCoursesByIdsRequest => GetCoursesByIdsRequest.decode(value),
+    requestDeserialize: (value: Buffer): GetCoursesByIdsRequest =>
+      GetCoursesByIdsRequest.decode(value),
     responseSerialize: (value: GetCoursesByIdsResponse): Buffer =>
       Buffer.from(GetCoursesByIdsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetCoursesByIdsResponse => GetCoursesByIdsResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetCoursesByIdsResponse =>
+      GetCoursesByIdsResponse.decode(value),
   },
   /** Module CRUD */
   createModule: {
     path: "/course_service.CourseService/CreateModule",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: CreateModuleRequest): Buffer => Buffer.from(CreateModuleRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CreateModuleRequest => CreateModuleRequest.decode(value),
-    responseSerialize: (value: ModuleResponse): Buffer => Buffer.from(ModuleResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ModuleResponse => ModuleResponse.decode(value),
+    requestSerialize: (value: CreateModuleRequest): Buffer =>
+      Buffer.from(CreateModuleRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): CreateModuleRequest =>
+      CreateModuleRequest.decode(value),
+    responseSerialize: (value: ModuleResponse): Buffer =>
+      Buffer.from(ModuleResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ModuleResponse =>
+      ModuleResponse.decode(value),
   },
   getModule: {
     path: "/course_service.CourseService/GetModule",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetModuleRequest): Buffer => Buffer.from(GetModuleRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetModuleRequest => GetModuleRequest.decode(value),
-    responseSerialize: (value: ModuleResponse): Buffer => Buffer.from(ModuleResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ModuleResponse => ModuleResponse.decode(value),
+    requestSerialize: (value: GetModuleRequest): Buffer =>
+      Buffer.from(GetModuleRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetModuleRequest =>
+      GetModuleRequest.decode(value),
+    responseSerialize: (value: ModuleResponse): Buffer =>
+      Buffer.from(ModuleResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ModuleResponse =>
+      ModuleResponse.decode(value),
   },
   updateModule: {
     path: "/course_service.CourseService/UpdateModule",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UpdateModuleRequest): Buffer => Buffer.from(UpdateModuleRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateModuleRequest => UpdateModuleRequest.decode(value),
-    responseSerialize: (value: ModuleResponse): Buffer => Buffer.from(ModuleResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ModuleResponse => ModuleResponse.decode(value),
+    requestSerialize: (value: UpdateModuleRequest): Buffer =>
+      Buffer.from(UpdateModuleRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): UpdateModuleRequest =>
+      UpdateModuleRequest.decode(value),
+    responseSerialize: (value: ModuleResponse): Buffer =>
+      Buffer.from(ModuleResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ModuleResponse =>
+      ModuleResponse.decode(value),
   },
   deleteModule: {
     path: "/course_service.CourseService/DeleteModule",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: DeleteModuleRequest): Buffer => Buffer.from(DeleteModuleRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteModuleRequest => DeleteModuleRequest.decode(value),
+    requestSerialize: (value: DeleteModuleRequest): Buffer =>
+      Buffer.from(DeleteModuleRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): DeleteModuleRequest =>
+      DeleteModuleRequest.decode(value),
     responseSerialize: (value: DeleteModuleResponse): Buffer =>
       Buffer.from(DeleteModuleResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteModuleResponse => DeleteModuleResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteModuleResponse =>
+      DeleteModuleResponse.decode(value),
   },
   getModulesByCourse: {
     path: "/course_service.CourseService/GetModulesByCourse",
@@ -305,47 +357,65 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetModulesByCourseRequest): Buffer =>
       Buffer.from(GetModulesByCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetModulesByCourseRequest => GetModulesByCourseRequest.decode(value),
-    responseSerialize: (value: ModulesResponse): Buffer => Buffer.from(ModulesResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ModulesResponse => ModulesResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetModulesByCourseRequest =>
+      GetModulesByCourseRequest.decode(value),
+    responseSerialize: (value: ModulesResponse): Buffer =>
+      Buffer.from(ModulesResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ModulesResponse =>
+      ModulesResponse.decode(value),
   },
   /** Lesson CRUD */
   createLesson: {
     path: "/course_service.CourseService/CreateLesson",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: CreateLessonRequest): Buffer => Buffer.from(CreateLessonRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CreateLessonRequest => CreateLessonRequest.decode(value),
-    responseSerialize: (value: LessonResponse): Buffer => Buffer.from(LessonResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): LessonResponse => LessonResponse.decode(value),
+    requestSerialize: (value: CreateLessonRequest): Buffer =>
+      Buffer.from(CreateLessonRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): CreateLessonRequest =>
+      CreateLessonRequest.decode(value),
+    responseSerialize: (value: LessonResponse): Buffer =>
+      Buffer.from(LessonResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): LessonResponse =>
+      LessonResponse.decode(value),
   },
   getLesson: {
     path: "/course_service.CourseService/GetLesson",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetLessonRequest): Buffer => Buffer.from(GetLessonRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetLessonRequest => GetLessonRequest.decode(value),
-    responseSerialize: (value: LessonResponse): Buffer => Buffer.from(LessonResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): LessonResponse => LessonResponse.decode(value),
+    requestSerialize: (value: GetLessonRequest): Buffer =>
+      Buffer.from(GetLessonRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetLessonRequest =>
+      GetLessonRequest.decode(value),
+    responseSerialize: (value: LessonResponse): Buffer =>
+      Buffer.from(LessonResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): LessonResponse =>
+      LessonResponse.decode(value),
   },
   updateLesson: {
     path: "/course_service.CourseService/UpdateLesson",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UpdateLessonRequest): Buffer => Buffer.from(UpdateLessonRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateLessonRequest => UpdateLessonRequest.decode(value),
-    responseSerialize: (value: LessonResponse): Buffer => Buffer.from(LessonResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): LessonResponse => LessonResponse.decode(value),
+    requestSerialize: (value: UpdateLessonRequest): Buffer =>
+      Buffer.from(UpdateLessonRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): UpdateLessonRequest =>
+      UpdateLessonRequest.decode(value),
+    responseSerialize: (value: LessonResponse): Buffer =>
+      Buffer.from(LessonResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): LessonResponse =>
+      LessonResponse.decode(value),
   },
   deleteLesson: {
     path: "/course_service.CourseService/DeleteLesson",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: DeleteLessonRequest): Buffer => Buffer.from(DeleteLessonRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteLessonRequest => DeleteLessonRequest.decode(value),
+    requestSerialize: (value: DeleteLessonRequest): Buffer =>
+      Buffer.from(DeleteLessonRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): DeleteLessonRequest =>
+      DeleteLessonRequest.decode(value),
     responseSerialize: (value: DeleteLessonResponse): Buffer =>
       Buffer.from(DeleteLessonResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteLessonResponse => DeleteLessonResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteLessonResponse =>
+      DeleteLessonResponse.decode(value),
   },
   getLessonsByModule: {
     path: "/course_service.CourseService/GetLessonsByModule",
@@ -353,46 +423,65 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetLessonsByModuleRequest): Buffer =>
       Buffer.from(GetLessonsByModuleRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetLessonsByModuleRequest => GetLessonsByModuleRequest.decode(value),
-    responseSerialize: (value: LessonsResponse): Buffer => Buffer.from(LessonsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): LessonsResponse => LessonsResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetLessonsByModuleRequest =>
+      GetLessonsByModuleRequest.decode(value),
+    responseSerialize: (value: LessonsResponse): Buffer =>
+      Buffer.from(LessonsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): LessonsResponse =>
+      LessonsResponse.decode(value),
   },
   /** Quiz CRUD */
   createQuiz: {
     path: "/course_service.CourseService/CreateQuiz",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: CreateQuizRequest): Buffer => Buffer.from(CreateQuizRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CreateQuizRequest => CreateQuizRequest.decode(value),
-    responseSerialize: (value: QuizResponse): Buffer => Buffer.from(QuizResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): QuizResponse => QuizResponse.decode(value),
+    requestSerialize: (value: CreateQuizRequest): Buffer =>
+      Buffer.from(CreateQuizRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): CreateQuizRequest =>
+      CreateQuizRequest.decode(value),
+    responseSerialize: (value: QuizResponse): Buffer =>
+      Buffer.from(QuizResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): QuizResponse =>
+      QuizResponse.decode(value),
   },
   getQuiz: {
     path: "/course_service.CourseService/GetQuiz",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetQuizRequest): Buffer => Buffer.from(GetQuizRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetQuizRequest => GetQuizRequest.decode(value),
-    responseSerialize: (value: QuizResponse): Buffer => Buffer.from(QuizResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): QuizResponse => QuizResponse.decode(value),
+    requestSerialize: (value: GetQuizRequest): Buffer =>
+      Buffer.from(GetQuizRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetQuizRequest =>
+      GetQuizRequest.decode(value),
+    responseSerialize: (value: QuizResponse): Buffer =>
+      Buffer.from(QuizResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): QuizResponse =>
+      QuizResponse.decode(value),
   },
   updateQuiz: {
     path: "/course_service.CourseService/UpdateQuiz",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UpdateQuizRequest): Buffer => Buffer.from(UpdateQuizRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateQuizRequest => UpdateQuizRequest.decode(value),
-    responseSerialize: (value: QuizResponse): Buffer => Buffer.from(QuizResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): QuizResponse => QuizResponse.decode(value),
+    requestSerialize: (value: UpdateQuizRequest): Buffer =>
+      Buffer.from(UpdateQuizRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): UpdateQuizRequest =>
+      UpdateQuizRequest.decode(value),
+    responseSerialize: (value: QuizResponse): Buffer =>
+      Buffer.from(QuizResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): QuizResponse =>
+      QuizResponse.decode(value),
   },
   deleteQuiz: {
     path: "/course_service.CourseService/DeleteQuiz",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: DeleteQuizRequest): Buffer => Buffer.from(DeleteQuizRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteQuizRequest => DeleteQuizRequest.decode(value),
-    responseSerialize: (value: DeleteQuizResponse): Buffer => Buffer.from(DeleteQuizResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteQuizResponse => DeleteQuizResponse.decode(value),
+    requestSerialize: (value: DeleteQuizRequest): Buffer =>
+      Buffer.from(DeleteQuizRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): DeleteQuizRequest =>
+      DeleteQuizRequest.decode(value),
+    responseSerialize: (value: DeleteQuizResponse): Buffer =>
+      Buffer.from(DeleteQuizResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): DeleteQuizResponse =>
+      DeleteQuizResponse.decode(value),
   },
   getQuizzesByCourse: {
     path: "/course_service.CourseService/GetQuizzesByCourse",
@@ -400,9 +489,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetQuizzesByCourseRequest): Buffer =>
       Buffer.from(GetQuizzesByCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetQuizzesByCourseRequest => GetQuizzesByCourseRequest.decode(value),
-    responseSerialize: (value: QuizzesResponse): Buffer => Buffer.from(QuizzesResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): QuizzesResponse => QuizzesResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetQuizzesByCourseRequest =>
+      GetQuizzesByCourseRequest.decode(value),
+    responseSerialize: (value: QuizzesResponse): Buffer =>
+      Buffer.from(QuizzesResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): QuizzesResponse =>
+      QuizzesResponse.decode(value),
   },
   /** Stats */
   getInstructorCoursesStats: {
@@ -422,11 +514,13 @@ export const CourseServiceService = {
     path: "/course_service.CourseService/GetCoursesStats",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
+    requestSerialize: (value: Empty): Buffer =>
+      Buffer.from(Empty.encode(value).finish()),
     requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
     responseSerialize: (value: GetCoursesStatsResponse): Buffer =>
       Buffer.from(GetCoursesStatsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetCoursesStatsResponse => GetCoursesStatsResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetCoursesStatsResponse =>
+      GetCoursesStatsResponse.decode(value),
   },
   getInstructorCourseRatingStats: {
     path: "/course_service.CourseService/GetInstructorCourseRatingStats",
@@ -434,11 +528,19 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetInstructorCourseRatingStatsRequest): Buffer =>
       Buffer.from(GetInstructorCourseRatingStatsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetInstructorCourseRatingStatsRequest =>
+    requestDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseRatingStatsRequest =>
       GetInstructorCourseRatingStatsRequest.decode(value),
-    responseSerialize: (value: GetInstructorCourseRatingStatsResponse): Buffer =>
-      Buffer.from(GetInstructorCourseRatingStatsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetInstructorCourseRatingStatsResponse =>
+    responseSerialize: (
+      value: GetInstructorCourseRatingStatsResponse,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseRatingStatsResponse.encode(value).finish(),
+      ),
+    responseDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseRatingStatsResponse =>
       GetInstructorCourseRatingStatsResponse.decode(value),
   },
   /** Category CRUD */
@@ -448,9 +550,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetAllCategoriesRequest): Buffer =>
       Buffer.from(GetAllCategoriesRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetAllCategoriesRequest => GetAllCategoriesRequest.decode(value),
-    responseSerialize: (value: CategoriesResponse): Buffer => Buffer.from(CategoriesResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CategoriesResponse => CategoriesResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetAllCategoriesRequest =>
+      GetAllCategoriesRequest.decode(value),
+    responseSerialize: (value: CategoriesResponse): Buffer =>
+      Buffer.from(CategoriesResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CategoriesResponse =>
+      CategoriesResponse.decode(value),
   },
   createCategory: {
     path: "/course_service.CourseService/CreateCategory",
@@ -458,9 +563,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: CreateCategoryRequest): Buffer =>
       Buffer.from(CreateCategoryRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CreateCategoryRequest => CreateCategoryRequest.decode(value),
-    responseSerialize: (value: CategoryResponse): Buffer => Buffer.from(CategoryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CategoryResponse => CategoryResponse.decode(value),
+    requestDeserialize: (value: Buffer): CreateCategoryRequest =>
+      CreateCategoryRequest.decode(value),
+    responseSerialize: (value: CategoryResponse): Buffer =>
+      Buffer.from(CategoryResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CategoryResponse =>
+      CategoryResponse.decode(value),
   },
   updateCategory: {
     path: "/course_service.CourseService/UpdateCategory",
@@ -468,9 +576,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: UpdateCategoryRequest): Buffer =>
       Buffer.from(UpdateCategoryRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateCategoryRequest => UpdateCategoryRequest.decode(value),
-    responseSerialize: (value: CategoryResponse): Buffer => Buffer.from(CategoryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CategoryResponse => CategoryResponse.decode(value),
+    requestDeserialize: (value: Buffer): UpdateCategoryRequest =>
+      UpdateCategoryRequest.decode(value),
+    responseSerialize: (value: CategoryResponse): Buffer =>
+      Buffer.from(CategoryResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CategoryResponse =>
+      CategoryResponse.decode(value),
   },
   deleteCategory: {
     path: "/course_service.CourseService/DeleteCategory",
@@ -478,10 +589,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: DeleteCategoryRequest): Buffer =>
       Buffer.from(DeleteCategoryRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteCategoryRequest => DeleteCategoryRequest.decode(value),
+    requestDeserialize: (value: Buffer): DeleteCategoryRequest =>
+      DeleteCategoryRequest.decode(value),
     responseSerialize: (value: DeleteCategoryResponse): Buffer =>
       Buffer.from(DeleteCategoryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteCategoryResponse => DeleteCategoryResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteCategoryResponse =>
+      DeleteCategoryResponse.decode(value),
   },
   toggleCategoryStatus: {
     path: "/course_service.CourseService/ToggleCategoryStatus",
@@ -489,9 +602,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: ToggleCategoryStatusRequest): Buffer =>
       Buffer.from(ToggleCategoryStatusRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): ToggleCategoryStatusRequest => ToggleCategoryStatusRequest.decode(value),
-    responseSerialize: (value: CategoryResponse): Buffer => Buffer.from(CategoryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CategoryResponse => CategoryResponse.decode(value),
+    requestDeserialize: (value: Buffer): ToggleCategoryStatusRequest =>
+      ToggleCategoryStatusRequest.decode(value),
+    responseSerialize: (value: CategoryResponse): Buffer =>
+      Buffer.from(CategoryResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CategoryResponse =>
+      CategoryResponse.decode(value),
   },
   getCategoriesStats: {
     path: "/course_service.CourseService/GetCategoriesStats",
@@ -499,10 +615,12 @@ export const CourseServiceService = {
     responseStream: false,
     requestSerialize: (value: GetCategoriesStatsRequest): Buffer =>
       Buffer.from(GetCategoriesStatsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCategoriesStatsRequest => GetCategoriesStatsRequest.decode(value),
+    requestDeserialize: (value: Buffer): GetCategoriesStatsRequest =>
+      GetCategoriesStatsRequest.decode(value),
     responseSerialize: (value: GetCategoriesStatsResponse): Buffer =>
       Buffer.from(GetCategoriesStatsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetCategoriesStatsResponse => GetCategoriesStatsResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetCategoriesStatsResponse =>
+      GetCategoriesStatsResponse.decode(value),
   },
 } as const;
 
@@ -516,41 +634,74 @@ export interface CourseServiceServer extends UntypedServiceImplementation {
   publishCourse: handleUnaryCall<PublishCourseRequest, CourseResponse>;
   unPublishCourse: handleUnaryCall<UnPublishCourseRequest, CourseResponse>;
   deleteCourse: handleUnaryCall<DeleteCourseRequest, DeleteCourseResponse>;
-  getCoursesByInstructor: handleUnaryCall<GetCoursesByInstructorRequest, CoursesListResponse>;
-  getEnrolledCourses: handleUnaryCall<GetEnrolledCoursesRequest, CoursesListResponse>;
-  getCoursesByIds: handleUnaryCall<GetCoursesByIdsRequest, GetCoursesByIdsResponse>;
+  getCoursesByInstructor: handleUnaryCall<
+    GetCoursesByInstructorRequest,
+    CoursesListResponse
+  >;
+  getEnrolledCourses: handleUnaryCall<
+    GetEnrolledCoursesRequest,
+    CoursesListResponse
+  >;
+  getCoursesByIds: handleUnaryCall<
+    GetCoursesByIdsRequest,
+    GetCoursesByIdsResponse
+  >;
   /** Module CRUD */
   createModule: handleUnaryCall<CreateModuleRequest, ModuleResponse>;
   getModule: handleUnaryCall<GetModuleRequest, ModuleResponse>;
   updateModule: handleUnaryCall<UpdateModuleRequest, ModuleResponse>;
   deleteModule: handleUnaryCall<DeleteModuleRequest, DeleteModuleResponse>;
-  getModulesByCourse: handleUnaryCall<GetModulesByCourseRequest, ModulesResponse>;
+  getModulesByCourse: handleUnaryCall<
+    GetModulesByCourseRequest,
+    ModulesResponse
+  >;
   /** Lesson CRUD */
   createLesson: handleUnaryCall<CreateLessonRequest, LessonResponse>;
   getLesson: handleUnaryCall<GetLessonRequest, LessonResponse>;
   updateLesson: handleUnaryCall<UpdateLessonRequest, LessonResponse>;
   deleteLesson: handleUnaryCall<DeleteLessonRequest, DeleteLessonResponse>;
-  getLessonsByModule: handleUnaryCall<GetLessonsByModuleRequest, LessonsResponse>;
+  getLessonsByModule: handleUnaryCall<
+    GetLessonsByModuleRequest,
+    LessonsResponse
+  >;
   /** Quiz CRUD */
   createQuiz: handleUnaryCall<CreateQuizRequest, QuizResponse>;
   getQuiz: handleUnaryCall<GetQuizRequest, QuizResponse>;
   updateQuiz: handleUnaryCall<UpdateQuizRequest, QuizResponse>;
   deleteQuiz: handleUnaryCall<DeleteQuizRequest, DeleteQuizResponse>;
-  getQuizzesByCourse: handleUnaryCall<GetQuizzesByCourseRequest, QuizzesResponse>;
+  getQuizzesByCourse: handleUnaryCall<
+    GetQuizzesByCourseRequest,
+    QuizzesResponse
+  >;
   /** Stats */
-  getInstructorCoursesStats: handleUnaryCall<GetInstructorCoursesStatsRequest, GetInstructorCoursesStatsResponse>;
+  getInstructorCoursesStats: handleUnaryCall<
+    GetInstructorCoursesStatsRequest,
+    GetInstructorCoursesStatsResponse
+  >;
   getCoursesStats: handleUnaryCall<Empty, GetCoursesStatsResponse>;
   getInstructorCourseRatingStats: handleUnaryCall<
     GetInstructorCourseRatingStatsRequest,
     GetInstructorCourseRatingStatsResponse
   >;
   /** Category CRUD */
-  getAllCategories: handleUnaryCall<GetAllCategoriesRequest, CategoriesResponse>;
+  getAllCategories: handleUnaryCall<
+    GetAllCategoriesRequest,
+    CategoriesResponse
+  >;
   createCategory: handleUnaryCall<CreateCategoryRequest, CategoryResponse>;
   updateCategory: handleUnaryCall<UpdateCategoryRequest, CategoryResponse>;
-  deleteCategory: handleUnaryCall<DeleteCategoryRequest, DeleteCategoryResponse>;
-  toggleCategoryStatus: handleUnaryCall<ToggleCategoryStatusRequest, CategoryResponse>;
-  getCategoriesStats: handleUnaryCall<GetCategoriesStatsRequest, GetCategoriesStatsResponse>;
+  deleteCategory: handleUnaryCall<
+    DeleteCategoryRequest,
+    DeleteCategoryResponse
+  >;
+  toggleCategoryStatus: handleUnaryCall<
+    ToggleCategoryStatusRequest,
+    CategoryResponse
+  >;
+  getCategoriesStats: handleUnaryCall<
+    GetCategoriesStatsRequest,
+    GetCategoriesStatsResponse
+  >;
 }
 
 export interface CourseServiceClient extends Client {
@@ -602,18 +753,27 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   getCourses(
     request: GetCoursesRequest,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCourses(
     request: GetCoursesRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCourses(
     request: GetCoursesRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   updateCourse(
     request: UpdateCourseRequest,
@@ -662,63 +822,99 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   deleteCourse(
     request: DeleteCourseRequest,
-    callback: (error: ServiceError | null, response: DeleteCourseResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteCourseResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteCourse(
     request: DeleteCourseRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteCourseResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteCourseResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteCourse(
     request: DeleteCourseRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteCourseResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteCourseResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesByInstructor(
     request: GetCoursesByInstructorRequest,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesByInstructor(
     request: GetCoursesByInstructorRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesByInstructor(
     request: GetCoursesByInstructorRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrolledCourses(
     request: GetEnrolledCoursesRequest,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrolledCourses(
     request: GetEnrolledCoursesRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrolledCourses(
     request: GetEnrolledCoursesRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CoursesListResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CoursesListResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesByIds(
     request: GetCoursesByIdsRequest,
-    callback: (error: ServiceError | null, response: GetCoursesByIdsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCoursesByIdsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesByIds(
     request: GetCoursesByIdsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetCoursesByIdsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCoursesByIdsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesByIds(
     request: GetCoursesByIdsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetCoursesByIdsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCoursesByIdsResponse,
+    ) => void,
   ): ClientUnaryCall;
   /** Module CRUD */
   createModule(
@@ -768,18 +964,27 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   deleteModule(
     request: DeleteModuleRequest,
-    callback: (error: ServiceError | null, response: DeleteModuleResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteModuleResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteModule(
     request: DeleteModuleRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteModuleResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteModuleResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteModule(
     request: DeleteModuleRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteModuleResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteModuleResponse,
+    ) => void,
   ): ClientUnaryCall;
   getModulesByCourse(
     request: GetModulesByCourseRequest,
@@ -844,18 +1049,27 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   deleteLesson(
     request: DeleteLessonRequest,
-    callback: (error: ServiceError | null, response: DeleteLessonResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteLessonResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteLesson(
     request: DeleteLessonRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteLessonResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteLessonResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteLesson(
     request: DeleteLessonRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteLessonResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteLessonResponse,
+    ) => void,
   ): ClientUnaryCall;
   getLessonsByModule(
     request: GetLessonsByModuleRequest,
@@ -920,18 +1134,27 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   deleteQuiz(
     request: DeleteQuizRequest,
-    callback: (error: ServiceError | null, response: DeleteQuizResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteQuizResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteQuiz(
     request: DeleteQuizRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteQuizResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteQuizResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteQuiz(
     request: DeleteQuizRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteQuizResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteQuizResponse,
+    ) => void,
   ): ClientUnaryCall;
   getQuizzesByCourse(
     request: GetQuizzesByCourseRequest,
@@ -951,64 +1174,100 @@ export interface CourseServiceClient extends Client {
   /** Stats */
   getInstructorCoursesStats(
     request: GetInstructorCoursesStatsRequest,
-    callback: (error: ServiceError | null, response: GetInstructorCoursesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCoursesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCoursesStats(
     request: GetInstructorCoursesStatsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetInstructorCoursesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCoursesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCoursesStats(
     request: GetInstructorCoursesStatsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetInstructorCoursesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCoursesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesStats(
     request: Empty,
-    callback: (error: ServiceError | null, response: GetCoursesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCoursesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesStats(
     request: Empty,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetCoursesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCoursesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCoursesStats(
     request: Empty,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetCoursesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCoursesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseRatingStats(
     request: GetInstructorCourseRatingStatsRequest,
-    callback: (error: ServiceError | null, response: GetInstructorCourseRatingStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseRatingStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseRatingStats(
     request: GetInstructorCourseRatingStatsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetInstructorCourseRatingStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseRatingStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseRatingStats(
     request: GetInstructorCourseRatingStatsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetInstructorCourseRatingStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseRatingStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   /** Category CRUD */
   getAllCategories(
     request: GetAllCategoriesRequest,
-    callback: (error: ServiceError | null, response: CategoriesResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CategoriesResponse,
+    ) => void,
   ): ClientUnaryCall;
   getAllCategories(
     request: GetAllCategoriesRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CategoriesResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CategoriesResponse,
+    ) => void,
   ): ClientUnaryCall;
   getAllCategories(
     request: GetAllCategoriesRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CategoriesResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CategoriesResponse,
+    ) => void,
   ): ClientUnaryCall;
   createCategory(
     request: CreateCategoryRequest,
@@ -1042,18 +1301,27 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   deleteCategory(
     request: DeleteCategoryRequest,
-    callback: (error: ServiceError | null, response: DeleteCategoryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteCategoryResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteCategory(
     request: DeleteCategoryRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteCategoryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteCategoryResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteCategory(
     request: DeleteCategoryRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteCategoryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteCategoryResponse,
+    ) => void,
   ): ClientUnaryCall;
   toggleCategoryStatus(
     request: ToggleCategoryStatusRequest,
@@ -1072,18 +1340,27 @@ export interface CourseServiceClient extends Client {
   ): ClientUnaryCall;
   getCategoriesStats(
     request: GetCategoriesStatsRequest,
-    callback: (error: ServiceError | null, response: GetCategoriesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCategoriesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCategoriesStats(
     request: GetCategoriesStatsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetCategoriesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCategoriesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCategoriesStats(
     request: GetCategoriesStatsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetCategoriesStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetCategoriesStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
 }
 
@@ -1091,7 +1368,11 @@ export const CourseServiceClient = makeGenericClientConstructor(
   CourseServiceService,
   "course_service.CourseService",
 ) as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): CourseServiceClient;
+  new (
+    address: string,
+    credentials: ChannelCredentials,
+    options?: Partial<ClientOptions>,
+  ): CourseServiceClient;
   service: typeof CourseServiceService;
   serviceName: string;
 };
@@ -1106,21 +1387,27 @@ export const EnrollmentServiceService = {
     path: "/course_service.EnrollmentService/GetEnrollment",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetEnrollmentRequest): Buffer => Buffer.from(GetEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetEnrollmentRequest => GetEnrollmentRequest.decode(value),
+    requestSerialize: (value: GetEnrollmentRequest): Buffer =>
+      Buffer.from(GetEnrollmentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetEnrollmentRequest =>
+      GetEnrollmentRequest.decode(value),
     responseSerialize: (value: GetEnrollmentResponse): Buffer =>
       Buffer.from(GetEnrollmentResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetEnrollmentResponse => GetEnrollmentResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetEnrollmentResponse =>
+      GetEnrollmentResponse.decode(value),
   },
   getEnrollmentDetails: {
     path: "/course_service.EnrollmentService/GetEnrollmentDetails",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetEnrollmentRequest): Buffer => Buffer.from(GetEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetEnrollmentRequest => GetEnrollmentRequest.decode(value),
+    requestSerialize: (value: GetEnrollmentRequest): Buffer =>
+      Buffer.from(GetEnrollmentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetEnrollmentRequest =>
+      GetEnrollmentRequest.decode(value),
     responseSerialize: (value: GetEnrollmentDetailsResponse): Buffer =>
       Buffer.from(GetEnrollmentDetailsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetEnrollmentDetailsResponse => GetEnrollmentDetailsResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetEnrollmentDetailsResponse =>
+      GetEnrollmentDetailsResponse.decode(value),
   },
   updateEnrollment: {
     path: "/course_service.EnrollmentService/UpdateEnrollment",
@@ -1128,9 +1415,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: UpdateEnrollmentRequest): Buffer =>
       Buffer.from(UpdateEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateEnrollmentRequest => UpdateEnrollmentRequest.decode(value),
-    responseSerialize: (value: EnrollmentResponse): Buffer => Buffer.from(EnrollmentResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): EnrollmentResponse => EnrollmentResponse.decode(value),
+    requestDeserialize: (value: Buffer): UpdateEnrollmentRequest =>
+      UpdateEnrollmentRequest.decode(value),
+    responseSerialize: (value: EnrollmentResponse): Buffer =>
+      Buffer.from(EnrollmentResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): EnrollmentResponse =>
+      EnrollmentResponse.decode(value),
   },
   deleteEnrollment: {
     path: "/course_service.EnrollmentService/DeleteEnrollment",
@@ -1138,10 +1428,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: DeleteEnrollmentRequest): Buffer =>
       Buffer.from(DeleteEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteEnrollmentRequest => DeleteEnrollmentRequest.decode(value),
+    requestDeserialize: (value: Buffer): DeleteEnrollmentRequest =>
+      DeleteEnrollmentRequest.decode(value),
     responseSerialize: (value: DeleteEnrollmentResponse): Buffer =>
       Buffer.from(DeleteEnrollmentResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteEnrollmentResponse => DeleteEnrollmentResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteEnrollmentResponse =>
+      DeleteEnrollmentResponse.decode(value),
   },
   checkEnrollment: {
     path: "/course_service.EnrollmentService/CheckEnrollment",
@@ -1149,10 +1441,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: CheckEnrollmentRequest): Buffer =>
       Buffer.from(CheckEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CheckEnrollmentRequest => CheckEnrollmentRequest.decode(value),
+    requestDeserialize: (value: Buffer): CheckEnrollmentRequest =>
+      CheckEnrollmentRequest.decode(value),
     responseSerialize: (value: CheckEnrollmentResponse): Buffer =>
       Buffer.from(CheckEnrollmentResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CheckEnrollmentResponse => CheckEnrollmentResponse.decode(value),
+    responseDeserialize: (value: Buffer): CheckEnrollmentResponse =>
+      CheckEnrollmentResponse.decode(value),
   },
   checkCourseEnrollment: {
     path: "/course_service.EnrollmentService/CheckCourseEnrollment",
@@ -1160,10 +1454,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: CheckCourseEnrollmentRequest): Buffer =>
       Buffer.from(CheckCourseEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CheckCourseEnrollmentRequest => CheckCourseEnrollmentRequest.decode(value),
+    requestDeserialize: (value: Buffer): CheckCourseEnrollmentRequest =>
+      CheckCourseEnrollmentRequest.decode(value),
     responseSerialize: (value: CheckEnrollmentResponse): Buffer =>
       Buffer.from(CheckEnrollmentResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CheckEnrollmentResponse => CheckEnrollmentResponse.decode(value),
+    responseDeserialize: (value: Buffer): CheckEnrollmentResponse =>
+      CheckEnrollmentResponse.decode(value),
   },
   getEnrollmentsByUser: {
     path: "/course_service.EnrollmentService/GetEnrollmentsByUser",
@@ -1171,9 +1467,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetEnrollmentsByUserRequest): Buffer =>
       Buffer.from(GetEnrollmentsByUserRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetEnrollmentsByUserRequest => GetEnrollmentsByUserRequest.decode(value),
-    responseSerialize: (value: EnrollmentsResponse): Buffer => Buffer.from(EnrollmentsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): EnrollmentsResponse => EnrollmentsResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetEnrollmentsByUserRequest =>
+      GetEnrollmentsByUserRequest.decode(value),
+    responseSerialize: (value: EnrollmentsResponse): Buffer =>
+      Buffer.from(EnrollmentsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): EnrollmentsResponse =>
+      EnrollmentsResponse.decode(value),
   },
   getEnrollmentsByCourse: {
     path: "/course_service.EnrollmentService/GetEnrollmentsByCourse",
@@ -1181,9 +1480,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetEnrollmentsByCourseRequest): Buffer =>
       Buffer.from(GetEnrollmentsByCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetEnrollmentsByCourseRequest => GetEnrollmentsByCourseRequest.decode(value),
-    responseSerialize: (value: EnrollmentsResponse): Buffer => Buffer.from(EnrollmentsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): EnrollmentsResponse => EnrollmentsResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetEnrollmentsByCourseRequest =>
+      GetEnrollmentsByCourseRequest.decode(value),
+    responseSerialize: (value: EnrollmentsResponse): Buffer =>
+      Buffer.from(EnrollmentsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): EnrollmentsResponse =>
+      EnrollmentsResponse.decode(value),
   },
   /** Progress CRUD */
   createProgress: {
@@ -1192,18 +1494,25 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: CreateProgressRequest): Buffer =>
       Buffer.from(CreateProgressRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): CreateProgressRequest => CreateProgressRequest.decode(value),
-    responseSerialize: (value: ProgressResponse): Buffer => Buffer.from(ProgressResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProgressResponse => ProgressResponse.decode(value),
+    requestDeserialize: (value: Buffer): CreateProgressRequest =>
+      CreateProgressRequest.decode(value),
+    responseSerialize: (value: ProgressResponse): Buffer =>
+      Buffer.from(ProgressResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ProgressResponse =>
+      ProgressResponse.decode(value),
   },
   getProgress: {
     path: "/course_service.EnrollmentService/GetProgress",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetProgressRequest): Buffer => Buffer.from(GetProgressRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetProgressRequest => GetProgressRequest.decode(value),
-    responseSerialize: (value: ProgressResponse): Buffer => Buffer.from(ProgressResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProgressResponse => ProgressResponse.decode(value),
+    requestSerialize: (value: GetProgressRequest): Buffer =>
+      Buffer.from(GetProgressRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetProgressRequest =>
+      GetProgressRequest.decode(value),
+    responseSerialize: (value: ProgressResponse): Buffer =>
+      Buffer.from(ProgressResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ProgressResponse =>
+      ProgressResponse.decode(value),
   },
   updateLessonProgress: {
     path: "/course_service.EnrollmentService/UpdateLessonProgress",
@@ -1211,10 +1520,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: UpdateLessonProgressRequest): Buffer =>
       Buffer.from(UpdateLessonProgressRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateLessonProgressRequest => UpdateLessonProgressRequest.decode(value),
+    requestDeserialize: (value: Buffer): UpdateLessonProgressRequest =>
+      UpdateLessonProgressRequest.decode(value),
     responseSerialize: (value: UpdateLessonProgressResponse): Buffer =>
       Buffer.from(UpdateLessonProgressResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): UpdateLessonProgressResponse => UpdateLessonProgressResponse.decode(value),
+    responseDeserialize: (value: Buffer): UpdateLessonProgressResponse =>
+      UpdateLessonProgressResponse.decode(value),
   },
   submitQuizProgress: {
     path: "/course_service.EnrollmentService/SubmitQuizProgress",
@@ -1222,10 +1533,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: SubmitQuizAttemptRequest): Buffer =>
       Buffer.from(SubmitQuizAttemptRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): SubmitQuizAttemptRequest => SubmitQuizAttemptRequest.decode(value),
+    requestDeserialize: (value: Buffer): SubmitQuizAttemptRequest =>
+      SubmitQuizAttemptRequest.decode(value),
     responseSerialize: (value: SubmitQuizAttemptResponse): Buffer =>
       Buffer.from(SubmitQuizAttemptResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): SubmitQuizAttemptResponse => SubmitQuizAttemptResponse.decode(value),
+    responseDeserialize: (value: Buffer): SubmitQuizAttemptResponse =>
+      SubmitQuizAttemptResponse.decode(value),
   },
   deleteProgress: {
     path: "/course_service.EnrollmentService/DeleteProgress",
@@ -1233,10 +1546,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: DeleteProgressRequest): Buffer =>
       Buffer.from(DeleteProgressRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteProgressRequest => DeleteProgressRequest.decode(value),
+    requestDeserialize: (value: Buffer): DeleteProgressRequest =>
+      DeleteProgressRequest.decode(value),
     responseSerialize: (value: DeleteProgressResponse): Buffer =>
       Buffer.from(DeleteProgressResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteProgressResponse => DeleteProgressResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteProgressResponse =>
+      DeleteProgressResponse.decode(value),
   },
   getProgressByEnrollment: {
     path: "/course_service.EnrollmentService/GetProgressByEnrollment",
@@ -1244,10 +1559,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetProgressByEnrollmentRequest): Buffer =>
       Buffer.from(GetProgressByEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetProgressByEnrollmentRequest => GetProgressByEnrollmentRequest.decode(value),
+    requestDeserialize: (value: Buffer): GetProgressByEnrollmentRequest =>
+      GetProgressByEnrollmentRequest.decode(value),
     responseSerialize: (value: EnrollmentProgressResponse): Buffer =>
       Buffer.from(EnrollmentProgressResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): EnrollmentProgressResponse => EnrollmentProgressResponse.decode(value),
+    responseDeserialize: (value: Buffer): EnrollmentProgressResponse =>
+      EnrollmentProgressResponse.decode(value),
   },
   /** Review CRUD */
   submitCourseReview: {
@@ -1256,18 +1573,25 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: SubmitCourseReviewRequest): Buffer =>
       Buffer.from(SubmitCourseReviewRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): SubmitCourseReviewRequest => SubmitCourseReviewRequest.decode(value),
-    responseSerialize: (value: ReviewResponse): Buffer => Buffer.from(ReviewResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ReviewResponse => ReviewResponse.decode(value),
+    requestDeserialize: (value: Buffer): SubmitCourseReviewRequest =>
+      SubmitCourseReviewRequest.decode(value),
+    responseSerialize: (value: ReviewResponse): Buffer =>
+      Buffer.from(ReviewResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ReviewResponse =>
+      ReviewResponse.decode(value),
   },
   getReview: {
     path: "/course_service.EnrollmentService/GetReview",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetReviewRequest): Buffer => Buffer.from(GetReviewRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetReviewRequest => GetReviewRequest.decode(value),
-    responseSerialize: (value: ReviewResponse): Buffer => Buffer.from(ReviewResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ReviewResponse => ReviewResponse.decode(value),
+    requestSerialize: (value: GetReviewRequest): Buffer =>
+      Buffer.from(GetReviewRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): GetReviewRequest =>
+      GetReviewRequest.decode(value),
+    responseSerialize: (value: ReviewResponse): Buffer =>
+      Buffer.from(ReviewResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ReviewResponse =>
+      ReviewResponse.decode(value),
   },
   getReviewByEnrollment: {
     path: "/course_service.EnrollmentService/GetReviewByEnrollment",
@@ -1275,28 +1599,38 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetReviewByEnrollmentRequest): Buffer =>
       Buffer.from(GetReviewByEnrollmentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetReviewByEnrollmentRequest => GetReviewByEnrollmentRequest.decode(value),
-    responseSerialize: (value: ReviewResponse): Buffer => Buffer.from(ReviewResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ReviewResponse => ReviewResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetReviewByEnrollmentRequest =>
+      GetReviewByEnrollmentRequest.decode(value),
+    responseSerialize: (value: ReviewResponse): Buffer =>
+      Buffer.from(ReviewResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ReviewResponse =>
+      ReviewResponse.decode(value),
   },
   updateReview: {
     path: "/course_service.EnrollmentService/UpdateReview",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: UpdateReviewRequest): Buffer => Buffer.from(UpdateReviewRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): UpdateReviewRequest => UpdateReviewRequest.decode(value),
-    responseSerialize: (value: ReviewResponse): Buffer => Buffer.from(ReviewResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ReviewResponse => ReviewResponse.decode(value),
+    requestSerialize: (value: UpdateReviewRequest): Buffer =>
+      Buffer.from(UpdateReviewRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): UpdateReviewRequest =>
+      UpdateReviewRequest.decode(value),
+    responseSerialize: (value: ReviewResponse): Buffer =>
+      Buffer.from(ReviewResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ReviewResponse =>
+      ReviewResponse.decode(value),
   },
   deleteReview: {
     path: "/course_service.EnrollmentService/DeleteReview",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: DeleteReviewRequest): Buffer => Buffer.from(DeleteReviewRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DeleteReviewRequest => DeleteReviewRequest.decode(value),
+    requestSerialize: (value: DeleteReviewRequest): Buffer =>
+      Buffer.from(DeleteReviewRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer): DeleteReviewRequest =>
+      DeleteReviewRequest.decode(value),
     responseSerialize: (value: DeleteReviewResponse): Buffer =>
       Buffer.from(DeleteReviewResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): DeleteReviewResponse => DeleteReviewResponse.decode(value),
+    responseDeserialize: (value: Buffer): DeleteReviewResponse =>
+      DeleteReviewResponse.decode(value),
   },
   getReviewsByCourse: {
     path: "/course_service.EnrollmentService/GetReviewsByCourse",
@@ -1304,9 +1638,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetReviewsByCourseRequest): Buffer =>
       Buffer.from(GetReviewsByCourseRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetReviewsByCourseRequest => GetReviewsByCourseRequest.decode(value),
-    responseSerialize: (value: ReviewsResponse): Buffer => Buffer.from(ReviewsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ReviewsResponse => ReviewsResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetReviewsByCourseRequest =>
+      GetReviewsByCourseRequest.decode(value),
+    responseSerialize: (value: ReviewsResponse): Buffer =>
+      Buffer.from(ReviewsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ReviewsResponse =>
+      ReviewsResponse.decode(value),
   },
   /** CERTIFICATE CRUD */
   getCertificate: {
@@ -1315,9 +1652,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetCertificateRequest): Buffer =>
       Buffer.from(GetCertificateRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCertificateRequest => GetCertificateRequest.decode(value),
-    responseSerialize: (value: CertificateResponse): Buffer => Buffer.from(CertificateResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CertificateResponse => CertificateResponse.decode(value),
+    requestDeserialize: (value: Buffer): GetCertificateRequest =>
+      GetCertificateRequest.decode(value),
+    responseSerialize: (value: CertificateResponse): Buffer =>
+      Buffer.from(CertificateResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CertificateResponse =>
+      CertificateResponse.decode(value),
   },
   getCertificateByEnrollment: {
     path: "/course_service.EnrollmentService/GetCertificateByEnrollment",
@@ -1327,8 +1667,10 @@ export const EnrollmentServiceService = {
       Buffer.from(GetCertificateByEnrollmentRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): GetCertificateByEnrollmentRequest =>
       GetCertificateByEnrollmentRequest.decode(value),
-    responseSerialize: (value: CertificateResponse): Buffer => Buffer.from(CertificateResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CertificateResponse => CertificateResponse.decode(value),
+    responseSerialize: (value: CertificateResponse): Buffer =>
+      Buffer.from(CertificateResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CertificateResponse =>
+      CertificateResponse.decode(value),
   },
   getCertificatesByUser: {
     path: "/course_service.EnrollmentService/GetCertificatesByUser",
@@ -1336,10 +1678,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetCertificatesByUserRequest): Buffer =>
       Buffer.from(GetCertificatesByUserRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetCertificatesByUserRequest => GetCertificatesByUserRequest.decode(value),
+    requestDeserialize: (value: Buffer): GetCertificatesByUserRequest =>
+      GetCertificatesByUserRequest.decode(value),
     responseSerialize: (value: CertificatesResponse): Buffer =>
       Buffer.from(CertificatesResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CertificatesResponse => CertificatesResponse.decode(value),
+    responseDeserialize: (value: Buffer): CertificatesResponse =>
+      CertificatesResponse.decode(value),
   },
   generateCertificate: {
     path: "/course_service.EnrollmentService/GenerateCertificate",
@@ -1347,9 +1691,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GenerateCertificateRequest): Buffer =>
       Buffer.from(GenerateCertificateRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GenerateCertificateRequest => GenerateCertificateRequest.decode(value),
-    responseSerialize: (value: CertificateResponse): Buffer => Buffer.from(CertificateResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CertificateResponse => CertificateResponse.decode(value),
+    requestDeserialize: (value: Buffer): GenerateCertificateRequest =>
+      GenerateCertificateRequest.decode(value),
+    responseSerialize: (value: CertificateResponse): Buffer =>
+      Buffer.from(CertificateResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CertificateResponse =>
+      CertificateResponse.decode(value),
   },
   downloadCertificate: {
     path: "/course_service.EnrollmentService/DownloadCertificate",
@@ -1357,61 +1704,112 @@ export const EnrollmentServiceService = {
     responseStream: true,
     requestSerialize: (value: DownloadCertificateRequest): Buffer =>
       Buffer.from(DownloadCertificateRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): DownloadCertificateRequest => DownloadCertificateRequest.decode(value),
-    responseSerialize: (value: CertificatePDFChunk): Buffer => Buffer.from(CertificatePDFChunk.encode(value).finish()),
-    responseDeserialize: (value: Buffer): CertificatePDFChunk => CertificatePDFChunk.decode(value),
+    requestDeserialize: (value: Buffer): DownloadCertificateRequest =>
+      DownloadCertificateRequest.decode(value),
+    responseSerialize: (value: CertificatePDFChunk): Buffer =>
+      Buffer.from(CertificatePDFChunk.encode(value).finish()),
+    responseDeserialize: (value: Buffer): CertificatePDFChunk =>
+      CertificatePDFChunk.decode(value),
   },
   /** Stats */
   getInstructorCoursesEnrollmentSummery: {
     path: "/course_service.EnrollmentService/GetInstructorCoursesEnrollmentSummery",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetInstructorCoursesEnrollmentSummeryRequest): Buffer =>
-      Buffer.from(GetInstructorCoursesEnrollmentSummeryRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetInstructorCoursesEnrollmentSummeryRequest =>
+    requestSerialize: (
+      value: GetInstructorCoursesEnrollmentSummeryRequest,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCoursesEnrollmentSummeryRequest.encode(value).finish(),
+      ),
+    requestDeserialize: (
+      value: Buffer,
+    ): GetInstructorCoursesEnrollmentSummeryRequest =>
       GetInstructorCoursesEnrollmentSummeryRequest.decode(value),
-    responseSerialize: (value: GetInstructorCoursesEnrollmentSummeryResponse): Buffer =>
-      Buffer.from(GetInstructorCoursesEnrollmentSummeryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetInstructorCoursesEnrollmentSummeryResponse =>
+    responseSerialize: (
+      value: GetInstructorCoursesEnrollmentSummeryResponse,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCoursesEnrollmentSummeryResponse.encode(value).finish(),
+      ),
+    responseDeserialize: (
+      value: Buffer,
+    ): GetInstructorCoursesEnrollmentSummeryResponse =>
       GetInstructorCoursesEnrollmentSummeryResponse.decode(value),
   },
   getInstructorCourseEnrollmentSummery: {
     path: "/course_service.EnrollmentService/GetInstructorCourseEnrollmentSummery",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetInstructorCourseEnrollmentSummeryRequest): Buffer =>
-      Buffer.from(GetInstructorCourseEnrollmentSummeryRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetInstructorCourseEnrollmentSummeryRequest =>
+    requestSerialize: (
+      value: GetInstructorCourseEnrollmentSummeryRequest,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseEnrollmentSummeryRequest.encode(value).finish(),
+      ),
+    requestDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseEnrollmentSummeryRequest =>
       GetInstructorCourseEnrollmentSummeryRequest.decode(value),
-    responseSerialize: (value: GetInstructorCourseEnrollmentSummeryResponse): Buffer =>
-      Buffer.from(GetInstructorCourseEnrollmentSummeryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetInstructorCourseEnrollmentSummeryResponse =>
+    responseSerialize: (
+      value: GetInstructorCourseEnrollmentSummeryResponse,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseEnrollmentSummeryResponse.encode(value).finish(),
+      ),
+    responseDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseEnrollmentSummeryResponse =>
       GetInstructorCourseEnrollmentSummeryResponse.decode(value),
   },
   getInstructorCourseEnrollmentTrend: {
     path: "/course_service.EnrollmentService/GetInstructorCourseEnrollmentTrend",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetInstructorCourseEnrollmentTrendRequest): Buffer =>
-      Buffer.from(GetInstructorCourseEnrollmentTrendRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetInstructorCourseEnrollmentTrendRequest =>
+    requestSerialize: (
+      value: GetInstructorCourseEnrollmentTrendRequest,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseEnrollmentTrendRequest.encode(value).finish(),
+      ),
+    requestDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseEnrollmentTrendRequest =>
       GetInstructorCourseEnrollmentTrendRequest.decode(value),
-    responseSerialize: (value: GetInstructorCourseEnrollmentTrendResponse): Buffer =>
-      Buffer.from(GetInstructorCourseEnrollmentTrendResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetInstructorCourseEnrollmentTrendResponse =>
+    responseSerialize: (
+      value: GetInstructorCourseEnrollmentTrendResponse,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseEnrollmentTrendResponse.encode(value).finish(),
+      ),
+    responseDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseEnrollmentTrendResponse =>
       GetInstructorCourseEnrollmentTrendResponse.decode(value),
   },
   getInstructorCourseRevenueSummery: {
     path: "/course_service.EnrollmentService/GetInstructorCourseRevenueSummery",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetInstructorCourseRevenueSummeryRequest): Buffer =>
-      Buffer.from(GetInstructorCourseRevenueSummeryRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetInstructorCourseRevenueSummeryRequest =>
+    requestSerialize: (
+      value: GetInstructorCourseRevenueSummeryRequest,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseRevenueSummeryRequest.encode(value).finish(),
+      ),
+    requestDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseRevenueSummeryRequest =>
       GetInstructorCourseRevenueSummeryRequest.decode(value),
-    responseSerialize: (value: GetInstructorCourseRevenueSummeryResponse): Buffer =>
-      Buffer.from(GetInstructorCourseRevenueSummeryResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetInstructorCourseRevenueSummeryResponse =>
+    responseSerialize: (
+      value: GetInstructorCourseRevenueSummeryResponse,
+    ): Buffer =>
+      Buffer.from(
+        GetInstructorCourseRevenueSummeryResponse.encode(value).finish(),
+      ),
+    responseDeserialize: (
+      value: Buffer,
+    ): GetInstructorCourseRevenueSummeryResponse =>
       GetInstructorCourseRevenueSummeryResponse.decode(value),
   },
   getEnrollmentTrend: {
@@ -1420,22 +1818,36 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetEnrollmentTrendRequest): Buffer =>
       Buffer.from(GetEnrollmentTrendRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetEnrollmentTrendRequest => GetEnrollmentTrendRequest.decode(value),
+    requestDeserialize: (value: Buffer): GetEnrollmentTrendRequest =>
+      GetEnrollmentTrendRequest.decode(value),
     responseSerialize: (value: GetEnrollmentTrendResponse): Buffer =>
       Buffer.from(GetEnrollmentTrendResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetEnrollmentTrendResponse => GetEnrollmentTrendResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetEnrollmentTrendResponse =>
+      GetEnrollmentTrendResponse.decode(value),
   },
   getMonthlyCoursesEnrollmentStats: {
     path: "/course_service.EnrollmentService/GetMonthlyCoursesEnrollmentStats",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetMonthlyCoursesEnrollmentStatsRequest): Buffer =>
-      Buffer.from(GetMonthlyCoursesEnrollmentStatsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetMonthlyCoursesEnrollmentStatsRequest =>
+    requestSerialize: (
+      value: GetMonthlyCoursesEnrollmentStatsRequest,
+    ): Buffer =>
+      Buffer.from(
+        GetMonthlyCoursesEnrollmentStatsRequest.encode(value).finish(),
+      ),
+    requestDeserialize: (
+      value: Buffer,
+    ): GetMonthlyCoursesEnrollmentStatsRequest =>
       GetMonthlyCoursesEnrollmentStatsRequest.decode(value),
-    responseSerialize: (value: GetMonthlyCoursesEnrollmentStatsResponse): Buffer =>
-      Buffer.from(GetMonthlyCoursesEnrollmentStatsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetMonthlyCoursesEnrollmentStatsResponse =>
+    responseSerialize: (
+      value: GetMonthlyCoursesEnrollmentStatsResponse,
+    ): Buffer =>
+      Buffer.from(
+        GetMonthlyCoursesEnrollmentStatsResponse.encode(value).finish(),
+      ),
+    responseDeserialize: (
+      value: Buffer,
+    ): GetMonthlyCoursesEnrollmentStatsResponse =>
       GetMonthlyCoursesEnrollmentStatsResponse.decode(value),
   },
   getRevenueStats: {
@@ -1444,10 +1856,12 @@ export const EnrollmentServiceService = {
     responseStream: false,
     requestSerialize: (value: GetRevenueStatsRequest): Buffer =>
       Buffer.from(GetRevenueStatsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer): GetRevenueStatsRequest => GetRevenueStatsRequest.decode(value),
+    requestDeserialize: (value: Buffer): GetRevenueStatsRequest =>
+      GetRevenueStatsRequest.decode(value),
     responseSerialize: (value: GetRevenueStatsResponse): Buffer =>
       Buffer.from(GetRevenueStatsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): GetRevenueStatsResponse => GetRevenueStatsResponse.decode(value),
+    responseDeserialize: (value: Buffer): GetRevenueStatsResponse =>
+      GetRevenueStatsResponse.decode(value),
   },
 } as const;
 
@@ -1457,33 +1871,87 @@ export interface EnrollmentServiceServer extends UntypedServiceImplementation {
    * rpc CreateEnrollment(course.enrollment.CreateEnrollmentRequest) returns (course.enrollment.EnrollmentResponse);
    */
   getEnrollment: handleUnaryCall<GetEnrollmentRequest, GetEnrollmentResponse>;
-  getEnrollmentDetails: handleUnaryCall<GetEnrollmentRequest, GetEnrollmentDetailsResponse>;
-  updateEnrollment: handleUnaryCall<UpdateEnrollmentRequest, EnrollmentResponse>;
-  deleteEnrollment: handleUnaryCall<DeleteEnrollmentRequest, DeleteEnrollmentResponse>;
-  checkEnrollment: handleUnaryCall<CheckEnrollmentRequest, CheckEnrollmentResponse>;
-  checkCourseEnrollment: handleUnaryCall<CheckCourseEnrollmentRequest, CheckEnrollmentResponse>;
-  getEnrollmentsByUser: handleUnaryCall<GetEnrollmentsByUserRequest, EnrollmentsResponse>;
-  getEnrollmentsByCourse: handleUnaryCall<GetEnrollmentsByCourseRequest, EnrollmentsResponse>;
+  getEnrollmentDetails: handleUnaryCall<
+    GetEnrollmentRequest,
+    GetEnrollmentDetailsResponse
+  >;
+  updateEnrollment: handleUnaryCall<
+    UpdateEnrollmentRequest,
+    EnrollmentResponse
+  >;
+  deleteEnrollment: handleUnaryCall<
+    DeleteEnrollmentRequest,
+    DeleteEnrollmentResponse
+  >;
+  checkEnrollment: handleUnaryCall<
+    CheckEnrollmentRequest,
+    CheckEnrollmentResponse
+  >;
+  checkCourseEnrollment: handleUnaryCall<
+    CheckCourseEnrollmentRequest,
+    CheckEnrollmentResponse
+  >;
+  getEnrollmentsByUser: handleUnaryCall<
+    GetEnrollmentsByUserRequest,
+    EnrollmentsResponse
+  >;
+  getEnrollmentsByCourse: handleUnaryCall<
+    GetEnrollmentsByCourseRequest,
+    EnrollmentsResponse
+  >;
   /** Progress CRUD */
   createProgress: handleUnaryCall<CreateProgressRequest, ProgressResponse>;
   getProgress: handleUnaryCall<GetProgressRequest, ProgressResponse>;
-  updateLessonProgress: handleUnaryCall<UpdateLessonProgressRequest, UpdateLessonProgressResponse>;
-  submitQuizProgress: handleUnaryCall<SubmitQuizAttemptRequest, SubmitQuizAttemptResponse>;
-  deleteProgress: handleUnaryCall<DeleteProgressRequest, DeleteProgressResponse>;
-  getProgressByEnrollment: handleUnaryCall<GetProgressByEnrollmentRequest, EnrollmentProgressResponse>;
+  updateLessonProgress: handleUnaryCall<
+    UpdateLessonProgressRequest,
+    UpdateLessonProgressResponse
+  >;
+  submitQuizProgress: handleUnaryCall<
+    SubmitQuizAttemptRequest,
+    SubmitQuizAttemptResponse
+  >;
+  deleteProgress: handleUnaryCall<
+    DeleteProgressRequest,
+    DeleteProgressResponse
+  >;
+  getProgressByEnrollment: handleUnaryCall<
+    GetProgressByEnrollmentRequest,
+    EnrollmentProgressResponse
+  >;
   /** Review CRUD */
-  submitCourseReview: handleUnaryCall<SubmitCourseReviewRequest, ReviewResponse>;
+  submitCourseReview: handleUnaryCall<
+    SubmitCourseReviewRequest,
+    ReviewResponse
+  >;
   getReview: handleUnaryCall<GetReviewRequest, ReviewResponse>;
-  getReviewByEnrollment: handleUnaryCall<GetReviewByEnrollmentRequest, ReviewResponse>;
+  getReviewByEnrollment: handleUnaryCall<
+    GetReviewByEnrollmentRequest,
+    ReviewResponse
+  >;
   updateReview: handleUnaryCall<UpdateReviewRequest, ReviewResponse>;
   deleteReview: handleUnaryCall<DeleteReviewRequest, DeleteReviewResponse>;
-  getReviewsByCourse: handleUnaryCall<GetReviewsByCourseRequest, ReviewsResponse>;
+  getReviewsByCourse: handleUnaryCall<
+    GetReviewsByCourseRequest,
+    ReviewsResponse
+  >;
   /** CERTIFICATE CRUD */
   getCertificate: handleUnaryCall<GetCertificateRequest, CertificateResponse>;
-  getCertificateByEnrollment: handleUnaryCall<GetCertificateByEnrollmentRequest, CertificateResponse>;
-  getCertificatesByUser: handleUnaryCall<GetCertificatesByUserRequest, CertificatesResponse>;
-  generateCertificate: handleUnaryCall<GenerateCertificateRequest, CertificateResponse>;
-  downloadCertificate: handleServerStreamingCall<DownloadCertificateRequest, CertificatePDFChunk>;
+  getCertificateByEnrollment: handleUnaryCall<
+    GetCertificateByEnrollmentRequest,
+    CertificateResponse
+  >;
+  getCertificatesByUser: handleUnaryCall<
+    GetCertificatesByUserRequest,
+    CertificatesResponse
+  >;
+  generateCertificate: handleUnaryCall<
+    GenerateCertificateRequest,
+    CertificateResponse
+  >;
+  downloadCertificate: handleServerStreamingCall<
+    DownloadCertificateRequest,
+    CertificatePDFChunk
+  >;
   /** Stats */
   getInstructorCoursesEnrollmentSummery: handleUnaryCall<
     GetInstructorCoursesEnrollmentSummeryRequest,
@@ -1501,12 +1969,18 @@ export interface EnrollmentServiceServer extends UntypedServiceImplementation {
     GetInstructorCourseRevenueSummeryRequest,
     GetInstructorCourseRevenueSummeryResponse
   >;
-  getEnrollmentTrend: handleUnaryCall<GetEnrollmentTrendRequest, GetEnrollmentTrendResponse>;
+  getEnrollmentTrend: handleUnaryCall<
+    GetEnrollmentTrendRequest,
+    GetEnrollmentTrendResponse
+  >;
   getMonthlyCoursesEnrollmentStats: handleUnaryCall<
     GetMonthlyCoursesEnrollmentStatsRequest,
     GetMonthlyCoursesEnrollmentStatsResponse
   >;
-  getRevenueStats: handleUnaryCall<GetRevenueStatsRequest, GetRevenueStatsResponse>;
+  getRevenueStats: handleUnaryCall<
+    GetRevenueStatsRequest,
+    GetRevenueStatsResponse
+  >;
 }
 
 export interface EnrollmentServiceClient extends Client {
@@ -1516,123 +1990,195 @@ export interface EnrollmentServiceClient extends Client {
    */
   getEnrollment(
     request: GetEnrollmentRequest,
-    callback: (error: ServiceError | null, response: GetEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollment(
     request: GetEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollment(
     request: GetEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentDetails(
     request: GetEnrollmentRequest,
-    callback: (error: ServiceError | null, response: GetEnrollmentDetailsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentDetailsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentDetails(
     request: GetEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetEnrollmentDetailsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentDetailsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentDetails(
     request: GetEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetEnrollmentDetailsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentDetailsResponse,
+    ) => void,
   ): ClientUnaryCall;
   updateEnrollment(
     request: UpdateEnrollmentRequest,
-    callback: (error: ServiceError | null, response: EnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   updateEnrollment(
     request: UpdateEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: EnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   updateEnrollment(
     request: UpdateEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteEnrollment(
     request: DeleteEnrollmentRequest,
-    callback: (error: ServiceError | null, response: DeleteEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteEnrollment(
     request: DeleteEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteEnrollment(
     request: DeleteEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   checkEnrollment(
     request: CheckEnrollmentRequest,
-    callback: (error: ServiceError | null, response: CheckEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CheckEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   checkEnrollment(
     request: CheckEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CheckEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CheckEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   checkEnrollment(
     request: CheckEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CheckEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CheckEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   checkCourseEnrollment(
     request: CheckCourseEnrollmentRequest,
-    callback: (error: ServiceError | null, response: CheckEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CheckEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   checkCourseEnrollment(
     request: CheckCourseEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CheckEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CheckEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   checkCourseEnrollment(
     request: CheckCourseEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CheckEnrollmentResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CheckEnrollmentResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentsByUser(
     request: GetEnrollmentsByUserRequest,
-    callback: (error: ServiceError | null, response: EnrollmentsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentsByUser(
     request: GetEnrollmentsByUserRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: EnrollmentsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentsByUser(
     request: GetEnrollmentsByUserRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EnrollmentsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentsByCourse(
     request: GetEnrollmentsByCourseRequest,
-    callback: (error: ServiceError | null, response: EnrollmentsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentsByCourse(
     request: GetEnrollmentsByCourseRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: EnrollmentsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentsByCourse(
     request: GetEnrollmentsByCourseRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EnrollmentsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentsResponse,
+    ) => void,
   ): ClientUnaryCall;
   /** Progress CRUD */
   createProgress(
@@ -1667,63 +2213,99 @@ export interface EnrollmentServiceClient extends Client {
   ): ClientUnaryCall;
   updateLessonProgress(
     request: UpdateLessonProgressRequest,
-    callback: (error: ServiceError | null, response: UpdateLessonProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: UpdateLessonProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   updateLessonProgress(
     request: UpdateLessonProgressRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: UpdateLessonProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: UpdateLessonProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   updateLessonProgress(
     request: UpdateLessonProgressRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: UpdateLessonProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: UpdateLessonProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   submitQuizProgress(
     request: SubmitQuizAttemptRequest,
-    callback: (error: ServiceError | null, response: SubmitQuizAttemptResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SubmitQuizAttemptResponse,
+    ) => void,
   ): ClientUnaryCall;
   submitQuizProgress(
     request: SubmitQuizAttemptRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: SubmitQuizAttemptResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SubmitQuizAttemptResponse,
+    ) => void,
   ): ClientUnaryCall;
   submitQuizProgress(
     request: SubmitQuizAttemptRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: SubmitQuizAttemptResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: SubmitQuizAttemptResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteProgress(
     request: DeleteProgressRequest,
-    callback: (error: ServiceError | null, response: DeleteProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteProgress(
     request: DeleteProgressRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteProgress(
     request: DeleteProgressRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   getProgressByEnrollment(
     request: GetProgressByEnrollmentRequest,
-    callback: (error: ServiceError | null, response: EnrollmentProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   getProgressByEnrollment(
     request: GetProgressByEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: EnrollmentProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   getProgressByEnrollment(
     request: GetProgressByEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EnrollmentProgressResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: EnrollmentProgressResponse,
+    ) => void,
   ): ClientUnaryCall;
   /** Review CRUD */
   submitCourseReview(
@@ -1788,18 +2370,27 @@ export interface EnrollmentServiceClient extends Client {
   ): ClientUnaryCall;
   deleteReview(
     request: DeleteReviewRequest,
-    callback: (error: ServiceError | null, response: DeleteReviewResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteReviewResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteReview(
     request: DeleteReviewRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: DeleteReviewResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteReviewResponse,
+    ) => void,
   ): ClientUnaryCall;
   deleteReview(
     request: DeleteReviewRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: DeleteReviewResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: DeleteReviewResponse,
+    ) => void,
   ): ClientUnaryCall;
   getReviewsByCourse(
     request: GetReviewsByCourseRequest,
@@ -1819,63 +2410,99 @@ export interface EnrollmentServiceClient extends Client {
   /** CERTIFICATE CRUD */
   getCertificate(
     request: GetCertificateRequest,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificate(
     request: GetCertificateRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificate(
     request: GetCertificateRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificateByEnrollment(
     request: GetCertificateByEnrollmentRequest,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificateByEnrollment(
     request: GetCertificateByEnrollmentRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificateByEnrollment(
     request: GetCertificateByEnrollmentRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificatesByUser(
     request: GetCertificatesByUserRequest,
-    callback: (error: ServiceError | null, response: CertificatesResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificatesResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificatesByUser(
     request: GetCertificatesByUserRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CertificatesResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificatesResponse,
+    ) => void,
   ): ClientUnaryCall;
   getCertificatesByUser(
     request: GetCertificatesByUserRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CertificatesResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificatesResponse,
+    ) => void,
   ): ClientUnaryCall;
   generateCertificate(
     request: GenerateCertificateRequest,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   generateCertificate(
     request: GenerateCertificateRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   generateCertificate(
     request: GenerateCertificateRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: CertificateResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: CertificateResponse,
+    ) => void,
   ): ClientUnaryCall;
   downloadCertificate(
     request: DownloadCertificateRequest,
@@ -1889,108 +2516,171 @@ export interface EnrollmentServiceClient extends Client {
   /** Stats */
   getInstructorCoursesEnrollmentSummery(
     request: GetInstructorCoursesEnrollmentSummeryRequest,
-    callback: (error: ServiceError | null, response: GetInstructorCoursesEnrollmentSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCoursesEnrollmentSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCoursesEnrollmentSummery(
     request: GetInstructorCoursesEnrollmentSummeryRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetInstructorCoursesEnrollmentSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCoursesEnrollmentSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCoursesEnrollmentSummery(
     request: GetInstructorCoursesEnrollmentSummeryRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetInstructorCoursesEnrollmentSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCoursesEnrollmentSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseEnrollmentSummery(
     request: GetInstructorCourseEnrollmentSummeryRequest,
-    callback: (error: ServiceError | null, response: GetInstructorCourseEnrollmentSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseEnrollmentSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseEnrollmentSummery(
     request: GetInstructorCourseEnrollmentSummeryRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetInstructorCourseEnrollmentSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseEnrollmentSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseEnrollmentSummery(
     request: GetInstructorCourseEnrollmentSummeryRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetInstructorCourseEnrollmentSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseEnrollmentSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseEnrollmentTrend(
     request: GetInstructorCourseEnrollmentTrendRequest,
-    callback: (error: ServiceError | null, response: GetInstructorCourseEnrollmentTrendResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseEnrollmentTrendResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseEnrollmentTrend(
     request: GetInstructorCourseEnrollmentTrendRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetInstructorCourseEnrollmentTrendResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseEnrollmentTrendResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseEnrollmentTrend(
     request: GetInstructorCourseEnrollmentTrendRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetInstructorCourseEnrollmentTrendResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseEnrollmentTrendResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseRevenueSummery(
     request: GetInstructorCourseRevenueSummeryRequest,
-    callback: (error: ServiceError | null, response: GetInstructorCourseRevenueSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseRevenueSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseRevenueSummery(
     request: GetInstructorCourseRevenueSummeryRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetInstructorCourseRevenueSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseRevenueSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getInstructorCourseRevenueSummery(
     request: GetInstructorCourseRevenueSummeryRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetInstructorCourseRevenueSummeryResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetInstructorCourseRevenueSummeryResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentTrend(
     request: GetEnrollmentTrendRequest,
-    callback: (error: ServiceError | null, response: GetEnrollmentTrendResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentTrendResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentTrend(
     request: GetEnrollmentTrendRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetEnrollmentTrendResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentTrendResponse,
+    ) => void,
   ): ClientUnaryCall;
   getEnrollmentTrend(
     request: GetEnrollmentTrendRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetEnrollmentTrendResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetEnrollmentTrendResponse,
+    ) => void,
   ): ClientUnaryCall;
   getMonthlyCoursesEnrollmentStats(
     request: GetMonthlyCoursesEnrollmentStatsRequest,
-    callback: (error: ServiceError | null, response: GetMonthlyCoursesEnrollmentStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetMonthlyCoursesEnrollmentStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getMonthlyCoursesEnrollmentStats(
     request: GetMonthlyCoursesEnrollmentStatsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetMonthlyCoursesEnrollmentStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetMonthlyCoursesEnrollmentStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getMonthlyCoursesEnrollmentStats(
     request: GetMonthlyCoursesEnrollmentStatsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetMonthlyCoursesEnrollmentStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetMonthlyCoursesEnrollmentStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getRevenueStats(
     request: GetRevenueStatsRequest,
-    callback: (error: ServiceError | null, response: GetRevenueStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetRevenueStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getRevenueStats(
     request: GetRevenueStatsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetRevenueStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetRevenueStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
   getRevenueStats(
     request: GetRevenueStatsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetRevenueStatsResponse) => void,
+    callback: (
+      error: ServiceError | null,
+      response: GetRevenueStatsResponse,
+    ) => void,
   ): ClientUnaryCall;
 }
 
@@ -1998,7 +2688,11 @@ export const EnrollmentServiceClient = makeGenericClientConstructor(
   EnrollmentServiceService,
   "course_service.EnrollmentService",
 ) as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EnrollmentServiceClient;
+  new (
+    address: string,
+    credentials: ChannelCredentials,
+    options?: Partial<ClientOptions>,
+  ): EnrollmentServiceClient;
   service: typeof EnrollmentServiceService;
   serviceName: string;
 };

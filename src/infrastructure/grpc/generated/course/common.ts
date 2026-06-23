@@ -37,9 +37,7 @@ export interface Pagination {
   /** Number of items per page */
   pageSize: number;
   /** Field to sort by (e.g., "created_at") */
-  sortBy?:
-    | string
-    | undefined;
+  sortBy?: string | undefined;
   /** "ASC" or "DESC" */
   sortOrder?: string | undefined;
 }
@@ -48,15 +46,17 @@ export interface DeleteSuccess {
   deleted: boolean;
 }
 
-export interface Empty {
-}
+export interface Empty {}
 
 function createBaseError(): Error {
   return { code: "", message: "", details: [] };
 }
 
 export const Error: MessageFns<Error> = {
-  encode(message: Error, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: Error,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.code !== "") {
       writer.uint32(10).string(message.code);
     }
@@ -70,7 +70,8 @@ export const Error: MessageFns<Error> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): Error {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseError();
     while (reader.pos < end) {
@@ -113,7 +114,9 @@ export const Error: MessageFns<Error> = {
     return {
       code: isSet(object.code) ? globalThis.String(object.code) : "",
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      details: globalThis.Array.isArray(object?.details) ? object.details.map((e: any) => ErrorDetail.fromJSON(e)) : [],
+      details: globalThis.Array.isArray(object?.details)
+        ? object.details.map((e: any) => ErrorDetail.fromJSON(e))
+        : [],
     };
   },
 
@@ -138,7 +141,8 @@ export const Error: MessageFns<Error> = {
     const message = createBaseError();
     message.code = object.code ?? "";
     message.message = object.message ?? "";
-    message.details = object.details?.map((e) => ErrorDetail.fromPartial(e)) || [];
+    message.details =
+      object.details?.map((e) => ErrorDetail.fromPartial(e)) || [];
     return message;
   },
 };
@@ -148,7 +152,10 @@ function createBaseErrorDetail(): ErrorDetail {
 }
 
 export const ErrorDetail: MessageFns<ErrorDetail> = {
-  encode(message: ErrorDetail, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ErrorDetail,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.field !== undefined) {
       writer.uint32(10).string(message.field);
     }
@@ -159,7 +166,8 @@ export const ErrorDetail: MessageFns<ErrorDetail> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ErrorDetail {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseErrorDetail();
     while (reader.pos < end) {
@@ -211,7 +219,9 @@ export const ErrorDetail: MessageFns<ErrorDetail> = {
   create<I extends Exact<DeepPartial<ErrorDetail>, I>>(base?: I): ErrorDetail {
     return ErrorDetail.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ErrorDetail>, I>>(object: I): ErrorDetail {
+  fromPartial<I extends Exact<DeepPartial<ErrorDetail>, I>>(
+    object: I,
+  ): ErrorDetail {
     const message = createBaseErrorDetail();
     message.field = object.field ?? undefined;
     message.message = object.message ?? "";
@@ -224,7 +234,10 @@ function createBaseUser(): User {
 }
 
 export const User: MessageFns<User> = {
-  encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: User,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -241,7 +254,8 @@ export const User: MessageFns<User> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): User {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUser();
     while (reader.pos < end) {
@@ -292,7 +306,9 @@ export const User: MessageFns<User> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      avatar: isSet(object.avatar) ? globalThis.String(object.avatar) : undefined,
+      avatar: isSet(object.avatar)
+        ? globalThis.String(object.avatar)
+        : undefined,
       email: isSet(object.email) ? globalThis.String(object.email) : undefined,
     };
   },
@@ -332,7 +348,10 @@ function createBasePagination(): Pagination {
 }
 
 export const Pagination: MessageFns<Pagination> = {
-  encode(message: Pagination, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: Pagination,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.page !== 0) {
       writer.uint32(8).int32(message.page);
     }
@@ -349,7 +368,8 @@ export const Pagination: MessageFns<Pagination> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): Pagination {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePagination();
     while (reader.pos < end) {
@@ -402,18 +422,18 @@ export const Pagination: MessageFns<Pagination> = {
       pageSize: isSet(object.pageSize)
         ? globalThis.Number(object.pageSize)
         : isSet(object.page_size)
-        ? globalThis.Number(object.page_size)
-        : 0,
+          ? globalThis.Number(object.page_size)
+          : 0,
       sortBy: isSet(object.sortBy)
         ? globalThis.String(object.sortBy)
         : isSet(object.sort_by)
-        ? globalThis.String(object.sort_by)
-        : undefined,
+          ? globalThis.String(object.sort_by)
+          : undefined,
       sortOrder: isSet(object.sortOrder)
         ? globalThis.String(object.sortOrder)
         : isSet(object.sort_order)
-        ? globalThis.String(object.sort_order)
-        : undefined,
+          ? globalThis.String(object.sort_order)
+          : undefined,
     };
   },
 
@@ -437,7 +457,9 @@ export const Pagination: MessageFns<Pagination> = {
   create<I extends Exact<DeepPartial<Pagination>, I>>(base?: I): Pagination {
     return Pagination.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Pagination>, I>>(object: I): Pagination {
+  fromPartial<I extends Exact<DeepPartial<Pagination>, I>>(
+    object: I,
+  ): Pagination {
     const message = createBasePagination();
     message.page = object.page ?? 0;
     message.pageSize = object.pageSize ?? 0;
@@ -452,7 +474,10 @@ function createBaseDeleteSuccess(): DeleteSuccess {
 }
 
 export const DeleteSuccess: MessageFns<DeleteSuccess> = {
-  encode(message: DeleteSuccess, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteSuccess,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.deleted !== false) {
       writer.uint32(8).bool(message.deleted);
     }
@@ -460,7 +485,8 @@ export const DeleteSuccess: MessageFns<DeleteSuccess> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): DeleteSuccess {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteSuccess();
     while (reader.pos < end) {
@@ -484,7 +510,11 @@ export const DeleteSuccess: MessageFns<DeleteSuccess> = {
   },
 
   fromJSON(object: any): DeleteSuccess {
-    return { deleted: isSet(object.deleted) ? globalThis.Boolean(object.deleted) : false };
+    return {
+      deleted: isSet(object.deleted)
+        ? globalThis.Boolean(object.deleted)
+        : false,
+    };
   },
 
   toJSON(message: DeleteSuccess): unknown {
@@ -495,10 +525,14 @@ export const DeleteSuccess: MessageFns<DeleteSuccess> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteSuccess>, I>>(base?: I): DeleteSuccess {
+  create<I extends Exact<DeepPartial<DeleteSuccess>, I>>(
+    base?: I,
+  ): DeleteSuccess {
     return DeleteSuccess.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteSuccess>, I>>(object: I): DeleteSuccess {
+  fromPartial<I extends Exact<DeepPartial<DeleteSuccess>, I>>(
+    object: I,
+  ): DeleteSuccess {
     const message = createBaseDeleteSuccess();
     message.deleted = object.deleted ?? false;
     return message;
@@ -515,7 +549,8 @@ export const Empty: MessageFns<Empty> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): Empty {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEmpty();
     while (reader.pos < end) {
@@ -548,17 +583,31 @@ export const Empty: MessageFns<Empty> = {
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

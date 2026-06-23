@@ -5,10 +5,7 @@ import {
 } from "@nestjs/common";
 import { ICertificateRepository } from "../../../domain/repositories/certificate.repository";
 import { CertificateDto } from "src/application/dtos/certificate.dto";
-import {
-  CertificateNotFoundException,
-} from "src/domain/exceptions/certificate.exceptions";
-import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { CertificateNotFoundException, NotAuthorizedException } from "src/domain/exceptions/domain.exceptions";
 
 @Injectable()
 export class GetCertificateUseCase {
@@ -16,7 +13,7 @@ export class GetCertificateUseCase {
 
   async execute(
     certificateId: string,
-    userId: string,
+    userId: string
   ): Promise<CertificateDto> {
     const certificate = await this.certificateRepo.findById(certificateId);
 
@@ -26,7 +23,7 @@ export class GetCertificateUseCase {
 
     // Verify ownership
     if (certificate.getUserId() !== userId) {
-      throw new UnauthorizedException("Not authorized");
+      throw new NotAuthorizedException("Not authorized");
     }
 
     return CertificateDto.fromDomain(certificate);

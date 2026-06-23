@@ -1,11 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import {
+  Injectable,
+} from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
 import { IEnrollmentRepository } from "../../../domain/repositories/enrollment.repository";
 import { ICertificateRepository } from "../../../domain/repositories/certificate.repository";
 import { Certificate } from "../../../domain/entities/certificate.entity";
 import { CertificateDto } from "src/application/dtos/certificate.dto";
-import { BadRequestException, UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
-import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
+import { BadRequestException, CertificateNotFoundException, NotAuthorizedException } from "src/domain/exceptions/domain.exceptions";
 
 export interface GenerateCertificateRequest {
   enrollmentId: string;
@@ -17,23 +18,24 @@ export interface GenerateCertificateRequest {
 export class GenerateCertificateUseCase {
   constructor(
     private readonly enrollmentRepo: IEnrollmentRepository,
-    private readonly certificateRepo: ICertificateRepository,
+    private readonly certificateRepo: ICertificateRepository
   ) {}
 
   async execute(request: GenerateCertificateRequest): Promise<CertificateDto> {
     //  Validate enrollment exists and belongs to user
-    const enrollment = await this.enrollmentRepo.getById(request.enrollmentId, {
-      includeCourse: true,
-    });
+    const enrollment = await this.enrollmentRepo.getById(
+      request.enrollmentId,
+      { includeCourse: true }
+    );
 
     let course = enrollment.getCourse();
 
     if (!enrollment) {
-      throw new EnrollmentNotFoundException("Enrollment not found");
+      throw new CertificateNotFoundException("Enrollment not found");
     }
 
     if (enrollment.getStudentId() !== request.userId) {
-      throw new UnauthorizedException("Not authorized");
+      throw new NotAuthorizedException("Not authorized");
     }
 
     //  Check if enrollment is completed
@@ -42,13 +44,13 @@ export class GenerateCertificateUseCase {
       enrollment.getProgressPercent() !== 100
     ) {
       throw new BadRequestException(
-        "Course must be completed to generate certificate",
+        "Course must be completed to generate certificate"
       );
     }
 
     //  Check if certificate already exists
     const existingCertificate = await this.certificateRepo.findByEnrollmentId(
-      request.enrollmentId,
+      request.enrollmentId
     );
 
     if (existingCertificate) {
@@ -65,13 +67,13 @@ export class GenerateCertificateUseCase {
     const trimmedName = request.studentName.trim();
     if (!trimmedName || trimmedName.length < 2) {
       throw new BadRequestException(
-        "Student name must be at least 2 characters",
+        "Student name must be at least 2 characters"
       );
     }
 
     if (trimmedName.length > 100) {
       throw new BadRequestException(
-        "Student name must be less than 100 characters",
+        "Student name must be less than 100 characters"
       );
     }
 
@@ -89,7 +91,7 @@ export class GenerateCertificateUseCase {
       trimmedName,
       enrollment.getCompletedAt() || new Date(),
       certificateNumber,
-      issueDate,
+      issueDate
     );
 
     //  Save certificate

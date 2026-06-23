@@ -24,13 +24,9 @@ export interface EnrollmentProgressData {
 export interface LessonProgress {
   lessonId: string;
   completed: boolean;
-  completedAt?:
-    | string
-    | undefined;
+  completedAt?: string | undefined;
   /** seconds */
-  watchTime?:
-    | number
-    | undefined;
+  watchTime?: number | undefined;
   /** seconds */
   duration?: number | undefined;
   progressPercent?: number | undefined;
@@ -190,7 +186,10 @@ function createBaseEnrollmentProgressData(): EnrollmentProgressData {
 }
 
 export const EnrollmentProgressData: MessageFns<EnrollmentProgressData> = {
-  encode(message: EnrollmentProgressData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: EnrollmentProgressData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.enrollmentId !== "") {
       writer.uint32(10).string(message.enrollmentId);
     }
@@ -218,8 +217,12 @@ export const EnrollmentProgressData: MessageFns<EnrollmentProgressData> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): EnrollmentProgressData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): EnrollmentProgressData {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEnrollmentProgressData();
     while (reader.pos < end) {
@@ -300,12 +303,22 @@ export const EnrollmentProgressData: MessageFns<EnrollmentProgressData> = {
 
   fromJSON(object: any): EnrollmentProgressData {
     return {
-      enrollmentId: isSet(object.enrollmentId) ? globalThis.String(object.enrollmentId) : "",
-      courseId: isSet(object.courseId) ? globalThis.String(object.courseId) : "",
+      enrollmentId: isSet(object.enrollmentId)
+        ? globalThis.String(object.enrollmentId)
+        : "",
+      courseId: isSet(object.courseId)
+        ? globalThis.String(object.courseId)
+        : "",
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      overallProgress: isSet(object.overallProgress) ? globalThis.Number(object.overallProgress) : 0,
-      completedUnits: isSet(object.completedUnits) ? globalThis.Number(object.completedUnits) : 0,
-      totalUnits: isSet(object.totalUnits) ? globalThis.Number(object.totalUnits) : 0,
+      overallProgress: isSet(object.overallProgress)
+        ? globalThis.Number(object.overallProgress)
+        : 0,
+      completedUnits: isSet(object.completedUnits)
+        ? globalThis.Number(object.completedUnits)
+        : 0,
+      totalUnits: isSet(object.totalUnits)
+        ? globalThis.Number(object.totalUnits)
+        : 0,
       lessons: globalThis.Array.isArray(object?.lessons)
         ? object.lessons.map((e: any) => LessonProgress.fromJSON(e))
         : [],
@@ -344,10 +357,14 @@ export const EnrollmentProgressData: MessageFns<EnrollmentProgressData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<EnrollmentProgressData>, I>>(base?: I): EnrollmentProgressData {
+  create<I extends Exact<DeepPartial<EnrollmentProgressData>, I>>(
+    base?: I,
+  ): EnrollmentProgressData {
     return EnrollmentProgressData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<EnrollmentProgressData>, I>>(object: I): EnrollmentProgressData {
+  fromPartial<I extends Exact<DeepPartial<EnrollmentProgressData>, I>>(
+    object: I,
+  ): EnrollmentProgressData {
     const message = createBaseEnrollmentProgressData();
     message.enrollmentId = object.enrollmentId ?? "";
     message.courseId = object.courseId ?? "";
@@ -355,8 +372,10 @@ export const EnrollmentProgressData: MessageFns<EnrollmentProgressData> = {
     message.overallProgress = object.overallProgress ?? 0;
     message.completedUnits = object.completedUnits ?? 0;
     message.totalUnits = object.totalUnits ?? 0;
-    message.lessons = object.lessons?.map((e) => LessonProgress.fromPartial(e)) || [];
-    message.quizzes = object.quizzes?.map((e) => QuizProgress.fromPartial(e)) || [];
+    message.lessons =
+      object.lessons?.map((e) => LessonProgress.fromPartial(e)) || [];
+    message.quizzes =
+      object.quizzes?.map((e) => QuizProgress.fromPartial(e)) || [];
     return message;
   },
 };
@@ -373,7 +392,10 @@ function createBaseLessonProgress(): LessonProgress {
 }
 
 export const LessonProgress: MessageFns<LessonProgress> = {
-  encode(message: LessonProgress, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: LessonProgress,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.lessonId !== "") {
       writer.uint32(10).string(message.lessonId);
     }
@@ -396,7 +418,8 @@ export const LessonProgress: MessageFns<LessonProgress> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): LessonProgress {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLessonProgress();
     while (reader.pos < end) {
@@ -461,12 +484,24 @@ export const LessonProgress: MessageFns<LessonProgress> = {
 
   fromJSON(object: any): LessonProgress {
     return {
-      lessonId: isSet(object.lessonId) ? globalThis.String(object.lessonId) : "",
-      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
-      completedAt: isSet(object.completedAt) ? globalThis.String(object.completedAt) : undefined,
-      watchTime: isSet(object.watchTime) ? globalThis.Number(object.watchTime) : undefined,
-      duration: isSet(object.duration) ? globalThis.Number(object.duration) : undefined,
-      progressPercent: isSet(object.progressPercent) ? globalThis.Number(object.progressPercent) : undefined,
+      lessonId: isSet(object.lessonId)
+        ? globalThis.String(object.lessonId)
+        : "",
+      completed: isSet(object.completed)
+        ? globalThis.Boolean(object.completed)
+        : false,
+      completedAt: isSet(object.completedAt)
+        ? globalThis.String(object.completedAt)
+        : undefined,
+      watchTime: isSet(object.watchTime)
+        ? globalThis.Number(object.watchTime)
+        : undefined,
+      duration: isSet(object.duration)
+        ? globalThis.Number(object.duration)
+        : undefined,
+      progressPercent: isSet(object.progressPercent)
+        ? globalThis.Number(object.progressPercent)
+        : undefined,
     };
   },
 
@@ -493,10 +528,14 @@ export const LessonProgress: MessageFns<LessonProgress> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<LessonProgress>, I>>(base?: I): LessonProgress {
+  create<I extends Exact<DeepPartial<LessonProgress>, I>>(
+    base?: I,
+  ): LessonProgress {
     return LessonProgress.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<LessonProgress>, I>>(object: I): LessonProgress {
+  fromPartial<I extends Exact<DeepPartial<LessonProgress>, I>>(
+    object: I,
+  ): LessonProgress {
     const message = createBaseLessonProgress();
     message.lessonId = object.lessonId ?? "";
     message.completed = object.completed ?? false;
@@ -509,11 +548,21 @@ export const LessonProgress: MessageFns<LessonProgress> = {
 };
 
 function createBaseQuizProgress(): QuizProgress {
-  return { quizId: "", completed: false, score: undefined, attempts: 0, passed: false, completedAt: undefined };
+  return {
+    quizId: "",
+    completed: false,
+    score: undefined,
+    attempts: 0,
+    passed: false,
+    completedAt: undefined,
+  };
 }
 
 export const QuizProgress: MessageFns<QuizProgress> = {
-  encode(message: QuizProgress, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizProgress,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.quizId !== "") {
       writer.uint32(10).string(message.quizId);
     }
@@ -536,7 +585,8 @@ export const QuizProgress: MessageFns<QuizProgress> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuizProgress {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizProgress();
     while (reader.pos < end) {
@@ -602,11 +652,15 @@ export const QuizProgress: MessageFns<QuizProgress> = {
   fromJSON(object: any): QuizProgress {
     return {
       quizId: isSet(object.quizId) ? globalThis.String(object.quizId) : "",
-      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
+      completed: isSet(object.completed)
+        ? globalThis.Boolean(object.completed)
+        : false,
       score: isSet(object.score) ? globalThis.Number(object.score) : undefined,
       attempts: isSet(object.attempts) ? globalThis.Number(object.attempts) : 0,
       passed: isSet(object.passed) ? globalThis.Boolean(object.passed) : false,
-      completedAt: isSet(object.completedAt) ? globalThis.String(object.completedAt) : undefined,
+      completedAt: isSet(object.completedAt)
+        ? globalThis.String(object.completedAt)
+        : undefined,
     };
   },
 
@@ -633,10 +687,14 @@ export const QuizProgress: MessageFns<QuizProgress> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QuizProgress>, I>>(base?: I): QuizProgress {
+  create<I extends Exact<DeepPartial<QuizProgress>, I>>(
+    base?: I,
+  ): QuizProgress {
     return QuizProgress.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuizProgress>, I>>(object: I): QuizProgress {
+  fromPartial<I extends Exact<DeepPartial<QuizProgress>, I>>(
+    object: I,
+  ): QuizProgress {
     const message = createBaseQuizProgress();
     message.quizId = object.quizId ?? "";
     message.completed = object.completed ?? false;
@@ -653,7 +711,10 @@ function createBaseMilestone(): Milestone {
 }
 
 export const Milestone: MessageFns<Milestone> = {
-  encode(message: Milestone, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: Milestone,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -667,7 +728,8 @@ export const Milestone: MessageFns<Milestone> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): Milestone {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMilestone();
     while (reader.pos < end) {
@@ -710,7 +772,9 @@ export const Milestone: MessageFns<Milestone> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       type: isSet(object.type) ? globalThis.String(object.type) : "",
-      achievedAt: isSet(object.achievedAt) ? globalThis.String(object.achievedAt) : "",
+      achievedAt: isSet(object.achievedAt)
+        ? globalThis.String(object.achievedAt)
+        : "",
     };
   },
 
@@ -731,7 +795,9 @@ export const Milestone: MessageFns<Milestone> = {
   create<I extends Exact<DeepPartial<Milestone>, I>>(base?: I): Milestone {
     return Milestone.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Milestone>, I>>(object: I): Milestone {
+  fromPartial<I extends Exact<DeepPartial<Milestone>, I>>(
+    object: I,
+  ): Milestone {
     const message = createBaseMilestone();
     message.id = object.id ?? "";
     message.type = object.type ?? "";
@@ -744,262 +810,336 @@ function createBaseUpdateLessonProgressResponseData(): UpdateLessonProgressRespo
   return { completed: false, progressPercent: 0, milestone: undefined };
 }
 
-export const UpdateLessonProgressResponseData: MessageFns<UpdateLessonProgressResponseData> = {
-  encode(message: UpdateLessonProgressResponseData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.completed !== false) {
-      writer.uint32(8).bool(message.completed);
-    }
-    if (message.progressPercent !== 0) {
-      writer.uint32(16).int32(message.progressPercent);
-    }
-    if (message.milestone !== undefined) {
-      Milestone.encode(message.milestone, writer.uint32(26).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateLessonProgressResponseData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateLessonProgressResponseData();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.completed = reader.bool();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.progressPercent = reader.int32();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.milestone = Milestone.decode(reader, reader.uint32());
-          continue;
-        }
+export const UpdateLessonProgressResponseData: MessageFns<UpdateLessonProgressResponseData> =
+  {
+    encode(
+      message: UpdateLessonProgressResponseData,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.completed !== false) {
+        writer.uint32(8).bool(message.completed);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.progressPercent !== 0) {
+        writer.uint32(16).int32(message.progressPercent);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      if (message.milestone !== undefined) {
+        Milestone.encode(message.milestone, writer.uint32(26).fork()).join();
+      }
+      return writer;
+    },
 
-  fromJSON(object: any): UpdateLessonProgressResponseData {
-    return {
-      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
-      progressPercent: isSet(object.progressPercent) ? globalThis.Number(object.progressPercent) : 0,
-      milestone: isSet(object.milestone) ? Milestone.fromJSON(object.milestone) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): UpdateLessonProgressResponseData {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseUpdateLessonProgressResponseData();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 8) {
+              break;
+            }
 
-  toJSON(message: UpdateLessonProgressResponseData): unknown {
-    const obj: any = {};
-    if (message.completed !== false) {
-      obj.completed = message.completed;
-    }
-    if (message.progressPercent !== 0) {
-      obj.progressPercent = Math.round(message.progressPercent);
-    }
-    if (message.milestone !== undefined) {
-      obj.milestone = Milestone.toJSON(message.milestone);
-    }
-    return obj;
-  },
+            message.completed = reader.bool();
+            continue;
+          }
+          case 2: {
+            if (tag !== 16) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<UpdateLessonProgressResponseData>, I>>(
-    base?: I,
-  ): UpdateLessonProgressResponseData {
-    return UpdateLessonProgressResponseData.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UpdateLessonProgressResponseData>, I>>(
-    object: I,
-  ): UpdateLessonProgressResponseData {
-    const message = createBaseUpdateLessonProgressResponseData();
-    message.completed = object.completed ?? false;
-    message.progressPercent = object.progressPercent ?? 0;
-    message.milestone = (object.milestone !== undefined && object.milestone !== null)
-      ? Milestone.fromPartial(object.milestone)
-      : undefined;
-    return message;
-  },
-};
+            message.progressPercent = reader.int32();
+            continue;
+          }
+          case 3: {
+            if (tag !== 26) {
+              break;
+            }
+
+            message.milestone = Milestone.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): UpdateLessonProgressResponseData {
+      return {
+        completed: isSet(object.completed)
+          ? globalThis.Boolean(object.completed)
+          : false,
+        progressPercent: isSet(object.progressPercent)
+          ? globalThis.Number(object.progressPercent)
+          : 0,
+        milestone: isSet(object.milestone)
+          ? Milestone.fromJSON(object.milestone)
+          : undefined,
+      };
+    },
+
+    toJSON(message: UpdateLessonProgressResponseData): unknown {
+      const obj: any = {};
+      if (message.completed !== false) {
+        obj.completed = message.completed;
+      }
+      if (message.progressPercent !== 0) {
+        obj.progressPercent = Math.round(message.progressPercent);
+      }
+      if (message.milestone !== undefined) {
+        obj.milestone = Milestone.toJSON(message.milestone);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<UpdateLessonProgressResponseData>, I>>(
+      base?: I,
+    ): UpdateLessonProgressResponseData {
+      return UpdateLessonProgressResponseData.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<
+      I extends Exact<DeepPartial<UpdateLessonProgressResponseData>, I>,
+    >(object: I): UpdateLessonProgressResponseData {
+      const message = createBaseUpdateLessonProgressResponseData();
+      message.completed = object.completed ?? false;
+      message.progressPercent = object.progressPercent ?? 0;
+      message.milestone =
+        object.milestone !== undefined && object.milestone !== null
+          ? Milestone.fromPartial(object.milestone)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseUpdateLessonProgressResponse(): UpdateLessonProgressResponse {
   return { progress: undefined, error: undefined };
 }
 
-export const UpdateLessonProgressResponse: MessageFns<UpdateLessonProgressResponse> = {
-  encode(message: UpdateLessonProgressResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.progress !== undefined) {
-      UpdateLessonProgressResponseData.encode(message.progress, writer.uint32(10).fork()).join();
-    }
-    if (message.error !== undefined) {
-      Error.encode(message.error, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateLessonProgressResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateLessonProgressResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.progress = UpdateLessonProgressResponseData.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.error = Error.decode(reader, reader.uint32());
-          continue;
-        }
+export const UpdateLessonProgressResponse: MessageFns<UpdateLessonProgressResponse> =
+  {
+    encode(
+      message: UpdateLessonProgressResponse,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.progress !== undefined) {
+        UpdateLessonProgressResponseData.encode(
+          message.progress,
+          writer.uint32(10).fork(),
+        ).join();
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.error !== undefined) {
+        Error.encode(message.error, writer.uint32(18).fork()).join();
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): UpdateLessonProgressResponse {
-    return {
-      progress: isSet(object.progress) ? UpdateLessonProgressResponseData.fromJSON(object.progress) : undefined,
-      error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): UpdateLessonProgressResponse {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseUpdateLessonProgressResponse();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: UpdateLessonProgressResponse): unknown {
-    const obj: any = {};
-    if (message.progress !== undefined) {
-      obj.progress = UpdateLessonProgressResponseData.toJSON(message.progress);
-    }
-    if (message.error !== undefined) {
-      obj.error = Error.toJSON(message.error);
-    }
-    return obj;
-  },
+            message.progress = UpdateLessonProgressResponseData.decode(
+              reader,
+              reader.uint32(),
+            );
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<UpdateLessonProgressResponse>, I>>(base?: I): UpdateLessonProgressResponse {
-    return UpdateLessonProgressResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UpdateLessonProgressResponse>, I>>(object: I): UpdateLessonProgressResponse {
-    const message = createBaseUpdateLessonProgressResponse();
-    message.progress = (object.progress !== undefined && object.progress !== null)
-      ? UpdateLessonProgressResponseData.fromPartial(object.progress)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
-    return message;
-  },
-};
+            message.error = Error.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): UpdateLessonProgressResponse {
+      return {
+        progress: isSet(object.progress)
+          ? UpdateLessonProgressResponseData.fromJSON(object.progress)
+          : undefined,
+        error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
+      };
+    },
+
+    toJSON(message: UpdateLessonProgressResponse): unknown {
+      const obj: any = {};
+      if (message.progress !== undefined) {
+        obj.progress = UpdateLessonProgressResponseData.toJSON(
+          message.progress,
+        );
+      }
+      if (message.error !== undefined) {
+        obj.error = Error.toJSON(message.error);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<UpdateLessonProgressResponse>, I>>(
+      base?: I,
+    ): UpdateLessonProgressResponse {
+      return UpdateLessonProgressResponse.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<UpdateLessonProgressResponse>, I>>(
+      object: I,
+    ): UpdateLessonProgressResponse {
+      const message = createBaseUpdateLessonProgressResponse();
+      message.progress =
+        object.progress !== undefined && object.progress !== null
+          ? UpdateLessonProgressResponseData.fromPartial(object.progress)
+          : undefined;
+      message.error =
+        object.error !== undefined && object.error !== null
+          ? Error.fromPartial(object.error)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseSubmitQuizAttemptResponse(): SubmitQuizAttemptResponse {
   return { progress: undefined, error: undefined };
 }
 
-export const SubmitQuizAttemptResponse: MessageFns<SubmitQuizAttemptResponse> = {
-  encode(message: SubmitQuizAttemptResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.progress !== undefined) {
-      QuizAttemptResponseData.encode(message.progress, writer.uint32(10).fork()).join();
-    }
-    if (message.error !== undefined) {
-      Error.encode(message.error, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): SubmitQuizAttemptResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSubmitQuizAttemptResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.progress = QuizAttemptResponseData.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.error = Error.decode(reader, reader.uint32());
-          continue;
-        }
+export const SubmitQuizAttemptResponse: MessageFns<SubmitQuizAttemptResponse> =
+  {
+    encode(
+      message: SubmitQuizAttemptResponse,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.progress !== undefined) {
+        QuizAttemptResponseData.encode(
+          message.progress,
+          writer.uint32(10).fork(),
+        ).join();
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.error !== undefined) {
+        Error.encode(message.error, writer.uint32(18).fork()).join();
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): SubmitQuizAttemptResponse {
-    return {
-      progress: isSet(object.progress) ? QuizAttemptResponseData.fromJSON(object.progress) : undefined,
-      error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): SubmitQuizAttemptResponse {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseSubmitQuizAttemptResponse();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: SubmitQuizAttemptResponse): unknown {
-    const obj: any = {};
-    if (message.progress !== undefined) {
-      obj.progress = QuizAttemptResponseData.toJSON(message.progress);
-    }
-    if (message.error !== undefined) {
-      obj.error = Error.toJSON(message.error);
-    }
-    return obj;
-  },
+            message.progress = QuizAttemptResponseData.decode(
+              reader,
+              reader.uint32(),
+            );
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<SubmitQuizAttemptResponse>, I>>(base?: I): SubmitQuizAttemptResponse {
-    return SubmitQuizAttemptResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<SubmitQuizAttemptResponse>, I>>(object: I): SubmitQuizAttemptResponse {
-    const message = createBaseSubmitQuizAttemptResponse();
-    message.progress = (object.progress !== undefined && object.progress !== null)
-      ? QuizAttemptResponseData.fromPartial(object.progress)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
-    return message;
-  },
-};
+            message.error = Error.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): SubmitQuizAttemptResponse {
+      return {
+        progress: isSet(object.progress)
+          ? QuizAttemptResponseData.fromJSON(object.progress)
+          : undefined,
+        error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
+      };
+    },
+
+    toJSON(message: SubmitQuizAttemptResponse): unknown {
+      const obj: any = {};
+      if (message.progress !== undefined) {
+        obj.progress = QuizAttemptResponseData.toJSON(message.progress);
+      }
+      if (message.error !== undefined) {
+        obj.error = Error.toJSON(message.error);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<SubmitQuizAttemptResponse>, I>>(
+      base?: I,
+    ): SubmitQuizAttemptResponse {
+      return SubmitQuizAttemptResponse.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<SubmitQuizAttemptResponse>, I>>(
+      object: I,
+    ): SubmitQuizAttemptResponse {
+      const message = createBaseSubmitQuizAttemptResponse();
+      message.progress =
+        object.progress !== undefined && object.progress !== null
+          ? QuizAttemptResponseData.fromPartial(object.progress)
+          : undefined;
+      message.error =
+        object.error !== undefined && object.error !== null
+          ? Error.fromPartial(object.error)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseQuizAttemptResponseData(): QuizAttemptResponseData {
-  return { score: 0, passed: false, completed: false, attempts: 0, milestone: undefined };
+  return {
+    score: 0,
+    passed: false,
+    completed: false,
+    attempts: 0,
+    milestone: undefined,
+  };
 }
 
 export const QuizAttemptResponseData: MessageFns<QuizAttemptResponseData> = {
-  encode(message: QuizAttemptResponseData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizAttemptResponseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.score !== 0) {
       writer.uint32(8).int32(message.score);
     }
@@ -1018,8 +1158,12 @@ export const QuizAttemptResponseData: MessageFns<QuizAttemptResponseData> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): QuizAttemptResponseData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): QuizAttemptResponseData {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizAttemptResponseData();
     while (reader.pos < end) {
@@ -1078,9 +1222,13 @@ export const QuizAttemptResponseData: MessageFns<QuizAttemptResponseData> = {
     return {
       score: isSet(object.score) ? globalThis.Number(object.score) : 0,
       passed: isSet(object.passed) ? globalThis.Boolean(object.passed) : false,
-      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
+      completed: isSet(object.completed)
+        ? globalThis.Boolean(object.completed)
+        : false,
       attempts: isSet(object.attempts) ? globalThis.Number(object.attempts) : 0,
-      milestone: isSet(object.milestone) ? Milestone.fromJSON(object.milestone) : undefined,
+      milestone: isSet(object.milestone)
+        ? Milestone.fromJSON(object.milestone)
+        : undefined,
     };
   },
 
@@ -1104,180 +1252,217 @@ export const QuizAttemptResponseData: MessageFns<QuizAttemptResponseData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QuizAttemptResponseData>, I>>(base?: I): QuizAttemptResponseData {
+  create<I extends Exact<DeepPartial<QuizAttemptResponseData>, I>>(
+    base?: I,
+  ): QuizAttemptResponseData {
     return QuizAttemptResponseData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuizAttemptResponseData>, I>>(object: I): QuizAttemptResponseData {
+  fromPartial<I extends Exact<DeepPartial<QuizAttemptResponseData>, I>>(
+    object: I,
+  ): QuizAttemptResponseData {
     const message = createBaseQuizAttemptResponseData();
     message.score = object.score ?? 0;
     message.passed = object.passed ?? false;
     message.completed = object.completed ?? false;
     message.attempts = object.attempts ?? 0;
-    message.milestone = (object.milestone !== undefined && object.milestone !== null)
-      ? Milestone.fromPartial(object.milestone)
-      : undefined;
+    message.milestone =
+      object.milestone !== undefined && object.milestone !== null
+        ? Milestone.fromPartial(object.milestone)
+        : undefined;
     return message;
   },
 };
 
 function createBaseUpdateLessonProgressRequest(): UpdateLessonProgressRequest {
-  return { enrollmentId: "", userId: "", lessonId: "", currentTime: 0, duration: 0, event: "" };
+  return {
+    enrollmentId: "",
+    userId: "",
+    lessonId: "",
+    currentTime: 0,
+    duration: 0,
+    event: "",
+  };
 }
 
-export const UpdateLessonProgressRequest: MessageFns<UpdateLessonProgressRequest> = {
-  encode(message: UpdateLessonProgressRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.enrollmentId !== "") {
-      writer.uint32(34).string(message.enrollmentId);
-    }
-    if (message.userId !== "") {
-      writer.uint32(42).string(message.userId);
-    }
-    if (message.lessonId !== "") {
-      writer.uint32(50).string(message.lessonId);
-    }
-    if (message.currentTime !== 0) {
-      writer.uint32(8).int32(message.currentTime);
-    }
-    if (message.duration !== 0) {
-      writer.uint32(16).int32(message.duration);
-    }
-    if (message.event !== "") {
-      writer.uint32(26).string(message.event);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateLessonProgressRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateLessonProgressRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.enrollmentId = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.lessonId = reader.string();
-          continue;
-        }
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.currentTime = reader.int32();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.duration = reader.int32();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.event = reader.string();
-          continue;
-        }
+export const UpdateLessonProgressRequest: MessageFns<UpdateLessonProgressRequest> =
+  {
+    encode(
+      message: UpdateLessonProgressRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.enrollmentId !== "") {
+        writer.uint32(34).string(message.enrollmentId);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.userId !== "") {
+        writer.uint32(42).string(message.userId);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      if (message.lessonId !== "") {
+        writer.uint32(50).string(message.lessonId);
+      }
+      if (message.currentTime !== 0) {
+        writer.uint32(8).int32(message.currentTime);
+      }
+      if (message.duration !== 0) {
+        writer.uint32(16).int32(message.duration);
+      }
+      if (message.event !== "") {
+        writer.uint32(26).string(message.event);
+      }
+      return writer;
+    },
 
-  fromJSON(object: any): UpdateLessonProgressRequest {
-    return {
-      enrollmentId: isSet(object.enrollmentId)
-        ? globalThis.String(object.enrollmentId)
-        : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
-      userId: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
-      lessonId: isSet(object.lessonId)
-        ? globalThis.String(object.lessonId)
-        : isSet(object.lesson_id)
-        ? globalThis.String(object.lesson_id)
-        : "",
-      currentTime: isSet(object.currentTime) ? globalThis.Number(object.currentTime) : 0,
-      duration: isSet(object.duration) ? globalThis.Number(object.duration) : 0,
-      event: isSet(object.event) ? globalThis.String(object.event) : "",
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): UpdateLessonProgressRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseUpdateLessonProgressRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 4: {
+            if (tag !== 34) {
+              break;
+            }
 
-  toJSON(message: UpdateLessonProgressRequest): unknown {
-    const obj: any = {};
-    if (message.enrollmentId !== "") {
-      obj.enrollmentId = message.enrollmentId;
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    if (message.lessonId !== "") {
-      obj.lessonId = message.lessonId;
-    }
-    if (message.currentTime !== 0) {
-      obj.currentTime = Math.round(message.currentTime);
-    }
-    if (message.duration !== 0) {
-      obj.duration = Math.round(message.duration);
-    }
-    if (message.event !== "") {
-      obj.event = message.event;
-    }
-    return obj;
-  },
+            message.enrollmentId = reader.string();
+            continue;
+          }
+          case 5: {
+            if (tag !== 42) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<UpdateLessonProgressRequest>, I>>(base?: I): UpdateLessonProgressRequest {
-    return UpdateLessonProgressRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UpdateLessonProgressRequest>, I>>(object: I): UpdateLessonProgressRequest {
-    const message = createBaseUpdateLessonProgressRequest();
-    message.enrollmentId = object.enrollmentId ?? "";
-    message.userId = object.userId ?? "";
-    message.lessonId = object.lessonId ?? "";
-    message.currentTime = object.currentTime ?? 0;
-    message.duration = object.duration ?? 0;
-    message.event = object.event ?? "";
-    return message;
-  },
-};
+            message.userId = reader.string();
+            continue;
+          }
+          case 6: {
+            if (tag !== 50) {
+              break;
+            }
+
+            message.lessonId = reader.string();
+            continue;
+          }
+          case 1: {
+            if (tag !== 8) {
+              break;
+            }
+
+            message.currentTime = reader.int32();
+            continue;
+          }
+          case 2: {
+            if (tag !== 16) {
+              break;
+            }
+
+            message.duration = reader.int32();
+            continue;
+          }
+          case 3: {
+            if (tag !== 26) {
+              break;
+            }
+
+            message.event = reader.string();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): UpdateLessonProgressRequest {
+      return {
+        enrollmentId: isSet(object.enrollmentId)
+          ? globalThis.String(object.enrollmentId)
+          : isSet(object.enrollment_id)
+            ? globalThis.String(object.enrollment_id)
+            : "",
+        userId: isSet(object.userId)
+          ? globalThis.String(object.userId)
+          : isSet(object.user_id)
+            ? globalThis.String(object.user_id)
+            : "",
+        lessonId: isSet(object.lessonId)
+          ? globalThis.String(object.lessonId)
+          : isSet(object.lesson_id)
+            ? globalThis.String(object.lesson_id)
+            : "",
+        currentTime: isSet(object.currentTime)
+          ? globalThis.Number(object.currentTime)
+          : 0,
+        duration: isSet(object.duration)
+          ? globalThis.Number(object.duration)
+          : 0,
+        event: isSet(object.event) ? globalThis.String(object.event) : "",
+      };
+    },
+
+    toJSON(message: UpdateLessonProgressRequest): unknown {
+      const obj: any = {};
+      if (message.enrollmentId !== "") {
+        obj.enrollmentId = message.enrollmentId;
+      }
+      if (message.userId !== "") {
+        obj.userId = message.userId;
+      }
+      if (message.lessonId !== "") {
+        obj.lessonId = message.lessonId;
+      }
+      if (message.currentTime !== 0) {
+        obj.currentTime = Math.round(message.currentTime);
+      }
+      if (message.duration !== 0) {
+        obj.duration = Math.round(message.duration);
+      }
+      if (message.event !== "") {
+        obj.event = message.event;
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<UpdateLessonProgressRequest>, I>>(
+      base?: I,
+    ): UpdateLessonProgressRequest {
+      return UpdateLessonProgressRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<UpdateLessonProgressRequest>, I>>(
+      object: I,
+    ): UpdateLessonProgressRequest {
+      const message = createBaseUpdateLessonProgressRequest();
+      message.enrollmentId = object.enrollmentId ?? "";
+      message.userId = object.userId ?? "";
+      message.lessonId = object.lessonId ?? "";
+      message.currentTime = object.currentTime ?? 0;
+      message.duration = object.duration ?? 0;
+      message.event = object.event ?? "";
+      return message;
+    },
+  };
 
 function createBaseSubmitQuizAttemptRequest(): SubmitQuizAttemptRequest {
-  return { enrollmentId: "", userId: "", quizId: "", answers: [], timeSpent: 0 };
+  return {
+    enrollmentId: "",
+    userId: "",
+    quizId: "",
+    answers: [],
+    timeSpent: 0,
+  };
 }
 
 export const SubmitQuizAttemptRequest: MessageFns<SubmitQuizAttemptRequest> = {
-  encode(message: SubmitQuizAttemptRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: SubmitQuizAttemptRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.enrollmentId !== "") {
       writer.uint32(34).string(message.enrollmentId);
     }
@@ -1296,8 +1481,12 @@ export const SubmitQuizAttemptRequest: MessageFns<SubmitQuizAttemptRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): SubmitQuizAttemptRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): SubmitQuizAttemptRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSubmitQuizAttemptRequest();
     while (reader.pos < end) {
@@ -1357,20 +1546,24 @@ export const SubmitQuizAttemptRequest: MessageFns<SubmitQuizAttemptRequest> = {
       enrollmentId: isSet(object.enrollmentId)
         ? globalThis.String(object.enrollmentId)
         : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
+          ? globalThis.String(object.enrollment_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       quizId: isSet(object.quizId)
         ? globalThis.String(object.quizId)
         : isSet(object.quiz_id)
-        ? globalThis.String(object.quiz_id)
-        : "",
-      answers: globalThis.Array.isArray(object?.answers) ? object.answers.map((e: any) => QuizAnswers.fromJSON(e)) : [],
-      timeSpent: isSet(object.timeSpent) ? globalThis.Number(object.timeSpent) : 0,
+          ? globalThis.String(object.quiz_id)
+          : "",
+      answers: globalThis.Array.isArray(object?.answers)
+        ? object.answers.map((e: any) => QuizAnswers.fromJSON(e))
+        : [],
+      timeSpent: isSet(object.timeSpent)
+        ? globalThis.Number(object.timeSpent)
+        : 0,
     };
   },
 
@@ -1394,15 +1587,20 @@ export const SubmitQuizAttemptRequest: MessageFns<SubmitQuizAttemptRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<SubmitQuizAttemptRequest>, I>>(base?: I): SubmitQuizAttemptRequest {
+  create<I extends Exact<DeepPartial<SubmitQuizAttemptRequest>, I>>(
+    base?: I,
+  ): SubmitQuizAttemptRequest {
     return SubmitQuizAttemptRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<SubmitQuizAttemptRequest>, I>>(object: I): SubmitQuizAttemptRequest {
+  fromPartial<I extends Exact<DeepPartial<SubmitQuizAttemptRequest>, I>>(
+    object: I,
+  ): SubmitQuizAttemptRequest {
     const message = createBaseSubmitQuizAttemptRequest();
     message.enrollmentId = object.enrollmentId ?? "";
     message.userId = object.userId ?? "";
     message.quizId = object.quizId ?? "";
-    message.answers = object.answers?.map((e) => QuizAnswers.fromPartial(e)) || [];
+    message.answers =
+      object.answers?.map((e) => QuizAnswers.fromPartial(e)) || [];
     message.timeSpent = object.timeSpent ?? 0;
     return message;
   },
@@ -1413,7 +1611,10 @@ function createBaseQuizAnswers(): QuizAnswers {
 }
 
 export const QuizAnswers: MessageFns<QuizAnswers> = {
-  encode(message: QuizAnswers, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizAnswers,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.questionId !== "") {
       writer.uint32(10).string(message.questionId);
     }
@@ -1424,7 +1625,8 @@ export const QuizAnswers: MessageFns<QuizAnswers> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuizAnswers {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizAnswers();
     while (reader.pos < end) {
@@ -1460,9 +1662,11 @@ export const QuizAnswers: MessageFns<QuizAnswers> = {
       questionId: isSet(object.questionId)
         ? globalThis.String(object.questionId)
         : isSet(object.question_id)
-        ? globalThis.String(object.question_id)
-        : "",
-      answers: globalThis.Array.isArray(object?.answers) ? object.answers.map((e: any) => globalThis.String(e)) : [],
+          ? globalThis.String(object.question_id)
+          : "",
+      answers: globalThis.Array.isArray(object?.answers)
+        ? object.answers.map((e: any) => globalThis.String(e))
+        : [],
     };
   },
 
@@ -1480,7 +1684,9 @@ export const QuizAnswers: MessageFns<QuizAnswers> = {
   create<I extends Exact<DeepPartial<QuizAnswers>, I>>(base?: I): QuizAnswers {
     return QuizAnswers.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuizAnswers>, I>>(object: I): QuizAnswers {
+  fromPartial<I extends Exact<DeepPartial<QuizAnswers>, I>>(
+    object: I,
+  ): QuizAnswers {
     const message = createBaseQuizAnswers();
     message.questionId = object.questionId ?? "";
     message.answers = object.answers?.map((e) => e) || [];
@@ -1493,7 +1699,10 @@ function createBaseCreateProgressRequest(): CreateProgressRequest {
 }
 
 export const CreateProgressRequest: MessageFns<CreateProgressRequest> = {
-  encode(message: CreateProgressRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CreateProgressRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.enrollmentId !== "") {
       writer.uint32(10).string(message.enrollmentId);
     }
@@ -1506,8 +1715,12 @@ export const CreateProgressRequest: MessageFns<CreateProgressRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateProgressRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): CreateProgressRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateProgressRequest();
     while (reader.pos < end) {
@@ -1551,13 +1764,13 @@ export const CreateProgressRequest: MessageFns<CreateProgressRequest> = {
       enrollmentId: isSet(object.enrollmentId)
         ? globalThis.String(object.enrollmentId)
         : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
+          ? globalThis.String(object.enrollment_id)
+          : "",
       lessonId: isSet(object.lessonId)
         ? globalThis.String(object.lessonId)
         : isSet(object.lesson_id)
-        ? globalThis.String(object.lesson_id)
-        : "",
+          ? globalThis.String(object.lesson_id)
+          : "",
       progress: isSet(object.progress) ? globalThis.Number(object.progress) : 0,
     };
   },
@@ -1576,10 +1789,14 @@ export const CreateProgressRequest: MessageFns<CreateProgressRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateProgressRequest>, I>>(base?: I): CreateProgressRequest {
+  create<I extends Exact<DeepPartial<CreateProgressRequest>, I>>(
+    base?: I,
+  ): CreateProgressRequest {
     return CreateProgressRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateProgressRequest>, I>>(object: I): CreateProgressRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateProgressRequest>, I>>(
+    object: I,
+  ): CreateProgressRequest {
     const message = createBaseCreateProgressRequest();
     message.enrollmentId = object.enrollmentId ?? "";
     message.lessonId = object.lessonId ?? "";
@@ -1592,100 +1809,119 @@ function createBaseGetEnrollmentDetailsRequest(): GetEnrollmentDetailsRequest {
   return { enrollmentId: "", userId: "" };
 }
 
-export const GetEnrollmentDetailsRequest: MessageFns<GetEnrollmentDetailsRequest> = {
-  encode(message: GetEnrollmentDetailsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.enrollmentId !== "") {
-      writer.uint32(10).string(message.enrollmentId);
-    }
-    if (message.userId !== "") {
-      writer.uint32(18).string(message.userId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetEnrollmentDetailsRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetEnrollmentDetailsRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.enrollmentId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
+export const GetEnrollmentDetailsRequest: MessageFns<GetEnrollmentDetailsRequest> =
+  {
+    encode(
+      message: GetEnrollmentDetailsRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.enrollmentId !== "") {
+        writer.uint32(10).string(message.enrollmentId);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.userId !== "") {
+        writer.uint32(18).string(message.userId);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): GetEnrollmentDetailsRequest {
-    return {
-      enrollmentId: isSet(object.enrollmentId)
-        ? globalThis.String(object.enrollmentId)
-        : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
-      userId: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetEnrollmentDetailsRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetEnrollmentDetailsRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: GetEnrollmentDetailsRequest): unknown {
-    const obj: any = {};
-    if (message.enrollmentId !== "") {
-      obj.enrollmentId = message.enrollmentId;
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    return obj;
-  },
+            message.enrollmentId = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<GetEnrollmentDetailsRequest>, I>>(base?: I): GetEnrollmentDetailsRequest {
-    return GetEnrollmentDetailsRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetEnrollmentDetailsRequest>, I>>(object: I): GetEnrollmentDetailsRequest {
-    const message = createBaseGetEnrollmentDetailsRequest();
-    message.enrollmentId = object.enrollmentId ?? "";
-    message.userId = object.userId ?? "";
-    return message;
-  },
-};
+            message.userId = reader.string();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): GetEnrollmentDetailsRequest {
+      return {
+        enrollmentId: isSet(object.enrollmentId)
+          ? globalThis.String(object.enrollmentId)
+          : isSet(object.enrollment_id)
+            ? globalThis.String(object.enrollment_id)
+            : "",
+        userId: isSet(object.userId)
+          ? globalThis.String(object.userId)
+          : isSet(object.user_id)
+            ? globalThis.String(object.user_id)
+            : "",
+      };
+    },
+
+    toJSON(message: GetEnrollmentDetailsRequest): unknown {
+      const obj: any = {};
+      if (message.enrollmentId !== "") {
+        obj.enrollmentId = message.enrollmentId;
+      }
+      if (message.userId !== "") {
+        obj.userId = message.userId;
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<GetEnrollmentDetailsRequest>, I>>(
+      base?: I,
+    ): GetEnrollmentDetailsRequest {
+      return GetEnrollmentDetailsRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetEnrollmentDetailsRequest>, I>>(
+      object: I,
+    ): GetEnrollmentDetailsRequest {
+      const message = createBaseGetEnrollmentDetailsRequest();
+      message.enrollmentId = object.enrollmentId ?? "";
+      message.userId = object.userId ?? "";
+      return message;
+    },
+  };
 
 function createBaseGetProgressRequest(): GetProgressRequest {
   return { progressId: "" };
 }
 
 export const GetProgressRequest: MessageFns<GetProgressRequest> = {
-  encode(message: GetProgressRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: GetProgressRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.progressId !== "") {
       writer.uint32(10).string(message.progressId);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetProgressRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): GetProgressRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetProgressRequest();
     while (reader.pos < end) {
@@ -1713,8 +1949,8 @@ export const GetProgressRequest: MessageFns<GetProgressRequest> = {
       progressId: isSet(object.progressId)
         ? globalThis.String(object.progressId)
         : isSet(object.progress_id)
-        ? globalThis.String(object.progress_id)
-        : "",
+          ? globalThis.String(object.progress_id)
+          : "",
     };
   },
 
@@ -1726,10 +1962,14 @@ export const GetProgressRequest: MessageFns<GetProgressRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetProgressRequest>, I>>(base?: I): GetProgressRequest {
+  create<I extends Exact<DeepPartial<GetProgressRequest>, I>>(
+    base?: I,
+  ): GetProgressRequest {
     return GetProgressRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetProgressRequest>, I>>(object: I): GetProgressRequest {
+  fromPartial<I extends Exact<DeepPartial<GetProgressRequest>, I>>(
+    object: I,
+  ): GetProgressRequest {
     const message = createBaseGetProgressRequest();
     message.progressId = object.progressId ?? "";
     return message;
@@ -1741,7 +1981,10 @@ function createBaseUpdateProgressRequest(): UpdateProgressRequest {
 }
 
 export const UpdateProgressRequest: MessageFns<UpdateProgressRequest> = {
-  encode(message: UpdateProgressRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: UpdateProgressRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.progressId !== "") {
       writer.uint32(10).string(message.progressId);
     }
@@ -1754,8 +1997,12 @@ export const UpdateProgressRequest: MessageFns<UpdateProgressRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateProgressRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): UpdateProgressRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateProgressRequest();
     while (reader.pos < end) {
@@ -1799,10 +2046,12 @@ export const UpdateProgressRequest: MessageFns<UpdateProgressRequest> = {
       progressId: isSet(object.progressId)
         ? globalThis.String(object.progressId)
         : isSet(object.progress_id)
-        ? globalThis.String(object.progress_id)
-        : "",
+          ? globalThis.String(object.progress_id)
+          : "",
       progress: isSet(object.progress) ? globalThis.Number(object.progress) : 0,
-      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
+      completed: isSet(object.completed)
+        ? globalThis.Boolean(object.completed)
+        : false,
     };
   },
 
@@ -1820,10 +2069,14 @@ export const UpdateProgressRequest: MessageFns<UpdateProgressRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateProgressRequest>, I>>(base?: I): UpdateProgressRequest {
+  create<I extends Exact<DeepPartial<UpdateProgressRequest>, I>>(
+    base?: I,
+  ): UpdateProgressRequest {
     return UpdateProgressRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateProgressRequest>, I>>(object: I): UpdateProgressRequest {
+  fromPartial<I extends Exact<DeepPartial<UpdateProgressRequest>, I>>(
+    object: I,
+  ): UpdateProgressRequest {
     const message = createBaseUpdateProgressRequest();
     message.progressId = object.progressId ?? "";
     message.progress = object.progress ?? 0;
@@ -1837,15 +2090,22 @@ function createBaseDeleteProgressRequest(): DeleteProgressRequest {
 }
 
 export const DeleteProgressRequest: MessageFns<DeleteProgressRequest> = {
-  encode(message: DeleteProgressRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteProgressRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.progressId !== "") {
       writer.uint32(10).string(message.progressId);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteProgressRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteProgressRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteProgressRequest();
     while (reader.pos < end) {
@@ -1873,8 +2133,8 @@ export const DeleteProgressRequest: MessageFns<DeleteProgressRequest> = {
       progressId: isSet(object.progressId)
         ? globalThis.String(object.progressId)
         : isSet(object.progress_id)
-        ? globalThis.String(object.progress_id)
-        : "",
+          ? globalThis.String(object.progress_id)
+          : "",
     };
   },
 
@@ -1886,10 +2146,14 @@ export const DeleteProgressRequest: MessageFns<DeleteProgressRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteProgressRequest>, I>>(base?: I): DeleteProgressRequest {
+  create<I extends Exact<DeepPartial<DeleteProgressRequest>, I>>(
+    base?: I,
+  ): DeleteProgressRequest {
     return DeleteProgressRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteProgressRequest>, I>>(object: I): DeleteProgressRequest {
+  fromPartial<I extends Exact<DeepPartial<DeleteProgressRequest>, I>>(
+    object: I,
+  ): DeleteProgressRequest {
     const message = createBaseDeleteProgressRequest();
     message.progressId = object.progressId ?? "";
     return message;
@@ -1900,87 +2164,97 @@ function createBaseGetProgressByEnrollmentRequest(): GetProgressByEnrollmentRequ
   return { enrollmentId: "", userId: "" };
 }
 
-export const GetProgressByEnrollmentRequest: MessageFns<GetProgressByEnrollmentRequest> = {
-  encode(message: GetProgressByEnrollmentRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.enrollmentId !== "") {
-      writer.uint32(10).string(message.enrollmentId);
-    }
-    if (message.userId !== "") {
-      writer.uint32(18).string(message.userId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetProgressByEnrollmentRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetProgressByEnrollmentRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.enrollmentId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
+export const GetProgressByEnrollmentRequest: MessageFns<GetProgressByEnrollmentRequest> =
+  {
+    encode(
+      message: GetProgressByEnrollmentRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.enrollmentId !== "") {
+        writer.uint32(10).string(message.enrollmentId);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.userId !== "") {
+        writer.uint32(18).string(message.userId);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): GetProgressByEnrollmentRequest {
-    return {
-      enrollmentId: isSet(object.enrollmentId)
-        ? globalThis.String(object.enrollmentId)
-        : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
-      userId: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetProgressByEnrollmentRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetProgressByEnrollmentRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: GetProgressByEnrollmentRequest): unknown {
-    const obj: any = {};
-    if (message.enrollmentId !== "") {
-      obj.enrollmentId = message.enrollmentId;
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    return obj;
-  },
+            message.enrollmentId = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<GetProgressByEnrollmentRequest>, I>>(base?: I): GetProgressByEnrollmentRequest {
-    return GetProgressByEnrollmentRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetProgressByEnrollmentRequest>, I>>(
-    object: I,
-  ): GetProgressByEnrollmentRequest {
-    const message = createBaseGetProgressByEnrollmentRequest();
-    message.enrollmentId = object.enrollmentId ?? "";
-    message.userId = object.userId ?? "";
-    return message;
-  },
-};
+            message.userId = reader.string();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): GetProgressByEnrollmentRequest {
+      return {
+        enrollmentId: isSet(object.enrollmentId)
+          ? globalThis.String(object.enrollmentId)
+          : isSet(object.enrollment_id)
+            ? globalThis.String(object.enrollment_id)
+            : "",
+        userId: isSet(object.userId)
+          ? globalThis.String(object.userId)
+          : isSet(object.user_id)
+            ? globalThis.String(object.user_id)
+            : "",
+      };
+    },
+
+    toJSON(message: GetProgressByEnrollmentRequest): unknown {
+      const obj: any = {};
+      if (message.enrollmentId !== "") {
+        obj.enrollmentId = message.enrollmentId;
+      }
+      if (message.userId !== "") {
+        obj.userId = message.userId;
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<GetProgressByEnrollmentRequest>, I>>(
+      base?: I,
+    ): GetProgressByEnrollmentRequest {
+      return GetProgressByEnrollmentRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<
+      I extends Exact<DeepPartial<GetProgressByEnrollmentRequest>, I>,
+    >(object: I): GetProgressByEnrollmentRequest {
+      const message = createBaseGetProgressByEnrollmentRequest();
+      message.enrollmentId = object.enrollmentId ?? "";
+      message.userId = object.userId ?? "";
+      return message;
+    },
+  };
 
 function createBaseProgressData(): ProgressData {
   return {
@@ -1996,7 +2270,10 @@ function createBaseProgressData(): ProgressData {
 }
 
 export const ProgressData: MessageFns<ProgressData> = {
-  encode(message: ProgressData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ProgressData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -2025,7 +2302,8 @@ export const ProgressData: MessageFns<ProgressData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ProgressData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProgressData();
     while (reader.pos < end) {
@@ -2110,34 +2388,36 @@ export const ProgressData: MessageFns<ProgressData> = {
       enrollmentId: isSet(object.enrollmentId)
         ? globalThis.String(object.enrollmentId)
         : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
+          ? globalThis.String(object.enrollment_id)
+          : "",
       lessonId: isSet(object.lessonId)
         ? globalThis.String(object.lessonId)
         : isSet(object.lesson_id)
-        ? globalThis.String(object.lesson_id)
-        : "",
+          ? globalThis.String(object.lesson_id)
+          : "",
       deletedAt: isSet(object.deletedAt)
         ? globalThis.String(object.deletedAt)
         : isSet(object.deleted_at)
-        ? globalThis.String(object.deleted_at)
-        : undefined,
-      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
+          ? globalThis.String(object.deleted_at)
+          : undefined,
+      completed: isSet(object.completed)
+        ? globalThis.Boolean(object.completed)
+        : false,
       completedAt: isSet(object.completedAt)
         ? globalThis.String(object.completedAt)
         : isSet(object.completed_at)
-        ? globalThis.String(object.completed_at)
-        : "",
+          ? globalThis.String(object.completed_at)
+          : "",
       createdAt: isSet(object.createdAt)
         ? globalThis.String(object.createdAt)
         : isSet(object.created_at)
-        ? globalThis.String(object.created_at)
-        : "",
+          ? globalThis.String(object.created_at)
+          : "",
       updatedAt: isSet(object.updatedAt)
         ? globalThis.String(object.updatedAt)
         : isSet(object.updated_at)
-        ? globalThis.String(object.updated_at)
-        : "",
+          ? globalThis.String(object.updated_at)
+          : "",
     };
   },
 
@@ -2170,10 +2450,14 @@ export const ProgressData: MessageFns<ProgressData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProgressData>, I>>(base?: I): ProgressData {
+  create<I extends Exact<DeepPartial<ProgressData>, I>>(
+    base?: I,
+  ): ProgressData {
     return ProgressData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ProgressData>, I>>(object: I): ProgressData {
+  fromPartial<I extends Exact<DeepPartial<ProgressData>, I>>(
+    object: I,
+  ): ProgressData {
     const message = createBaseProgressData();
     message.id = object.id ?? "";
     message.enrollmentId = object.enrollmentId ?? "";
@@ -2192,7 +2476,10 @@ function createBaseProgressResponse(): ProgressResponse {
 }
 
 export const ProgressResponse: MessageFns<ProgressResponse> = {
-  encode(message: ProgressResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ProgressResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.progress !== undefined) {
       ProgressData.encode(message.progress, writer.uint32(10).fork()).join();
     }
@@ -2203,7 +2490,8 @@ export const ProgressResponse: MessageFns<ProgressResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ProgressResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProgressResponse();
     while (reader.pos < end) {
@@ -2236,7 +2524,9 @@ export const ProgressResponse: MessageFns<ProgressResponse> = {
 
   fromJSON(object: any): ProgressResponse {
     return {
-      progress: isSet(object.progress) ? ProgressData.fromJSON(object.progress) : undefined,
+      progress: isSet(object.progress)
+        ? ProgressData.fromJSON(object.progress)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -2252,15 +2542,23 @@ export const ProgressResponse: MessageFns<ProgressResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProgressResponse>, I>>(base?: I): ProgressResponse {
+  create<I extends Exact<DeepPartial<ProgressResponse>, I>>(
+    base?: I,
+  ): ProgressResponse {
     return ProgressResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ProgressResponse>, I>>(object: I): ProgressResponse {
+  fromPartial<I extends Exact<DeepPartial<ProgressResponse>, I>>(
+    object: I,
+  ): ProgressResponse {
     const message = createBaseProgressResponse();
-    message.progress = (object.progress !== undefined && object.progress !== null)
-      ? ProgressData.fromPartial(object.progress)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.progress =
+      object.progress !== undefined && object.progress !== null
+        ? ProgressData.fromPartial(object.progress)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -2269,86 +2567,113 @@ function createBaseEnrollmentProgressResponse(): EnrollmentProgressResponse {
   return { progress: undefined, error: undefined };
 }
 
-export const EnrollmentProgressResponse: MessageFns<EnrollmentProgressResponse> = {
-  encode(message: EnrollmentProgressResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.progress !== undefined) {
-      EnrollmentProgressData.encode(message.progress, writer.uint32(10).fork()).join();
-    }
-    if (message.error !== undefined) {
-      Error.encode(message.error, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): EnrollmentProgressResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEnrollmentProgressResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.progress = EnrollmentProgressData.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.error = Error.decode(reader, reader.uint32());
-          continue;
-        }
+export const EnrollmentProgressResponse: MessageFns<EnrollmentProgressResponse> =
+  {
+    encode(
+      message: EnrollmentProgressResponse,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.progress !== undefined) {
+        EnrollmentProgressData.encode(
+          message.progress,
+          writer.uint32(10).fork(),
+        ).join();
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.error !== undefined) {
+        Error.encode(message.error, writer.uint32(18).fork()).join();
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): EnrollmentProgressResponse {
-    return {
-      progress: isSet(object.progress) ? EnrollmentProgressData.fromJSON(object.progress) : undefined,
-      error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): EnrollmentProgressResponse {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseEnrollmentProgressResponse();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: EnrollmentProgressResponse): unknown {
-    const obj: any = {};
-    if (message.progress !== undefined) {
-      obj.progress = EnrollmentProgressData.toJSON(message.progress);
-    }
-    if (message.error !== undefined) {
-      obj.error = Error.toJSON(message.error);
-    }
-    return obj;
-  },
+            message.progress = EnrollmentProgressData.decode(
+              reader,
+              reader.uint32(),
+            );
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<EnrollmentProgressResponse>, I>>(base?: I): EnrollmentProgressResponse {
-    return EnrollmentProgressResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<EnrollmentProgressResponse>, I>>(object: I): EnrollmentProgressResponse {
-    const message = createBaseEnrollmentProgressResponse();
-    message.progress = (object.progress !== undefined && object.progress !== null)
-      ? EnrollmentProgressData.fromPartial(object.progress)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
-    return message;
-  },
-};
+            message.error = Error.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): EnrollmentProgressResponse {
+      return {
+        progress: isSet(object.progress)
+          ? EnrollmentProgressData.fromJSON(object.progress)
+          : undefined,
+        error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
+      };
+    },
+
+    toJSON(message: EnrollmentProgressResponse): unknown {
+      const obj: any = {};
+      if (message.progress !== undefined) {
+        obj.progress = EnrollmentProgressData.toJSON(message.progress);
+      }
+      if (message.error !== undefined) {
+        obj.error = Error.toJSON(message.error);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<EnrollmentProgressResponse>, I>>(
+      base?: I,
+    ): EnrollmentProgressResponse {
+      return EnrollmentProgressResponse.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<EnrollmentProgressResponse>, I>>(
+      object: I,
+    ): EnrollmentProgressResponse {
+      const message = createBaseEnrollmentProgressResponse();
+      message.progress =
+        object.progress !== undefined && object.progress !== null
+          ? EnrollmentProgressData.fromPartial(object.progress)
+          : undefined;
+      message.error =
+        object.error !== undefined && object.error !== null
+          ? Error.fromPartial(object.error)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseProgressesData(): ProgressesData {
   return { progresses: [] };
 }
 
 export const ProgressesData: MessageFns<ProgressesData> = {
-  encode(message: ProgressesData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ProgressesData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.progresses) {
       ProgressData.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -2356,7 +2681,8 @@ export const ProgressesData: MessageFns<ProgressesData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ProgressesData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProgressesData();
     while (reader.pos < end) {
@@ -2395,12 +2721,17 @@ export const ProgressesData: MessageFns<ProgressesData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProgressesData>, I>>(base?: I): ProgressesData {
+  create<I extends Exact<DeepPartial<ProgressesData>, I>>(
+    base?: I,
+  ): ProgressesData {
     return ProgressesData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ProgressesData>, I>>(object: I): ProgressesData {
+  fromPartial<I extends Exact<DeepPartial<ProgressesData>, I>>(
+    object: I,
+  ): ProgressesData {
     const message = createBaseProgressesData();
-    message.progresses = object.progresses?.map((e) => ProgressData.fromPartial(e)) || [];
+    message.progresses =
+      object.progresses?.map((e) => ProgressData.fromPartial(e)) || [];
     return message;
   },
 };
@@ -2410,9 +2741,15 @@ function createBaseProgressesResponse(): ProgressesResponse {
 }
 
 export const ProgressesResponse: MessageFns<ProgressesResponse> = {
-  encode(message: ProgressesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ProgressesResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.progresses !== undefined) {
-      ProgressesData.encode(message.progresses, writer.uint32(10).fork()).join();
+      ProgressesData.encode(
+        message.progresses,
+        writer.uint32(10).fork(),
+      ).join();
     }
     if (message.error !== undefined) {
       Error.encode(message.error, writer.uint32(18).fork()).join();
@@ -2420,8 +2757,12 @@ export const ProgressesResponse: MessageFns<ProgressesResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ProgressesResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): ProgressesResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProgressesResponse();
     while (reader.pos < end) {
@@ -2454,7 +2795,9 @@ export const ProgressesResponse: MessageFns<ProgressesResponse> = {
 
   fromJSON(object: any): ProgressesResponse {
     return {
-      progresses: isSet(object.progresses) ? ProgressesData.fromJSON(object.progresses) : undefined,
+      progresses: isSet(object.progresses)
+        ? ProgressesData.fromJSON(object.progresses)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -2470,15 +2813,23 @@ export const ProgressesResponse: MessageFns<ProgressesResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProgressesResponse>, I>>(base?: I): ProgressesResponse {
+  create<I extends Exact<DeepPartial<ProgressesResponse>, I>>(
+    base?: I,
+  ): ProgressesResponse {
     return ProgressesResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ProgressesResponse>, I>>(object: I): ProgressesResponse {
+  fromPartial<I extends Exact<DeepPartial<ProgressesResponse>, I>>(
+    object: I,
+  ): ProgressesResponse {
     const message = createBaseProgressesResponse();
-    message.progresses = (object.progresses !== undefined && object.progresses !== null)
-      ? ProgressesData.fromPartial(object.progresses)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.progresses =
+      object.progresses !== undefined && object.progresses !== null
+        ? ProgressesData.fromPartial(object.progresses)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -2488,7 +2839,10 @@ function createBaseDeleteProgressResponse(): DeleteProgressResponse {
 }
 
 export const DeleteProgressResponse: MessageFns<DeleteProgressResponse> = {
-  encode(message: DeleteProgressResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteProgressResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.success !== undefined) {
       DeleteSuccess.encode(message.success, writer.uint32(10).fork()).join();
     }
@@ -2498,8 +2852,12 @@ export const DeleteProgressResponse: MessageFns<DeleteProgressResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteProgressResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteProgressResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteProgressResponse();
     while (reader.pos < end) {
@@ -2532,7 +2890,9 @@ export const DeleteProgressResponse: MessageFns<DeleteProgressResponse> = {
 
   fromJSON(object: any): DeleteProgressResponse {
     return {
-      success: isSet(object.success) ? DeleteSuccess.fromJSON(object.success) : undefined,
+      success: isSet(object.success)
+        ? DeleteSuccess.fromJSON(object.success)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -2548,30 +2908,52 @@ export const DeleteProgressResponse: MessageFns<DeleteProgressResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteProgressResponse>, I>>(base?: I): DeleteProgressResponse {
+  create<I extends Exact<DeepPartial<DeleteProgressResponse>, I>>(
+    base?: I,
+  ): DeleteProgressResponse {
     return DeleteProgressResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteProgressResponse>, I>>(object: I): DeleteProgressResponse {
+  fromPartial<I extends Exact<DeepPartial<DeleteProgressResponse>, I>>(
+    object: I,
+  ): DeleteProgressResponse {
     const message = createBaseDeleteProgressResponse();
-    message.success = (object.success !== undefined && object.success !== null)
-      ? DeleteSuccess.fromPartial(object.success)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.success =
+      object.success !== undefined && object.success !== null
+        ? DeleteSuccess.fromPartial(object.success)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

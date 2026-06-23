@@ -80,143 +80,167 @@ export interface DeleteReviewResponse {
 }
 
 function createBaseSubmitCourseReviewRequest(): SubmitCourseReviewRequest {
-  return { rating: 0, comment: "", enrollmentId: "", userId: "", user: undefined };
+  return {
+    rating: 0,
+    comment: "",
+    enrollmentId: "",
+    userId: "",
+    user: undefined,
+  };
 }
 
-export const SubmitCourseReviewRequest: MessageFns<SubmitCourseReviewRequest> = {
-  encode(message: SubmitCourseReviewRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.rating !== 0) {
-      writer.uint32(8).int32(message.rating);
-    }
-    if (message.comment !== "") {
-      writer.uint32(18).string(message.comment);
-    }
-    if (message.enrollmentId !== "") {
-      writer.uint32(26).string(message.enrollmentId);
-    }
-    if (message.userId !== "") {
-      writer.uint32(34).string(message.userId);
-    }
-    if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(42).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): SubmitCourseReviewRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSubmitCourseReviewRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.rating = reader.int32();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.comment = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.enrollmentId = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.user = User.decode(reader, reader.uint32());
-          continue;
-        }
+export const SubmitCourseReviewRequest: MessageFns<SubmitCourseReviewRequest> =
+  {
+    encode(
+      message: SubmitCourseReviewRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.rating !== 0) {
+        writer.uint32(8).int32(message.rating);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.comment !== "") {
+        writer.uint32(18).string(message.comment);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      if (message.enrollmentId !== "") {
+        writer.uint32(26).string(message.enrollmentId);
+      }
+      if (message.userId !== "") {
+        writer.uint32(34).string(message.userId);
+      }
+      if (message.user !== undefined) {
+        User.encode(message.user, writer.uint32(42).fork()).join();
+      }
+      return writer;
+    },
 
-  fromJSON(object: any): SubmitCourseReviewRequest {
-    return {
-      rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
-      comment: isSet(object.comment) ? globalThis.String(object.comment) : "",
-      enrollmentId: isSet(object.enrollmentId)
-        ? globalThis.String(object.enrollmentId)
-        : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
-      userId: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): SubmitCourseReviewRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseSubmitCourseReviewRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 8) {
+              break;
+            }
 
-  toJSON(message: SubmitCourseReviewRequest): unknown {
-    const obj: any = {};
-    if (message.rating !== 0) {
-      obj.rating = Math.round(message.rating);
-    }
-    if (message.comment !== "") {
-      obj.comment = message.comment;
-    }
-    if (message.enrollmentId !== "") {
-      obj.enrollmentId = message.enrollmentId;
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
-    }
-    return obj;
-  },
+            message.rating = reader.int32();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<SubmitCourseReviewRequest>, I>>(base?: I): SubmitCourseReviewRequest {
-    return SubmitCourseReviewRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<SubmitCourseReviewRequest>, I>>(object: I): SubmitCourseReviewRequest {
-    const message = createBaseSubmitCourseReviewRequest();
-    message.rating = object.rating ?? 0;
-    message.comment = object.comment ?? "";
-    message.enrollmentId = object.enrollmentId ?? "";
-    message.userId = object.userId ?? "";
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
-    return message;
-  },
-};
+            message.comment = reader.string();
+            continue;
+          }
+          case 3: {
+            if (tag !== 26) {
+              break;
+            }
+
+            message.enrollmentId = reader.string();
+            continue;
+          }
+          case 4: {
+            if (tag !== 34) {
+              break;
+            }
+
+            message.userId = reader.string();
+            continue;
+          }
+          case 5: {
+            if (tag !== 42) {
+              break;
+            }
+
+            message.user = User.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): SubmitCourseReviewRequest {
+      return {
+        rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
+        comment: isSet(object.comment) ? globalThis.String(object.comment) : "",
+        enrollmentId: isSet(object.enrollmentId)
+          ? globalThis.String(object.enrollmentId)
+          : isSet(object.enrollment_id)
+            ? globalThis.String(object.enrollment_id)
+            : "",
+        userId: isSet(object.userId)
+          ? globalThis.String(object.userId)
+          : isSet(object.user_id)
+            ? globalThis.String(object.user_id)
+            : "",
+        user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      };
+    },
+
+    toJSON(message: SubmitCourseReviewRequest): unknown {
+      const obj: any = {};
+      if (message.rating !== 0) {
+        obj.rating = Math.round(message.rating);
+      }
+      if (message.comment !== "") {
+        obj.comment = message.comment;
+      }
+      if (message.enrollmentId !== "") {
+        obj.enrollmentId = message.enrollmentId;
+      }
+      if (message.userId !== "") {
+        obj.userId = message.userId;
+      }
+      if (message.user !== undefined) {
+        obj.user = User.toJSON(message.user);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<SubmitCourseReviewRequest>, I>>(
+      base?: I,
+    ): SubmitCourseReviewRequest {
+      return SubmitCourseReviewRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<SubmitCourseReviewRequest>, I>>(
+      object: I,
+    ): SubmitCourseReviewRequest {
+      const message = createBaseSubmitCourseReviewRequest();
+      message.rating = object.rating ?? 0;
+      message.comment = object.comment ?? "";
+      message.enrollmentId = object.enrollmentId ?? "";
+      message.userId = object.userId ?? "";
+      message.user =
+        object.user !== undefined && object.user !== null
+          ? User.fromPartial(object.user)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseGetReviewRequest(): GetReviewRequest {
   return { reviewId: "" };
 }
 
 export const GetReviewRequest: MessageFns<GetReviewRequest> = {
-  encode(message: GetReviewRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: GetReviewRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.reviewId !== "") {
       writer.uint32(10).string(message.reviewId);
     }
@@ -224,7 +248,8 @@ export const GetReviewRequest: MessageFns<GetReviewRequest> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): GetReviewRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetReviewRequest();
     while (reader.pos < end) {
@@ -252,8 +277,8 @@ export const GetReviewRequest: MessageFns<GetReviewRequest> = {
       reviewId: isSet(object.reviewId)
         ? globalThis.String(object.reviewId)
         : isSet(object.review_id)
-        ? globalThis.String(object.review_id)
-        : "",
+          ? globalThis.String(object.review_id)
+          : "",
     };
   },
 
@@ -265,10 +290,14 @@ export const GetReviewRequest: MessageFns<GetReviewRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetReviewRequest>, I>>(base?: I): GetReviewRequest {
+  create<I extends Exact<DeepPartial<GetReviewRequest>, I>>(
+    base?: I,
+  ): GetReviewRequest {
     return GetReviewRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetReviewRequest>, I>>(object: I): GetReviewRequest {
+  fromPartial<I extends Exact<DeepPartial<GetReviewRequest>, I>>(
+    object: I,
+  ): GetReviewRequest {
     const message = createBaseGetReviewRequest();
     message.reviewId = object.reviewId ?? "";
     return message;
@@ -279,92 +308,107 @@ function createBaseGetReviewByEnrollmentRequest(): GetReviewByEnrollmentRequest 
   return { enrollmentId: "", userId: "" };
 }
 
-export const GetReviewByEnrollmentRequest: MessageFns<GetReviewByEnrollmentRequest> = {
-  encode(message: GetReviewByEnrollmentRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.enrollmentId !== "") {
-      writer.uint32(10).string(message.enrollmentId);
-    }
-    if (message.userId !== "") {
-      writer.uint32(18).string(message.userId);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetReviewByEnrollmentRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetReviewByEnrollmentRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.enrollmentId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
-        }
+export const GetReviewByEnrollmentRequest: MessageFns<GetReviewByEnrollmentRequest> =
+  {
+    encode(
+      message: GetReviewByEnrollmentRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.enrollmentId !== "") {
+        writer.uint32(10).string(message.enrollmentId);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.userId !== "") {
+        writer.uint32(18).string(message.userId);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): GetReviewByEnrollmentRequest {
-    return {
-      enrollmentId: isSet(object.enrollmentId)
-        ? globalThis.String(object.enrollmentId)
-        : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
-      userId: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetReviewByEnrollmentRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetReviewByEnrollmentRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: GetReviewByEnrollmentRequest): unknown {
-    const obj: any = {};
-    if (message.enrollmentId !== "") {
-      obj.enrollmentId = message.enrollmentId;
-    }
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
-    return obj;
-  },
+            message.enrollmentId = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<GetReviewByEnrollmentRequest>, I>>(base?: I): GetReviewByEnrollmentRequest {
-    return GetReviewByEnrollmentRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetReviewByEnrollmentRequest>, I>>(object: I): GetReviewByEnrollmentRequest {
-    const message = createBaseGetReviewByEnrollmentRequest();
-    message.enrollmentId = object.enrollmentId ?? "";
-    message.userId = object.userId ?? "";
-    return message;
-  },
-};
+            message.userId = reader.string();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): GetReviewByEnrollmentRequest {
+      return {
+        enrollmentId: isSet(object.enrollmentId)
+          ? globalThis.String(object.enrollmentId)
+          : isSet(object.enrollment_id)
+            ? globalThis.String(object.enrollment_id)
+            : "",
+        userId: isSet(object.userId)
+          ? globalThis.String(object.userId)
+          : isSet(object.user_id)
+            ? globalThis.String(object.user_id)
+            : "",
+      };
+    },
+
+    toJSON(message: GetReviewByEnrollmentRequest): unknown {
+      const obj: any = {};
+      if (message.enrollmentId !== "") {
+        obj.enrollmentId = message.enrollmentId;
+      }
+      if (message.userId !== "") {
+        obj.userId = message.userId;
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<GetReviewByEnrollmentRequest>, I>>(
+      base?: I,
+    ): GetReviewByEnrollmentRequest {
+      return GetReviewByEnrollmentRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetReviewByEnrollmentRequest>, I>>(
+      object: I,
+    ): GetReviewByEnrollmentRequest {
+      const message = createBaseGetReviewByEnrollmentRequest();
+      message.enrollmentId = object.enrollmentId ?? "";
+      message.userId = object.userId ?? "";
+      return message;
+    },
+  };
 
 function createBaseUpdateReviewRequest(): UpdateReviewRequest {
   return { reviewId: "", userId: "", enrollmentId: "", rating: 0, comment: "" };
 }
 
 export const UpdateReviewRequest: MessageFns<UpdateReviewRequest> = {
-  encode(message: UpdateReviewRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: UpdateReviewRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.reviewId !== "") {
       writer.uint32(10).string(message.reviewId);
     }
@@ -383,8 +427,12 @@ export const UpdateReviewRequest: MessageFns<UpdateReviewRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateReviewRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): UpdateReviewRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateReviewRequest();
     while (reader.pos < end) {
@@ -444,18 +492,18 @@ export const UpdateReviewRequest: MessageFns<UpdateReviewRequest> = {
       reviewId: isSet(object.reviewId)
         ? globalThis.String(object.reviewId)
         : isSet(object.review_id)
-        ? globalThis.String(object.review_id)
-        : "",
+          ? globalThis.String(object.review_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       enrollmentId: isSet(object.enrollmentId)
         ? globalThis.String(object.enrollmentId)
         : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
+          ? globalThis.String(object.enrollment_id)
+          : "",
       rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
       comment: isSet(object.comment) ? globalThis.String(object.comment) : "",
     };
@@ -481,10 +529,14 @@ export const UpdateReviewRequest: MessageFns<UpdateReviewRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateReviewRequest>, I>>(base?: I): UpdateReviewRequest {
+  create<I extends Exact<DeepPartial<UpdateReviewRequest>, I>>(
+    base?: I,
+  ): UpdateReviewRequest {
     return UpdateReviewRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateReviewRequest>, I>>(object: I): UpdateReviewRequest {
+  fromPartial<I extends Exact<DeepPartial<UpdateReviewRequest>, I>>(
+    object: I,
+  ): UpdateReviewRequest {
     const message = createBaseUpdateReviewRequest();
     message.reviewId = object.reviewId ?? "";
     message.userId = object.userId ?? "";
@@ -500,7 +552,10 @@ function createBaseDeleteReviewRequest(): DeleteReviewRequest {
 }
 
 export const DeleteReviewRequest: MessageFns<DeleteReviewRequest> = {
-  encode(message: DeleteReviewRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteReviewRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.reviewId !== "") {
       writer.uint32(10).string(message.reviewId);
     }
@@ -513,8 +568,12 @@ export const DeleteReviewRequest: MessageFns<DeleteReviewRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteReviewRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteReviewRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteReviewRequest();
     while (reader.pos < end) {
@@ -558,18 +617,18 @@ export const DeleteReviewRequest: MessageFns<DeleteReviewRequest> = {
       reviewId: isSet(object.reviewId)
         ? globalThis.String(object.reviewId)
         : isSet(object.review_id)
-        ? globalThis.String(object.review_id)
-        : "",
+          ? globalThis.String(object.review_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       enrollmentId: isSet(object.enrollmentId)
         ? globalThis.String(object.enrollmentId)
         : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
+          ? globalThis.String(object.enrollment_id)
+          : "",
     };
   },
 
@@ -587,10 +646,14 @@ export const DeleteReviewRequest: MessageFns<DeleteReviewRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteReviewRequest>, I>>(base?: I): DeleteReviewRequest {
+  create<I extends Exact<DeepPartial<DeleteReviewRequest>, I>>(
+    base?: I,
+  ): DeleteReviewRequest {
     return DeleteReviewRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteReviewRequest>, I>>(object: I): DeleteReviewRequest {
+  fromPartial<I extends Exact<DeepPartial<DeleteReviewRequest>, I>>(
+    object: I,
+  ): DeleteReviewRequest {
     const message = createBaseDeleteReviewRequest();
     message.reviewId = object.reviewId ?? "";
     message.userId = object.userId ?? "";
@@ -603,83 +666,98 @@ function createBaseGetReviewsByCourseRequest(): GetReviewsByCourseRequest {
   return { courseId: "", pagination: undefined };
 }
 
-export const GetReviewsByCourseRequest: MessageFns<GetReviewsByCourseRequest> = {
-  encode(message: GetReviewsByCourseRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.courseId !== "") {
-      writer.uint32(10).string(message.courseId);
-    }
-    if (message.pagination !== undefined) {
-      Pagination.encode(message.pagination, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetReviewsByCourseRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetReviewsByCourseRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.courseId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.pagination = Pagination.decode(reader, reader.uint32());
-          continue;
-        }
+export const GetReviewsByCourseRequest: MessageFns<GetReviewsByCourseRequest> =
+  {
+    encode(
+      message: GetReviewsByCourseRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.courseId !== "") {
+        writer.uint32(10).string(message.courseId);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.pagination !== undefined) {
+        Pagination.encode(message.pagination, writer.uint32(18).fork()).join();
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): GetReviewsByCourseRequest {
-    return {
-      courseId: isSet(object.courseId)
-        ? globalThis.String(object.courseId)
-        : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
-      pagination: isSet(object.pagination) ? Pagination.fromJSON(object.pagination) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetReviewsByCourseRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetReviewsByCourseRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: GetReviewsByCourseRequest): unknown {
-    const obj: any = {};
-    if (message.courseId !== "") {
-      obj.courseId = message.courseId;
-    }
-    if (message.pagination !== undefined) {
-      obj.pagination = Pagination.toJSON(message.pagination);
-    }
-    return obj;
-  },
+            message.courseId = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<GetReviewsByCourseRequest>, I>>(base?: I): GetReviewsByCourseRequest {
-    return GetReviewsByCourseRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetReviewsByCourseRequest>, I>>(object: I): GetReviewsByCourseRequest {
-    const message = createBaseGetReviewsByCourseRequest();
-    message.courseId = object.courseId ?? "";
-    message.pagination = (object.pagination !== undefined && object.pagination !== null)
-      ? Pagination.fromPartial(object.pagination)
-      : undefined;
-    return message;
-  },
-};
+            message.pagination = Pagination.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): GetReviewsByCourseRequest {
+      return {
+        courseId: isSet(object.courseId)
+          ? globalThis.String(object.courseId)
+          : isSet(object.course_id)
+            ? globalThis.String(object.course_id)
+            : "",
+        pagination: isSet(object.pagination)
+          ? Pagination.fromJSON(object.pagination)
+          : undefined,
+      };
+    },
+
+    toJSON(message: GetReviewsByCourseRequest): unknown {
+      const obj: any = {};
+      if (message.courseId !== "") {
+        obj.courseId = message.courseId;
+      }
+      if (message.pagination !== undefined) {
+        obj.pagination = Pagination.toJSON(message.pagination);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<GetReviewsByCourseRequest>, I>>(
+      base?: I,
+    ): GetReviewsByCourseRequest {
+      return GetReviewsByCourseRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetReviewsByCourseRequest>, I>>(
+      object: I,
+    ): GetReviewsByCourseRequest {
+      const message = createBaseGetReviewsByCourseRequest();
+      message.courseId = object.courseId ?? "";
+      message.pagination =
+        object.pagination !== undefined && object.pagination !== null
+          ? Pagination.fromPartial(object.pagination)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseReviewData(): ReviewData {
   return {
@@ -696,7 +774,10 @@ function createBaseReviewData(): ReviewData {
 }
 
 export const ReviewData: MessageFns<ReviewData> = {
-  encode(message: ReviewData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ReviewData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -728,7 +809,8 @@ export const ReviewData: MessageFns<ReviewData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ReviewData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReviewData();
     while (reader.pos < end) {
@@ -821,30 +903,30 @@ export const ReviewData: MessageFns<ReviewData> = {
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       enrollmentId: isSet(object.enrollmentId)
         ? globalThis.String(object.enrollmentId)
         : isSet(object.enrollment_id)
-        ? globalThis.String(object.enrollment_id)
-        : "",
+          ? globalThis.String(object.enrollment_id)
+          : "",
       rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
       comment: isSet(object.comment) ? globalThis.String(object.comment) : "",
       createdAt: isSet(object.createdAt)
         ? globalThis.String(object.createdAt)
         : isSet(object.created_at)
-        ? globalThis.String(object.created_at)
-        : "",
+          ? globalThis.String(object.created_at)
+          : "",
       updatedAt: isSet(object.updatedAt)
         ? globalThis.String(object.updatedAt)
         : isSet(object.updated_at)
-        ? globalThis.String(object.updated_at)
-        : "",
+          ? globalThis.String(object.updated_at)
+          : "",
       user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
     };
   },
@@ -884,7 +966,9 @@ export const ReviewData: MessageFns<ReviewData> = {
   create<I extends Exact<DeepPartial<ReviewData>, I>>(base?: I): ReviewData {
     return ReviewData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ReviewData>, I>>(object: I): ReviewData {
+  fromPartial<I extends Exact<DeepPartial<ReviewData>, I>>(
+    object: I,
+  ): ReviewData {
     const message = createBaseReviewData();
     message.id = object.id ?? "";
     message.userId = object.userId ?? "";
@@ -894,7 +978,10 @@ export const ReviewData: MessageFns<ReviewData> = {
     message.comment = object.comment ?? "";
     message.createdAt = object.createdAt ?? "";
     message.updatedAt = object.updatedAt ?? "";
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.user =
+      object.user !== undefined && object.user !== null
+        ? User.fromPartial(object.user)
+        : undefined;
     return message;
   },
 };
@@ -904,7 +991,10 @@ function createBaseReviewResponse(): ReviewResponse {
 }
 
 export const ReviewResponse: MessageFns<ReviewResponse> = {
-  encode(message: ReviewResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ReviewResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.review !== undefined) {
       ReviewData.encode(message.review, writer.uint32(10).fork()).join();
     }
@@ -915,7 +1005,8 @@ export const ReviewResponse: MessageFns<ReviewResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ReviewResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReviewResponse();
     while (reader.pos < end) {
@@ -948,7 +1039,9 @@ export const ReviewResponse: MessageFns<ReviewResponse> = {
 
   fromJSON(object: any): ReviewResponse {
     return {
-      review: isSet(object.review) ? ReviewData.fromJSON(object.review) : undefined,
+      review: isSet(object.review)
+        ? ReviewData.fromJSON(object.review)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -964,15 +1057,23 @@ export const ReviewResponse: MessageFns<ReviewResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ReviewResponse>, I>>(base?: I): ReviewResponse {
+  create<I extends Exact<DeepPartial<ReviewResponse>, I>>(
+    base?: I,
+  ): ReviewResponse {
     return ReviewResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ReviewResponse>, I>>(object: I): ReviewResponse {
+  fromPartial<I extends Exact<DeepPartial<ReviewResponse>, I>>(
+    object: I,
+  ): ReviewResponse {
     const message = createBaseReviewResponse();
-    message.review = (object.review !== undefined && object.review !== null)
-      ? ReviewData.fromPartial(object.review)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.review =
+      object.review !== undefined && object.review !== null
+        ? ReviewData.fromPartial(object.review)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -982,7 +1083,10 @@ function createBaseReviewsData(): ReviewsData {
 }
 
 export const ReviewsData: MessageFns<ReviewsData> = {
-  encode(message: ReviewsData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ReviewsData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.reviews) {
       ReviewData.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -993,7 +1097,8 @@ export const ReviewsData: MessageFns<ReviewsData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ReviewsData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReviewsData();
     while (reader.pos < end) {
@@ -1026,7 +1131,9 @@ export const ReviewsData: MessageFns<ReviewsData> = {
 
   fromJSON(object: any): ReviewsData {
     return {
-      reviews: globalThis.Array.isArray(object?.reviews) ? object.reviews.map((e: any) => ReviewData.fromJSON(e)) : [],
+      reviews: globalThis.Array.isArray(object?.reviews)
+        ? object.reviews.map((e: any) => ReviewData.fromJSON(e))
+        : [],
       total: isSet(object.total) ? globalThis.Number(object.total) : 0,
     };
   },
@@ -1045,9 +1152,12 @@ export const ReviewsData: MessageFns<ReviewsData> = {
   create<I extends Exact<DeepPartial<ReviewsData>, I>>(base?: I): ReviewsData {
     return ReviewsData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ReviewsData>, I>>(object: I): ReviewsData {
+  fromPartial<I extends Exact<DeepPartial<ReviewsData>, I>>(
+    object: I,
+  ): ReviewsData {
     const message = createBaseReviewsData();
-    message.reviews = object.reviews?.map((e) => ReviewData.fromPartial(e)) || [];
+    message.reviews =
+      object.reviews?.map((e) => ReviewData.fromPartial(e)) || [];
     message.total = object.total ?? 0;
     return message;
   },
@@ -1058,7 +1168,10 @@ function createBaseReviewsResponse(): ReviewsResponse {
 }
 
 export const ReviewsResponse: MessageFns<ReviewsResponse> = {
-  encode(message: ReviewsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ReviewsResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.reviews !== undefined) {
       ReviewsData.encode(message.reviews, writer.uint32(10).fork()).join();
     }
@@ -1069,7 +1182,8 @@ export const ReviewsResponse: MessageFns<ReviewsResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ReviewsResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReviewsResponse();
     while (reader.pos < end) {
@@ -1102,7 +1216,9 @@ export const ReviewsResponse: MessageFns<ReviewsResponse> = {
 
   fromJSON(object: any): ReviewsResponse {
     return {
-      reviews: isSet(object.reviews) ? ReviewsData.fromJSON(object.reviews) : undefined,
+      reviews: isSet(object.reviews)
+        ? ReviewsData.fromJSON(object.reviews)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1118,15 +1234,23 @@ export const ReviewsResponse: MessageFns<ReviewsResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ReviewsResponse>, I>>(base?: I): ReviewsResponse {
+  create<I extends Exact<DeepPartial<ReviewsResponse>, I>>(
+    base?: I,
+  ): ReviewsResponse {
     return ReviewsResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ReviewsResponse>, I>>(object: I): ReviewsResponse {
+  fromPartial<I extends Exact<DeepPartial<ReviewsResponse>, I>>(
+    object: I,
+  ): ReviewsResponse {
     const message = createBaseReviewsResponse();
-    message.reviews = (object.reviews !== undefined && object.reviews !== null)
-      ? ReviewsData.fromPartial(object.reviews)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.reviews =
+      object.reviews !== undefined && object.reviews !== null
+        ? ReviewsData.fromPartial(object.reviews)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1136,7 +1260,10 @@ function createBaseDeleteReviewResponse(): DeleteReviewResponse {
 }
 
 export const DeleteReviewResponse: MessageFns<DeleteReviewResponse> = {
-  encode(message: DeleteReviewResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteReviewResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.success !== undefined) {
       DeleteSuccess.encode(message.success, writer.uint32(10).fork()).join();
     }
@@ -1146,8 +1273,12 @@ export const DeleteReviewResponse: MessageFns<DeleteReviewResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteReviewResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteReviewResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteReviewResponse();
     while (reader.pos < end) {
@@ -1180,7 +1311,9 @@ export const DeleteReviewResponse: MessageFns<DeleteReviewResponse> = {
 
   fromJSON(object: any): DeleteReviewResponse {
     return {
-      success: isSet(object.success) ? DeleteSuccess.fromJSON(object.success) : undefined,
+      success: isSet(object.success)
+        ? DeleteSuccess.fromJSON(object.success)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1196,30 +1329,52 @@ export const DeleteReviewResponse: MessageFns<DeleteReviewResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteReviewResponse>, I>>(base?: I): DeleteReviewResponse {
+  create<I extends Exact<DeepPartial<DeleteReviewResponse>, I>>(
+    base?: I,
+  ): DeleteReviewResponse {
     return DeleteReviewResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteReviewResponse>, I>>(object: I): DeleteReviewResponse {
+  fromPartial<I extends Exact<DeepPartial<DeleteReviewResponse>, I>>(
+    object: I,
+  ): DeleteReviewResponse {
     const message = createBaseDeleteReviewResponse();
-    message.success = (object.success !== undefined && object.success !== null)
-      ? DeleteSuccess.fromPartial(object.success)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.success =
+      object.success !== undefined && object.success !== null
+        ? DeleteSuccess.fromPartial(object.success)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
