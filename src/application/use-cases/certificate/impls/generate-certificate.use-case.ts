@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { IEnrollmentRepository } from "../../../domain/repositories/enrollment.repository";
-import { ICertificateRepository } from "../../../domain/repositories/certificate.repository";
-import { Certificate } from "../../../domain/entities/certificate.entity";
+import { IEnrollmentRepository } from "../../../../domain/repositories/enrollment.repository";
+import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
+import { Certificate } from "../../../../domain/entities/certificate.entity";
 import { CertificateDto } from "src/application/dtos/certificate.dto";
-import { BadRequestException, UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import {
+  BadRequestException,
+  UnauthorizedException,
+} from "src/shared/exceptions/infra.exceptions";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
+import { IGenerateCertificateUseCase } from "../interfaces/generate-certificate.interface";
 
 export interface GenerateCertificateRequest {
   enrollmentId: string;
@@ -14,17 +18,20 @@ export interface GenerateCertificateRequest {
 }
 
 @Injectable()
-export class GenerateCertificateUseCase {
+export class GenerateCertificateUseCase implements IGenerateCertificateUseCase {
   constructor(
-    private readonly enrollmentRepo: IEnrollmentRepository,
-    private readonly certificateRepo: ICertificateRepository,
+    private readonly _enrollmentRepo: IEnrollmentRepository,
+    private readonly _certificateRepo: ICertificateRepository,
   ) {}
 
   async execute(request: GenerateCertificateRequest): Promise<CertificateDto> {
     //  Validate enrollment exists and belongs to user
-    const enrollment = await this.enrollmentRepo.getById(request.enrollmentId, {
-      includeCourse: true,
-    });
+    const enrollment = await this._enrollmentRepo.findById(
+      request.enrollmentId,
+      {
+        includeCourse: true,
+      },
+    );
 
     let course = enrollment.getCourse();
 
@@ -47,7 +54,7 @@ export class GenerateCertificateUseCase {
     }
 
     //  Check if certificate already exists
-    const existingCertificate = await this.certificateRepo.findByEnrollmentId(
+    const existingCertificate = await this._certificateRepo.findByEnrollmentId(
       request.enrollmentId,
     );
 
@@ -55,7 +62,7 @@ export class GenerateCertificateUseCase {
       // date student name if changed
       if (existingCertificate.getStudentName() !== request.studentName.trim()) {
         existingCertificate.updateStudentName(request.studentName);
-        await this.certificateRepo.save(existingCertificate);
+        await this._certificateRepo.save(existingCertificate);
       }
 
       return CertificateDto.fromDomain(existingCertificate);
@@ -93,7 +100,7 @@ export class GenerateCertificateUseCase {
     );
 
     //  Save certificate
-    await this.certificateRepo.save(certificate);
+    await this._certificateRepo.save(certificate);
 
     return CertificateDto.fromDomain(certificate);
   }

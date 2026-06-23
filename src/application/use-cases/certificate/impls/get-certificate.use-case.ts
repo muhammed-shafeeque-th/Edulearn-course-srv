@@ -3,22 +3,21 @@ import {
   NotFoundException,
   ForbiddenException,
 } from "@nestjs/common";
-import { ICertificateRepository } from "../../../domain/repositories/certificate.repository";
+import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
 import { CertificateDto } from "src/application/dtos/certificate.dto";
-import {
-  CertificateNotFoundException,
-} from "src/domain/exceptions/certificate.exceptions";
+import { CertificateNotFoundException } from "src/domain/exceptions/certificate.exceptions";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IGetCertificateUseCase } from "../interfaces/get-certificate.interface";
 
 @Injectable()
-export class GetCertificateUseCase {
-  constructor(private readonly certificateRepo: ICertificateRepository) {}
+export class GetCertificateUseCase implements IGetCertificateUseCase {
+  constructor(private readonly _certificateRepo: ICertificateRepository) {}
 
   async execute(
     certificateId: string,
     userId: string,
   ): Promise<CertificateDto> {
-    const certificate = await this.certificateRepo.findById(certificateId);
+    const certificate = await this._certificateRepo.findById(certificateId);
 
     if (!certificate) {
       throw new CertificateNotFoundException("Certificate not found");

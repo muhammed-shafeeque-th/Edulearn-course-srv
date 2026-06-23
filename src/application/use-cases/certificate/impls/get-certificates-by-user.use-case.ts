@@ -1,21 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { ICertificateRepository } from "../../../domain/repositories/certificate.repository";
+import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
 import { CertificateDto } from "src/application/dtos/certificate.dto";
 import { GetCertificatesByUserRequest } from "src/infrastructure/grpc/generated/course/types/certificate";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { IGetCertificatesByUserUseCase } from "../interfaces/get-certificates-by-user.interface";
 
 @Injectable()
-export class GetCertificatesByUserUseCase {
+export class GetCertificatesByUserUseCase
+  implements IGetCertificatesByUserUseCase
+{
   constructor(
-    private readonly certificateRepo: ICertificateRepository,
-    private readonly logger: LoggingService,
+    private readonly _certificateRepo: ICertificateRepository,
+    private readonly _logger: ILoggerService,
   ) {}
 
-  /**
-   * Retrieves certificates by user with pagination support.
-   * @param dto - The request object containing userId and pagination.
-   * @returns An object with the list of CertificateDto and the total count.
-   */
   async execute(
     dto: GetCertificatesByUserRequest,
   ): Promise<{ certificates: CertificateDto[]; total: number }> {
@@ -30,16 +28,13 @@ export class GetCertificatesByUserUseCase {
     const offset = (page - 1) * pageSize;
     const limit = pageSize;
 
-    this.logger.debug(
+    this._logger.debug(
       `Fetching certificates for userId: ${userId} with offset: ${offset}, limit: ${limit}`,
     );
 
     try {
-      const { certificates, total } = await this.certificateRepo.findByUserId(
-        userId,
-        offset,
-        limit,
-      );
+      const { data: certificates, total } =
+        await this._certificateRepo.findByUserId(userId, offset, limit);
 
       return {
         certificates: certificates.map((cert) =>
@@ -47,10 +42,10 @@ export class GetCertificatesByUserUseCase {
         ),
         total,
       };
-    } catch (error) {
-      this.logger.error(
+    } catch (error: any) {
+      this._logger.error(
         `Error fetching certificates for userId: ${userId} - ${error.message}`,
-        error.stack,
+        { error },
       );
       throw error;
     }
