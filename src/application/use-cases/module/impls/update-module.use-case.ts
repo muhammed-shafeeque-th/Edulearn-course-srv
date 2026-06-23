@@ -1,36 +1,35 @@
 import { Injectable } from "@nestjs/common";
 import { ModuleDto } from "src/application/dtos/module.dto";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
-import {
-  ModuleNotFoundException,
-} from "src/domain/exceptions/module.exceptions";
+import { ModuleNotFoundException } from "src/domain/exceptions/module.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IModuleRepository } from "src/domain/repositories/module.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UpdateModuleDto } from "src/presentation/grpc/dtos/module/update-module.dto";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IUpdateModuleUseCase } from "../interfaces/update-module.interface";
 
 @Injectable()
-export class UpdateModuleUseCase {
+export class UpdateModuleUseCase implements IUpdateModuleUseCase {
   constructor(
-    private readonly moduleRepository: IModuleRepository,
-    private readonly courseRepository: ICourseRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _moduleRepository: IModuleRepository,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(dto: UpdateModuleDto): Promise<ModuleDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "UpdateModuleUseCase.execute",
       async (span) => {
         span.setAttributes({
           "module.id": dto.moduleId,
         });
-        this.logger.log(`Updating module ${dto.moduleId}`, {
+         this._logger.log(`Updating module ${dto.moduleId}`, {
           ctx: UpdateModuleUseCase.name,
         });
-        const course = await this.courseRepository.findById(dto.courseId);
+        const course = await this._courseRepository.findById(dto.courseId);
         if (!course) {
           span.setAttribute("course.found", false);
           throw new CourseNotFoundException(
@@ -44,7 +43,7 @@ export class UpdateModuleUseCase {
           );
         }
 
-        const module = await this.moduleRepository.findById(dto.moduleId);
+        const module = await this._moduleRepository.findById(dto.moduleId);
         if (!module) {
           span.setAttribute("module.found", false);
           throw new ModuleNotFoundException(`Module ${dto.moduleId} not found`);
@@ -52,10 +51,10 @@ export class UpdateModuleUseCase {
         span.setAttribute("module.found", true);
 
         module.updateDetails(dto);
-        await this.moduleRepository.update(module);
+        await this._moduleRepository.update(module);
         span.setAttribute("module.updated", true);
 
-        this.logger.log(`Module ${dto.moduleId} updated`, {
+         this._logger.log(`Module ${dto.moduleId} updated`, {
           ctx: UpdateModuleUseCase.name,
         });
         return ModuleDto.fromDomain(module);

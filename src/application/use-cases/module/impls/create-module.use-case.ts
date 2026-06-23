@@ -1,31 +1,30 @@
 import { Injectable } from "@nestjs/common";
 import { ModuleDto } from "src/application/dtos/module.dto";
 import { Module } from "src/domain/entities/module.entity";
-import {
-  CourseNotFoundException,
-} from "src/domain/exceptions/course.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IModuleRepository } from "src/domain/repositories/module.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { CreateModuleRequestDto } from "src/presentation/grpc/dtos/module/create-module.dto";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { v4 as uuidV4 } from "uuid";
+import { ICreateModuleUseCase } from "../interfaces/create-module.interface";
 
 @Injectable()
-export class CreateModuleUseCase {
+export class CreateModuleUseCase implements ICreateModuleUseCase {
   constructor(
-    private readonly courseRepository: ICourseRepository,
-    private readonly moduleRepository: IModuleRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _moduleRepository: IModuleRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(
     dto: CreateModuleRequestDto,
     idempotencyKey: string,
   ): Promise<ModuleDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "CreateModuleUseCase.execute",
       async (span) => {
         span.setAttributes({
@@ -34,20 +33,20 @@ export class CreateModuleUseCase {
 
         // Check for existing course by idempotency key
         const existingModule =
-          await this.moduleRepository.findByIdempotencyKey(idempotencyKey);
+          await this._moduleRepository.findByIdempotencyKey(idempotencyKey);
         if (existingModule) {
           span.setAttribute("idempotency.duplicate", true);
-          this.logger.debug(
+           this._logger.debug(
             `Module creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateModuleUseCase.name}`,
           );
           return ModuleDto.fromDomain(existingModule);
         }
 
-        this.logger.log(`Creating module for course ${dto.courseId}`, {
+         this._logger.log(`Creating module for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
 
-        const course = await this.courseRepository.findById(dto.courseId);
+        const course = await this._courseRepository.findById(dto.courseId);
         if (!course) {
           span.setAttribute("course.found", false);
           throw new CourseNotFoundException(
@@ -73,11 +72,11 @@ export class CreateModuleUseCase {
           description: dto.description,
           isPublished: dto.isPublished,
         });
-        await this.moduleRepository.save(module);
+        await this._moduleRepository.save(module);
 
         span.setAttribute("course.module.created", true);
 
-        this.logger.log(`Module created for course ${dto.courseId}`, {
+         this._logger.log(`Module created for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
         return ModuleDto.fromDomain(module);
