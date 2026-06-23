@@ -1,15 +1,13 @@
 import { Controller, UseFilters } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
 import { DomainException } from "src/domain/exceptions/domain.exception";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { Error } from "src/infrastructure/grpc/generated/course/common";
 import { Metadata } from "@grpc/grpc-js";
-import { AddReviewUseCase } from "src/application/use-cases/review/add-review.use-case";
-import { GetReviewUseCase } from "src/application/use-cases/review/get-review.use-case";
-import { GetReviewsByCourseUseCase } from "src/application/use-cases/review/get-reviews-by-course.use-case";
-import { UpdateReviewUseCase } from "src/application/use-cases/review/update-review.use-case";
-import { DeleteReviewUseCase } from "src/application/use-cases/review/delete-review.use-case";
+import { IAddReviewUseCase } from "src/application/use-cases/review/interfaces/add-review.interface";
+import { IGetReviewUseCase } from "src/application/use-cases/review/interfaces/get-review.interface";
+import { IGetReviewsByCourseUseCase } from "src/application/use-cases/review/interfaces/get-reviews-by-course.interface";
+import { IUpdateReviewUseCase } from "src/application/use-cases/review/interfaces/update-review.interface";
+import { IDeleteReviewUseCase } from "src/application/use-cases/review/interfaces/delete-review.interface";
 import {
   DeleteReviewRequest,
   DeleteReviewResponse,
@@ -21,21 +19,23 @@ import {
   SubmitCourseReviewRequest,
   UpdateReviewRequest,
 } from "src/infrastructure/grpc/generated/course/types/review";
-import { GetReviewByEnrollmentUseCase } from "src/application/use-cases/review/get-review-by-enrollment.use-case";
+import { IGetReviewByEnrollmentUseCase } from "src/application/use-cases/review/interfaces/get-review-by-enrollment.interface";
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
 export class ReviewGrpcController {
   constructor(
-    private readonly createReviewUseCase: AddReviewUseCase,
-    private readonly getReviewUseCase: GetReviewUseCase,
-    private readonly getReviewByEnrollmentUseCase: GetReviewByEnrollmentUseCase,
-    private readonly getReviewsByCourseUseCase: GetReviewsByCourseUseCase,
-    private readonly updateReviewUseCase: UpdateReviewUseCase,
-    private readonly deleteReviewUseCase: DeleteReviewUseCase,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _createReviewUseCase: IAddReviewUseCase,
+    private readonly _getReviewUseCase: IGetReviewUseCase,
+    private readonly _getReviewByEnrollmentUseCase: IGetReviewByEnrollmentUseCase,
+    private readonly _getReviewsByCourseUseCase: IGetReviewsByCourseUseCase,
+    private readonly _updateReviewUseCase: IUpdateReviewUseCase,
+    private readonly _deleteReviewUseCase: IDeleteReviewUseCase,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   private createErrorResponse(error: DomainException): Error {
@@ -56,20 +56,20 @@ export class ReviewGrpcController {
     metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ReviewGrpcController.SubmitCourseReview",
         async (span) => {
           span.setAttribute("enrollment.id", data.enrollmentId);
           span.setAttribute("user.id", data.userId);
 
-          const reviewDto = await this.createReviewUseCase.execute(data);
+          const reviewDto = await this._createReviewUseCase.execute(data);
           return {
             review: reviewDto.toGrpcResponse(),
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to create review: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to create review: ${error.message}`, {
         error,
       });
 
@@ -83,19 +83,19 @@ export class ReviewGrpcController {
     metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ReviewGrpcController.GetReview",
         async (span) => {
           span.setAttribute("review.id", data.reviewId);
 
-          const reviewDto = await this.getReviewUseCase.execute(data.reviewId);
+          const reviewDto = await this._getReviewUseCase.execute(data.reviewId);
           return {
             review: reviewDto.toGrpcResponse(),
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to get review: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to get review: ${error.message}`, {
         error,
       });
 
@@ -108,21 +108,21 @@ export class ReviewGrpcController {
     metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ReviewGrpcController.GetReviewByEnrollment",
         async (span) => {
           span.setAttribute("enrollment.id", data.enrollmentId);
           span.setAttribute("user.id", data.userId);
 
           const reviewDto =
-            await this.getReviewByEnrollmentUseCase.execute(data);
+            await this._getReviewByEnrollmentUseCase.execute(data);
           return {
             review: reviewDto.toGrpcResponse(),
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to get review: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to get review: ${error.message}`, {
         error,
       });
 
@@ -136,19 +136,19 @@ export class ReviewGrpcController {
     metadata: Metadata,
   ): Promise<ReviewResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ReviewGrpcController.UpdateReview",
         async (span) => {
           span.setAttribute("review.id", data.reviewId);
 
-          const reviewDto = await this.updateReviewUseCase.execute(data);
+          const reviewDto = await this._updateReviewUseCase.execute(data);
           return {
             review: reviewDto.toGrpcResponse(),
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to update review: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to update review: ${error.message}`, {
         error,
       });
 
@@ -162,17 +162,17 @@ export class ReviewGrpcController {
     metadata: Metadata,
   ): Promise<DeleteReviewResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ReviewGrpcController.DeleteReview",
         async (span) => {
           span.setAttribute("review.id", data.reviewId);
 
-          await this.deleteReviewUseCase.execute(data);
+          await this._deleteReviewUseCase.execute(data);
           return { success: { deleted: true } };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to delete review: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to delete review: ${error.message}`, {
         error,
       });
 
@@ -186,7 +186,7 @@ export class ReviewGrpcController {
     metadata: Metadata,
   ): Promise<ReviewsResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ReviewGrpcController.GetReviewsByCourse",
         async (span) => {
           span.setAttribute("course.id", data.courseId);
@@ -196,7 +196,7 @@ export class ReviewGrpcController {
           span.setAttribute("sortOrder", data.pagination?.sortOrder);
 
           const { reviews, total } =
-            await this.getReviewsByCourseUseCase.execute(
+            await this._getReviewsByCourseUseCase.execute(
               data.courseId,
               data.pagination?.page,
               data.pagination?.pageSize,
@@ -211,8 +211,8 @@ export class ReviewGrpcController {
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to get reviews by course: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to get reviews by course: ${error.message}`, {
         error,
       });
 
