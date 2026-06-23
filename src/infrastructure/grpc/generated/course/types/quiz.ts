@@ -25,9 +25,7 @@ export interface Question {
   required: boolean;
   options: QuestionOption[];
   /** Index of the correct option (0-based) */
-  correctAnswer?:
-    | string
-    | undefined;
+  correctAnswer?: string | undefined;
   /** Optional explanation for the correct answer */
   explanation?: string | undefined;
 }
@@ -110,7 +108,10 @@ function createBaseQuestionOption(): QuestionOption {
 }
 
 export const QuestionOption: MessageFns<QuestionOption> = {
-  encode(message: QuestionOption, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuestionOption,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.value !== "") {
       writer.uint32(10).string(message.value);
     }
@@ -121,7 +122,8 @@ export const QuestionOption: MessageFns<QuestionOption> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuestionOption {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuestionOption();
     while (reader.pos < end) {
@@ -158,8 +160,8 @@ export const QuestionOption: MessageFns<QuestionOption> = {
       isCorrect: isSet(object.isCorrect)
         ? globalThis.Boolean(object.isCorrect)
         : isSet(object.is_correct)
-        ? globalThis.Boolean(object.is_correct)
-        : false,
+          ? globalThis.Boolean(object.is_correct)
+          : false,
     };
   },
 
@@ -174,10 +176,14 @@ export const QuestionOption: MessageFns<QuestionOption> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QuestionOption>, I>>(base?: I): QuestionOption {
+  create<I extends Exact<DeepPartial<QuestionOption>, I>>(
+    base?: I,
+  ): QuestionOption {
     return QuestionOption.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuestionOption>, I>>(object: I): QuestionOption {
+  fromPartial<I extends Exact<DeepPartial<QuestionOption>, I>>(
+    object: I,
+  ): QuestionOption {
     const message = createBaseQuestionOption();
     message.value = object.value ?? "";
     message.isCorrect = object.isCorrect ?? false;
@@ -200,7 +206,10 @@ function createBaseQuestion(): Question {
 }
 
 export const Question: MessageFns<Question> = {
-  encode(message: Question, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: Question,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(74).string(message.id);
     }
@@ -232,7 +241,8 @@ export const Question: MessageFns<Question> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): Question {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuestion();
     while (reader.pos < end) {
@@ -323,23 +333,31 @@ export const Question: MessageFns<Question> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       type: isSet(object.type) ? globalThis.String(object.type) : "",
-      points: isSet(object.points) ? globalThis.Number(object.points) : undefined,
+      points: isSet(object.points)
+        ? globalThis.Number(object.points)
+        : undefined,
       timeLimit: isSet(object.timeLimit)
         ? globalThis.Number(object.timeLimit)
         : isSet(object.time_limit)
-        ? globalThis.Number(object.time_limit)
-        : undefined,
-      question: isSet(object.question) ? globalThis.String(object.question) : "",
-      required: isSet(object.required) ? globalThis.Boolean(object.required) : false,
+          ? globalThis.Number(object.time_limit)
+          : undefined,
+      question: isSet(object.question)
+        ? globalThis.String(object.question)
+        : "",
+      required: isSet(object.required)
+        ? globalThis.Boolean(object.required)
+        : false,
       options: globalThis.Array.isArray(object?.options)
         ? object.options.map((e: any) => QuestionOption.fromJSON(e))
         : [],
       correctAnswer: isSet(object.correctAnswer)
         ? globalThis.String(object.correctAnswer)
         : isSet(object.correct_answer)
-        ? globalThis.String(object.correct_answer)
+          ? globalThis.String(object.correct_answer)
+          : undefined,
+      explanation: isSet(object.explanation)
+        ? globalThis.String(object.explanation)
         : undefined,
-      explanation: isSet(object.explanation) ? globalThis.String(object.explanation) : undefined,
     };
   },
 
@@ -386,7 +404,8 @@ export const Question: MessageFns<Question> = {
     message.timeLimit = object.timeLimit ?? undefined;
     message.question = object.question ?? "";
     message.required = object.required ?? false;
-    message.options = object.options?.map((e) => QuestionOption.fromPartial(e)) || [];
+    message.options =
+      object.options?.map((e) => QuestionOption.fromPartial(e)) || [];
     message.correctAnswer = object.correctAnswer ?? undefined;
     message.explanation = object.explanation ?? undefined;
     return message;
@@ -409,7 +428,10 @@ function createBaseCreateQuizRequest(): CreateQuizRequest {
 }
 
 export const CreateQuizRequest: MessageFns<CreateQuizRequest> = {
-  encode(message: CreateQuizRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CreateQuizRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.courseId !== "") {
       writer.uint32(10).string(message.courseId);
     }
@@ -444,7 +466,8 @@ export const CreateQuizRequest: MessageFns<CreateQuizRequest> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CreateQuizRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateQuizRequest();
     while (reader.pos < end) {
@@ -544,36 +567,40 @@ export const CreateQuizRequest: MessageFns<CreateQuizRequest> = {
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       moduleId: isSet(object.moduleId)
         ? globalThis.String(object.moduleId)
         : isSet(object.module_id)
-        ? globalThis.String(object.module_id)
-        : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+          ? globalThis.String(object.module_id)
+          : "",
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
+        : undefined,
       title: isSet(object.title) ? globalThis.String(object.title) : "",
-      isRequired: isSet(object.isRequired) ? globalThis.Boolean(object.isRequired) : false,
+      isRequired: isSet(object.isRequired)
+        ? globalThis.Boolean(object.isRequired)
+        : false,
       timeLimit: isSet(object.timeLimit)
         ? globalThis.Number(object.timeLimit)
         : isSet(object.time_limit)
-        ? globalThis.Number(object.time_limit)
-        : 0,
+          ? globalThis.Number(object.time_limit)
+          : 0,
       passingScore: isSet(object.passingScore)
         ? globalThis.Number(object.passingScore)
         : isSet(object.passing_score)
-        ? globalThis.Number(object.passing_score)
-        : 0,
+          ? globalThis.Number(object.passing_score)
+          : 0,
       maxAttempts: isSet(object.maxAttempts)
         ? globalThis.Number(object.maxAttempts)
         : isSet(object.max_attempts)
-        ? globalThis.Number(object.max_attempts)
-        : 0,
+          ? globalThis.Number(object.max_attempts)
+          : 0,
       questions: globalThis.Array.isArray(object?.questions)
         ? object.questions.map((e: any) => Question.fromJSON(e))
         : [],
@@ -615,10 +642,14 @@ export const CreateQuizRequest: MessageFns<CreateQuizRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateQuizRequest>, I>>(base?: I): CreateQuizRequest {
+  create<I extends Exact<DeepPartial<CreateQuizRequest>, I>>(
+    base?: I,
+  ): CreateQuizRequest {
     return CreateQuizRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateQuizRequest>, I>>(object: I): CreateQuizRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateQuizRequest>, I>>(
+    object: I,
+  ): CreateQuizRequest {
     const message = createBaseCreateQuizRequest();
     message.courseId = object.courseId ?? "";
     message.userId = object.userId ?? "";
@@ -629,7 +660,8 @@ export const CreateQuizRequest: MessageFns<CreateQuizRequest> = {
     message.timeLimit = object.timeLimit ?? 0;
     message.passingScore = object.passingScore ?? 0;
     message.maxAttempts = object.maxAttempts ?? 0;
-    message.questions = object.questions?.map((e) => Question.fromPartial(e)) || [];
+    message.questions =
+      object.questions?.map((e) => Question.fromPartial(e)) || [];
     return message;
   },
 };
@@ -639,7 +671,10 @@ function createBaseGetQuizRequest(): GetQuizRequest {
 }
 
 export const GetQuizRequest: MessageFns<GetQuizRequest> = {
-  encode(message: GetQuizRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: GetQuizRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.quizId !== "") {
       writer.uint32(10).string(message.quizId);
     }
@@ -647,7 +682,8 @@ export const GetQuizRequest: MessageFns<GetQuizRequest> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): GetQuizRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetQuizRequest();
     while (reader.pos < end) {
@@ -675,8 +711,8 @@ export const GetQuizRequest: MessageFns<GetQuizRequest> = {
       quizId: isSet(object.quizId)
         ? globalThis.String(object.quizId)
         : isSet(object.quiz_id)
-        ? globalThis.String(object.quiz_id)
-        : "",
+          ? globalThis.String(object.quiz_id)
+          : "",
     };
   },
 
@@ -688,10 +724,14 @@ export const GetQuizRequest: MessageFns<GetQuizRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetQuizRequest>, I>>(base?: I): GetQuizRequest {
+  create<I extends Exact<DeepPartial<GetQuizRequest>, I>>(
+    base?: I,
+  ): GetQuizRequest {
     return GetQuizRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetQuizRequest>, I>>(object: I): GetQuizRequest {
+  fromPartial<I extends Exact<DeepPartial<GetQuizRequest>, I>>(
+    object: I,
+  ): GetQuizRequest {
     const message = createBaseGetQuizRequest();
     message.quizId = object.quizId ?? "";
     return message;
@@ -714,7 +754,10 @@ function createBaseUpdateQuizRequest(): UpdateQuizRequest {
 }
 
 export const UpdateQuizRequest: MessageFns<UpdateQuizRequest> = {
-  encode(message: UpdateQuizRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: UpdateQuizRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.quizId !== "") {
       writer.uint32(10).string(message.quizId);
     }
@@ -749,7 +792,8 @@ export const UpdateQuizRequest: MessageFns<UpdateQuizRequest> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): UpdateQuizRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateQuizRequest();
     while (reader.pos < end) {
@@ -849,36 +893,40 @@ export const UpdateQuizRequest: MessageFns<UpdateQuizRequest> = {
       quizId: isSet(object.quizId)
         ? globalThis.String(object.quizId)
         : isSet(object.quiz_id)
-        ? globalThis.String(object.quiz_id)
-        : "",
+          ? globalThis.String(object.quiz_id)
+          : "",
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
+          ? globalThis.String(object.user_id)
+          : "",
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
         : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : "",
       title: isSet(object.title) ? globalThis.String(object.title) : "",
-      isRequired: isSet(object.isRequired) ? globalThis.Boolean(object.isRequired) : false,
+      isRequired: isSet(object.isRequired)
+        ? globalThis.Boolean(object.isRequired)
+        : false,
       timeLimit: isSet(object.timeLimit)
         ? globalThis.Number(object.timeLimit)
         : isSet(object.time_limit)
-        ? globalThis.Number(object.time_limit)
-        : 0,
+          ? globalThis.Number(object.time_limit)
+          : 0,
       passingScore: isSet(object.passingScore)
         ? globalThis.Number(object.passingScore)
         : isSet(object.passing_score)
-        ? globalThis.Number(object.passing_score)
-        : 0,
+          ? globalThis.Number(object.passing_score)
+          : 0,
       maxAttempts: isSet(object.maxAttempts)
         ? globalThis.Number(object.maxAttempts)
         : isSet(object.max_attempts)
-        ? globalThis.Number(object.max_attempts)
-        : 0,
+          ? globalThis.Number(object.max_attempts)
+          : 0,
       questions: globalThis.Array.isArray(object?.questions)
         ? object.questions.map((e: any) => Question.fromJSON(e))
         : [],
@@ -920,10 +968,14 @@ export const UpdateQuizRequest: MessageFns<UpdateQuizRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateQuizRequest>, I>>(base?: I): UpdateQuizRequest {
+  create<I extends Exact<DeepPartial<UpdateQuizRequest>, I>>(
+    base?: I,
+  ): UpdateQuizRequest {
     return UpdateQuizRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateQuizRequest>, I>>(object: I): UpdateQuizRequest {
+  fromPartial<I extends Exact<DeepPartial<UpdateQuizRequest>, I>>(
+    object: I,
+  ): UpdateQuizRequest {
     const message = createBaseUpdateQuizRequest();
     message.quizId = object.quizId ?? "";
     message.courseId = object.courseId ?? "";
@@ -934,7 +986,8 @@ export const UpdateQuizRequest: MessageFns<UpdateQuizRequest> = {
     message.timeLimit = object.timeLimit ?? 0;
     message.passingScore = object.passingScore ?? 0;
     message.maxAttempts = object.maxAttempts ?? 0;
-    message.questions = object.questions?.map((e) => Question.fromPartial(e)) || [];
+    message.questions =
+      object.questions?.map((e) => Question.fromPartial(e)) || [];
     return message;
   },
 };
@@ -944,7 +997,10 @@ function createBaseDeleteQuizRequest(): DeleteQuizRequest {
 }
 
 export const DeleteQuizRequest: MessageFns<DeleteQuizRequest> = {
-  encode(message: DeleteQuizRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteQuizRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.quizId !== "") {
       writer.uint32(10).string(message.quizId);
     }
@@ -958,7 +1014,8 @@ export const DeleteQuizRequest: MessageFns<DeleteQuizRequest> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): DeleteQuizRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteQuizRequest();
     while (reader.pos < end) {
@@ -1002,18 +1059,18 @@ export const DeleteQuizRequest: MessageFns<DeleteQuizRequest> = {
       quizId: isSet(object.quizId)
         ? globalThis.String(object.quizId)
         : isSet(object.quiz_id)
-        ? globalThis.String(object.quiz_id)
-        : "",
+          ? globalThis.String(object.quiz_id)
+          : "",
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
     };
   },
 
@@ -1031,10 +1088,14 @@ export const DeleteQuizRequest: MessageFns<DeleteQuizRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteQuizRequest>, I>>(base?: I): DeleteQuizRequest {
+  create<I extends Exact<DeepPartial<DeleteQuizRequest>, I>>(
+    base?: I,
+  ): DeleteQuizRequest {
     return DeleteQuizRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteQuizRequest>, I>>(object: I): DeleteQuizRequest {
+  fromPartial<I extends Exact<DeepPartial<DeleteQuizRequest>, I>>(
+    object: I,
+  ): DeleteQuizRequest {
     const message = createBaseDeleteQuizRequest();
     message.quizId = object.quizId ?? "";
     message.courseId = object.courseId ?? "";
@@ -1047,65 +1108,77 @@ function createBaseGetQuizzesByCourseRequest(): GetQuizzesByCourseRequest {
   return { courseId: "" };
 }
 
-export const GetQuizzesByCourseRequest: MessageFns<GetQuizzesByCourseRequest> = {
-  encode(message: GetQuizzesByCourseRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.courseId !== "") {
-      writer.uint32(10).string(message.courseId);
-    }
-    return writer;
-  },
+export const GetQuizzesByCourseRequest: MessageFns<GetQuizzesByCourseRequest> =
+  {
+    encode(
+      message: GetQuizzesByCourseRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.courseId !== "") {
+        writer.uint32(10).string(message.courseId);
+      }
+      return writer;
+    },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetQuizzesByCourseRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetQuizzesByCourseRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetQuizzesByCourseRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetQuizzesByCourseRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
+
+            message.courseId = reader.string();
+            continue;
           }
-
-          message.courseId = reader.string();
-          continue;
         }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      return message;
+    },
+
+    fromJSON(object: any): GetQuizzesByCourseRequest {
+      return {
+        courseId: isSet(object.courseId)
+          ? globalThis.String(object.courseId)
+          : isSet(object.course_id)
+            ? globalThis.String(object.course_id)
+            : "",
+      };
+    },
+
+    toJSON(message: GetQuizzesByCourseRequest): unknown {
+      const obj: any = {};
+      if (message.courseId !== "") {
+        obj.courseId = message.courseId;
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return obj;
+    },
 
-  fromJSON(object: any): GetQuizzesByCourseRequest {
-    return {
-      courseId: isSet(object.courseId)
-        ? globalThis.String(object.courseId)
-        : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
-    };
-  },
-
-  toJSON(message: GetQuizzesByCourseRequest): unknown {
-    const obj: any = {};
-    if (message.courseId !== "") {
-      obj.courseId = message.courseId;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GetQuizzesByCourseRequest>, I>>(base?: I): GetQuizzesByCourseRequest {
-    return GetQuizzesByCourseRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetQuizzesByCourseRequest>, I>>(object: I): GetQuizzesByCourseRequest {
-    const message = createBaseGetQuizzesByCourseRequest();
-    message.courseId = object.courseId ?? "";
-    return message;
-  },
-};
+    create<I extends Exact<DeepPartial<GetQuizzesByCourseRequest>, I>>(
+      base?: I,
+    ): GetQuizzesByCourseRequest {
+      return GetQuizzesByCourseRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetQuizzesByCourseRequest>, I>>(
+      object: I,
+    ): GetQuizzesByCourseRequest {
+      const message = createBaseGetQuizzesByCourseRequest();
+      message.courseId = object.courseId ?? "";
+      return message;
+    },
+  };
 
 function createBaseQuizData(): QuizData {
   return {
@@ -1124,7 +1197,10 @@ function createBaseQuizData(): QuizData {
 }
 
 export const QuizData: MessageFns<QuizData> = {
-  encode(message: QuizData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -1162,7 +1238,8 @@ export const QuizData: MessageFns<QuizData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuizData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizData();
     while (reader.pos < end) {
@@ -1271,43 +1348,45 @@ export const QuizData: MessageFns<QuizData> = {
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       moduleId: isSet(object.moduleId)
         ? globalThis.String(object.moduleId)
         : isSet(object.module_id)
-        ? globalThis.String(object.module_id)
-        : "",
+          ? globalThis.String(object.module_id)
+          : "",
       title: isSet(object.title) ? globalThis.String(object.title) : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
+        : undefined,
       timeLimit: isSet(object.timeLimit)
         ? globalThis.Number(object.timeLimit)
         : isSet(object.time_limit)
-        ? globalThis.Number(object.time_limit)
-        : 0,
+          ? globalThis.Number(object.time_limit)
+          : 0,
       passingScore: isSet(object.passingScore)
         ? globalThis.Number(object.passingScore)
         : isSet(object.passing_score)
-        ? globalThis.Number(object.passing_score)
-        : 0,
+          ? globalThis.Number(object.passing_score)
+          : 0,
       questions: globalThis.Array.isArray(object?.questions)
         ? object.questions.map((e: any) => Question.fromJSON(e))
         : [],
       createdAt: isSet(object.createdAt)
         ? globalThis.String(object.createdAt)
         : isSet(object.created_at)
-        ? globalThis.String(object.created_at)
-        : "",
+          ? globalThis.String(object.created_at)
+          : "",
       updatedAt: isSet(object.updatedAt)
         ? globalThis.String(object.updatedAt)
         : isSet(object.updated_at)
-        ? globalThis.String(object.updated_at)
-        : "",
+          ? globalThis.String(object.updated_at)
+          : "",
       deletedAt: isSet(object.deletedAt)
         ? globalThis.String(object.deletedAt)
         : isSet(object.deleted_at)
-        ? globalThis.String(object.deleted_at)
-        : undefined,
+          ? globalThis.String(object.deleted_at)
+          : undefined,
     };
   },
 
@@ -1361,7 +1440,8 @@ export const QuizData: MessageFns<QuizData> = {
     message.description = object.description ?? undefined;
     message.timeLimit = object.timeLimit ?? 0;
     message.passingScore = object.passingScore ?? 0;
-    message.questions = object.questions?.map((e) => Question.fromPartial(e)) || [];
+    message.questions =
+      object.questions?.map((e) => Question.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? "";
     message.updatedAt = object.updatedAt ?? "";
     message.deletedAt = object.deletedAt ?? undefined;
@@ -1374,7 +1454,10 @@ function createBaseQuizResponse(): QuizResponse {
 }
 
 export const QuizResponse: MessageFns<QuizResponse> = {
-  encode(message: QuizResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.quiz !== undefined) {
       QuizData.encode(message.quiz, writer.uint32(10).fork()).join();
     }
@@ -1385,7 +1468,8 @@ export const QuizResponse: MessageFns<QuizResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuizResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizResponse();
     while (reader.pos < end) {
@@ -1434,13 +1518,23 @@ export const QuizResponse: MessageFns<QuizResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QuizResponse>, I>>(base?: I): QuizResponse {
+  create<I extends Exact<DeepPartial<QuizResponse>, I>>(
+    base?: I,
+  ): QuizResponse {
     return QuizResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuizResponse>, I>>(object: I): QuizResponse {
+  fromPartial<I extends Exact<DeepPartial<QuizResponse>, I>>(
+    object: I,
+  ): QuizResponse {
     const message = createBaseQuizResponse();
-    message.quiz = (object.quiz !== undefined && object.quiz !== null) ? QuizData.fromPartial(object.quiz) : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.quiz =
+      object.quiz !== undefined && object.quiz !== null
+        ? QuizData.fromPartial(object.quiz)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1450,7 +1544,10 @@ function createBaseQuizzesData(): QuizzesData {
 }
 
 export const QuizzesData: MessageFns<QuizzesData> = {
-  encode(message: QuizzesData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizzesData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.quizzes) {
       QuizData.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -1458,7 +1555,8 @@ export const QuizzesData: MessageFns<QuizzesData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuizzesData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizzesData();
     while (reader.pos < end) {
@@ -1483,7 +1581,9 @@ export const QuizzesData: MessageFns<QuizzesData> = {
 
   fromJSON(object: any): QuizzesData {
     return {
-      quizzes: globalThis.Array.isArray(object?.quizzes) ? object.quizzes.map((e: any) => QuizData.fromJSON(e)) : [],
+      quizzes: globalThis.Array.isArray(object?.quizzes)
+        ? object.quizzes.map((e: any) => QuizData.fromJSON(e))
+        : [],
     };
   },
 
@@ -1498,7 +1598,9 @@ export const QuizzesData: MessageFns<QuizzesData> = {
   create<I extends Exact<DeepPartial<QuizzesData>, I>>(base?: I): QuizzesData {
     return QuizzesData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuizzesData>, I>>(object: I): QuizzesData {
+  fromPartial<I extends Exact<DeepPartial<QuizzesData>, I>>(
+    object: I,
+  ): QuizzesData {
     const message = createBaseQuizzesData();
     message.quizzes = object.quizzes?.map((e) => QuizData.fromPartial(e)) || [];
     return message;
@@ -1510,7 +1612,10 @@ function createBaseQuizzesResponse(): QuizzesResponse {
 }
 
 export const QuizzesResponse: MessageFns<QuizzesResponse> = {
-  encode(message: QuizzesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuizzesResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.quizzes !== undefined) {
       QuizzesData.encode(message.quizzes, writer.uint32(10).fork()).join();
     }
@@ -1521,7 +1626,8 @@ export const QuizzesResponse: MessageFns<QuizzesResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuizzesResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuizzesResponse();
     while (reader.pos < end) {
@@ -1554,7 +1660,9 @@ export const QuizzesResponse: MessageFns<QuizzesResponse> = {
 
   fromJSON(object: any): QuizzesResponse {
     return {
-      quizzes: isSet(object.quizzes) ? QuizzesData.fromJSON(object.quizzes) : undefined,
+      quizzes: isSet(object.quizzes)
+        ? QuizzesData.fromJSON(object.quizzes)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1570,15 +1678,23 @@ export const QuizzesResponse: MessageFns<QuizzesResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QuizzesResponse>, I>>(base?: I): QuizzesResponse {
+  create<I extends Exact<DeepPartial<QuizzesResponse>, I>>(
+    base?: I,
+  ): QuizzesResponse {
     return QuizzesResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuizzesResponse>, I>>(object: I): QuizzesResponse {
+  fromPartial<I extends Exact<DeepPartial<QuizzesResponse>, I>>(
+    object: I,
+  ): QuizzesResponse {
     const message = createBaseQuizzesResponse();
-    message.quizzes = (object.quizzes !== undefined && object.quizzes !== null)
-      ? QuizzesData.fromPartial(object.quizzes)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.quizzes =
+      object.quizzes !== undefined && object.quizzes !== null
+        ? QuizzesData.fromPartial(object.quizzes)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1588,7 +1704,10 @@ function createBaseDeleteQuizResponse(): DeleteQuizResponse {
 }
 
 export const DeleteQuizResponse: MessageFns<DeleteQuizResponse> = {
-  encode(message: DeleteQuizResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteQuizResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.success !== undefined) {
       DeleteSuccess.encode(message.success, writer.uint32(10).fork()).join();
     }
@@ -1598,8 +1717,12 @@ export const DeleteQuizResponse: MessageFns<DeleteQuizResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteQuizResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteQuizResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteQuizResponse();
     while (reader.pos < end) {
@@ -1632,7 +1755,9 @@ export const DeleteQuizResponse: MessageFns<DeleteQuizResponse> = {
 
   fromJSON(object: any): DeleteQuizResponse {
     return {
-      success: isSet(object.success) ? DeleteSuccess.fromJSON(object.success) : undefined,
+      success: isSet(object.success)
+        ? DeleteSuccess.fromJSON(object.success)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1648,30 +1773,52 @@ export const DeleteQuizResponse: MessageFns<DeleteQuizResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteQuizResponse>, I>>(base?: I): DeleteQuizResponse {
+  create<I extends Exact<DeepPartial<DeleteQuizResponse>, I>>(
+    base?: I,
+  ): DeleteQuizResponse {
     return DeleteQuizResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteQuizResponse>, I>>(object: I): DeleteQuizResponse {
+  fromPartial<I extends Exact<DeepPartial<DeleteQuizResponse>, I>>(
+    object: I,
+  ): DeleteQuizResponse {
     const message = createBaseDeleteQuizResponse();
-    message.success = (object.success !== undefined && object.success !== null)
-      ? DeleteSuccess.fromPartial(object.success)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.success =
+      object.success !== undefined && object.success !== null
+        ? DeleteSuccess.fromPartial(object.success)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -118,7 +118,10 @@ function createBaseCreateLessonRequest(): CreateLessonRequest {
 }
 
 export const CreateLessonRequest: MessageFns<CreateLessonRequest> = {
-  encode(message: CreateLessonRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CreateLessonRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.moduleId !== "") {
       writer.uint32(18).string(message.moduleId);
     }
@@ -158,8 +161,12 @@ export const CreateLessonRequest: MessageFns<CreateLessonRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateLessonRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): CreateLessonRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateLessonRequest();
     while (reader.pos < end) {
@@ -275,47 +282,51 @@ export const CreateLessonRequest: MessageFns<CreateLessonRequest> = {
       moduleId: isSet(object.moduleId)
         ? globalThis.String(object.moduleId)
         : isSet(object.module_id)
-        ? globalThis.String(object.module_id)
-        : "",
+          ? globalThis.String(object.module_id)
+          : "",
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       isPreview: isSet(object.isPreview)
         ? globalThis.Boolean(object.isPreview)
         : isSet(object.is_preview)
-        ? globalThis.Boolean(object.is_preview)
+          ? globalThis.Boolean(object.is_preview)
+          : undefined,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
         : undefined,
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
       estimatedDuration: isSet(object.estimatedDuration)
         ? globalThis.Number(object.estimatedDuration)
         : isSet(object.estimated_duration)
-        ? globalThis.Number(object.estimated_duration)
-        : undefined,
+          ? globalThis.Number(object.estimated_duration)
+          : undefined,
       order: isSet(object.order) ? globalThis.Number(object.order) : undefined,
       title: isSet(object.title) ? globalThis.String(object.title) : undefined,
       isPublished: isSet(object.isPublished)
         ? globalThis.Boolean(object.isPublished)
         : isSet(object.is_published)
-        ? globalThis.Boolean(object.is_published)
-        : undefined,
+          ? globalThis.Boolean(object.is_published)
+          : undefined,
       contentType: isSet(object.contentType)
         ? globalThis.String(object.contentType)
         : isSet(object.content_type)
-        ? globalThis.String(object.content_type)
-        : undefined,
+          ? globalThis.String(object.content_type)
+          : undefined,
       contentUrl: isSet(object.contentUrl)
         ? globalThis.String(object.contentUrl)
         : isSet(object.content_url)
-        ? globalThis.String(object.content_url)
+          ? globalThis.String(object.content_url)
+          : undefined,
+      metadata: isSet(object.metadata)
+        ? ContentMetaData.fromJSON(object.metadata)
         : undefined,
-      metadata: isSet(object.metadata) ? ContentMetaData.fromJSON(object.metadata) : undefined,
     };
   },
 
@@ -360,10 +371,14 @@ export const CreateLessonRequest: MessageFns<CreateLessonRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateLessonRequest>, I>>(base?: I): CreateLessonRequest {
+  create<I extends Exact<DeepPartial<CreateLessonRequest>, I>>(
+    base?: I,
+  ): CreateLessonRequest {
     return CreateLessonRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateLessonRequest>, I>>(object: I): CreateLessonRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateLessonRequest>, I>>(
+    object: I,
+  ): CreateLessonRequest {
     const message = createBaseCreateLessonRequest();
     message.moduleId = object.moduleId ?? "";
     message.courseId = object.courseId ?? "";
@@ -376,9 +391,10 @@ export const CreateLessonRequest: MessageFns<CreateLessonRequest> = {
     message.isPublished = object.isPublished ?? undefined;
     message.contentType = object.contentType ?? undefined;
     message.contentUrl = object.contentUrl ?? undefined;
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? ContentMetaData.fromPartial(object.metadata)
-      : undefined;
+    message.metadata =
+      object.metadata !== undefined && object.metadata !== null
+        ? ContentMetaData.fromPartial(object.metadata)
+        : undefined;
     return message;
   },
 };
@@ -388,7 +404,10 @@ function createBaseGetLessonRequest(): GetLessonRequest {
 }
 
 export const GetLessonRequest: MessageFns<GetLessonRequest> = {
-  encode(message: GetLessonRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: GetLessonRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.lessonId !== "") {
       writer.uint32(10).string(message.lessonId);
     }
@@ -396,7 +415,8 @@ export const GetLessonRequest: MessageFns<GetLessonRequest> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): GetLessonRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetLessonRequest();
     while (reader.pos < end) {
@@ -424,8 +444,8 @@ export const GetLessonRequest: MessageFns<GetLessonRequest> = {
       lessonId: isSet(object.lessonId)
         ? globalThis.String(object.lessonId)
         : isSet(object.lesson_id)
-        ? globalThis.String(object.lesson_id)
-        : "",
+          ? globalThis.String(object.lesson_id)
+          : "",
     };
   },
 
@@ -437,10 +457,14 @@ export const GetLessonRequest: MessageFns<GetLessonRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetLessonRequest>, I>>(base?: I): GetLessonRequest {
+  create<I extends Exact<DeepPartial<GetLessonRequest>, I>>(
+    base?: I,
+  ): GetLessonRequest {
     return GetLessonRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetLessonRequest>, I>>(object: I): GetLessonRequest {
+  fromPartial<I extends Exact<DeepPartial<GetLessonRequest>, I>>(
+    object: I,
+  ): GetLessonRequest {
     const message = createBaseGetLessonRequest();
     message.lessonId = object.lessonId ?? "";
     return message;
@@ -466,7 +490,10 @@ function createBaseUpdateLessonRequest(): UpdateLessonRequest {
 }
 
 export const UpdateLessonRequest: MessageFns<UpdateLessonRequest> = {
-  encode(message: UpdateLessonRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: UpdateLessonRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.lessonId !== "") {
       writer.uint32(10).string(message.lessonId);
     }
@@ -509,8 +536,12 @@ export const UpdateLessonRequest: MessageFns<UpdateLessonRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateLessonRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): UpdateLessonRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateLessonRequest();
     while (reader.pos < end) {
@@ -634,52 +665,56 @@ export const UpdateLessonRequest: MessageFns<UpdateLessonRequest> = {
       lessonId: isSet(object.lessonId)
         ? globalThis.String(object.lessonId)
         : isSet(object.lesson_id)
-        ? globalThis.String(object.lesson_id)
-        : "",
+          ? globalThis.String(object.lesson_id)
+          : "",
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
       moduleId: isSet(object.moduleId)
         ? globalThis.String(object.moduleId)
         : isSet(object.module_id)
-        ? globalThis.String(object.module_id)
-        : "",
+          ? globalThis.String(object.module_id)
+          : "",
       isPreview: isSet(object.isPreview)
         ? globalThis.Boolean(object.isPreview)
         : isSet(object.is_preview)
-        ? globalThis.Boolean(object.is_preview)
+          ? globalThis.Boolean(object.is_preview)
+          : undefined,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
         : undefined,
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
       estimatedDuration: isSet(object.estimatedDuration)
         ? globalThis.Number(object.estimatedDuration)
         : isSet(object.estimated_duration)
-        ? globalThis.Number(object.estimated_duration)
-        : undefined,
+          ? globalThis.Number(object.estimated_duration)
+          : undefined,
       order: isSet(object.order) ? globalThis.Number(object.order) : undefined,
       title: isSet(object.title) ? globalThis.String(object.title) : undefined,
       isPublished: isSet(object.isPublished)
         ? globalThis.Boolean(object.isPublished)
         : isSet(object.is_published)
-        ? globalThis.Boolean(object.is_published)
-        : undefined,
+          ? globalThis.Boolean(object.is_published)
+          : undefined,
       contentType: isSet(object.contentType)
         ? globalThis.String(object.contentType)
         : isSet(object.content_type)
-        ? globalThis.String(object.content_type)
-        : undefined,
+          ? globalThis.String(object.content_type)
+          : undefined,
       contentUrl: isSet(object.contentUrl)
         ? globalThis.String(object.contentUrl)
         : isSet(object.content_url)
-        ? globalThis.String(object.content_url)
+          ? globalThis.String(object.content_url)
+          : undefined,
+      metadata: isSet(object.metadata)
+        ? ContentMetaData.fromJSON(object.metadata)
         : undefined,
-      metadata: isSet(object.metadata) ? ContentMetaData.fromJSON(object.metadata) : undefined,
     };
   },
 
@@ -727,10 +762,14 @@ export const UpdateLessonRequest: MessageFns<UpdateLessonRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateLessonRequest>, I>>(base?: I): UpdateLessonRequest {
+  create<I extends Exact<DeepPartial<UpdateLessonRequest>, I>>(
+    base?: I,
+  ): UpdateLessonRequest {
     return UpdateLessonRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateLessonRequest>, I>>(object: I): UpdateLessonRequest {
+  fromPartial<I extends Exact<DeepPartial<UpdateLessonRequest>, I>>(
+    object: I,
+  ): UpdateLessonRequest {
     const message = createBaseUpdateLessonRequest();
     message.lessonId = object.lessonId ?? "";
     message.courseId = object.courseId ?? "";
@@ -744,19 +783,29 @@ export const UpdateLessonRequest: MessageFns<UpdateLessonRequest> = {
     message.isPublished = object.isPublished ?? undefined;
     message.contentType = object.contentType ?? undefined;
     message.contentUrl = object.contentUrl ?? undefined;
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? ContentMetaData.fromPartial(object.metadata)
-      : undefined;
+    message.metadata =
+      object.metadata !== undefined && object.metadata !== null
+        ? ContentMetaData.fromPartial(object.metadata)
+        : undefined;
     return message;
   },
 };
 
 function createBaseContentMetaData(): ContentMetaData {
-  return { title: undefined, fileName: undefined, mimeType: undefined, fileSize: undefined, url: undefined };
+  return {
+    title: undefined,
+    fileName: undefined,
+    mimeType: undefined,
+    fileSize: undefined,
+    url: undefined,
+  };
 }
 
 export const ContentMetaData: MessageFns<ContentMetaData> = {
-  encode(message: ContentMetaData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ContentMetaData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.title !== undefined) {
       writer.uint32(10).string(message.title);
     }
@@ -776,7 +825,8 @@ export const ContentMetaData: MessageFns<ContentMetaData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ContentMetaData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContentMetaData();
     while (reader.pos < end) {
@@ -837,18 +887,18 @@ export const ContentMetaData: MessageFns<ContentMetaData> = {
       fileName: isSet(object.fileName)
         ? globalThis.String(object.fileName)
         : isSet(object.file_name)
-        ? globalThis.String(object.file_name)
-        : undefined,
+          ? globalThis.String(object.file_name)
+          : undefined,
       mimeType: isSet(object.mimeType)
         ? globalThis.String(object.mimeType)
         : isSet(object.mime_type)
-        ? globalThis.String(object.mime_type)
-        : undefined,
+          ? globalThis.String(object.mime_type)
+          : undefined,
       fileSize: isSet(object.fileSize)
         ? globalThis.String(object.fileSize)
         : isSet(object.file_size)
-        ? globalThis.String(object.file_size)
-        : undefined,
+          ? globalThis.String(object.file_size)
+          : undefined,
       url: isSet(object.url) ? globalThis.String(object.url) : undefined,
     };
   },
@@ -873,10 +923,14 @@ export const ContentMetaData: MessageFns<ContentMetaData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ContentMetaData>, I>>(base?: I): ContentMetaData {
+  create<I extends Exact<DeepPartial<ContentMetaData>, I>>(
+    base?: I,
+  ): ContentMetaData {
     return ContentMetaData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ContentMetaData>, I>>(object: I): ContentMetaData {
+  fromPartial<I extends Exact<DeepPartial<ContentMetaData>, I>>(
+    object: I,
+  ): ContentMetaData {
     const message = createBaseContentMetaData();
     message.title = object.title ?? undefined;
     message.fileName = object.fileName ?? undefined;
@@ -892,7 +946,10 @@ function createBaseDeleteLessonRequest(): DeleteLessonRequest {
 }
 
 export const DeleteLessonRequest: MessageFns<DeleteLessonRequest> = {
-  encode(message: DeleteLessonRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteLessonRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.lessonId !== "") {
       writer.uint32(10).string(message.lessonId);
     }
@@ -905,8 +962,12 @@ export const DeleteLessonRequest: MessageFns<DeleteLessonRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteLessonRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteLessonRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteLessonRequest();
     while (reader.pos < end) {
@@ -950,18 +1011,18 @@ export const DeleteLessonRequest: MessageFns<DeleteLessonRequest> = {
       lessonId: isSet(object.lessonId)
         ? globalThis.String(object.lessonId)
         : isSet(object.lesson_id)
-        ? globalThis.String(object.lesson_id)
-        : "",
+          ? globalThis.String(object.lesson_id)
+          : "",
       courseId: isSet(object.courseId)
         ? globalThis.String(object.courseId)
         : isSet(object.course_id)
-        ? globalThis.String(object.course_id)
-        : "",
+          ? globalThis.String(object.course_id)
+          : "",
       userId: isSet(object.userId)
         ? globalThis.String(object.userId)
         : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "",
+          ? globalThis.String(object.user_id)
+          : "",
     };
   },
 
@@ -979,10 +1040,14 @@ export const DeleteLessonRequest: MessageFns<DeleteLessonRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteLessonRequest>, I>>(base?: I): DeleteLessonRequest {
+  create<I extends Exact<DeepPartial<DeleteLessonRequest>, I>>(
+    base?: I,
+  ): DeleteLessonRequest {
     return DeleteLessonRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteLessonRequest>, I>>(object: I): DeleteLessonRequest {
+  fromPartial<I extends Exact<DeepPartial<DeleteLessonRequest>, I>>(
+    object: I,
+  ): DeleteLessonRequest {
     const message = createBaseDeleteLessonRequest();
     message.lessonId = object.lessonId ?? "";
     message.courseId = object.courseId ?? "";
@@ -995,65 +1060,77 @@ function createBaseGetLessonsByModuleRequest(): GetLessonsByModuleRequest {
   return { moduleId: "" };
 }
 
-export const GetLessonsByModuleRequest: MessageFns<GetLessonsByModuleRequest> = {
-  encode(message: GetLessonsByModuleRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.moduleId !== "") {
-      writer.uint32(10).string(message.moduleId);
-    }
-    return writer;
-  },
+export const GetLessonsByModuleRequest: MessageFns<GetLessonsByModuleRequest> =
+  {
+    encode(
+      message: GetLessonsByModuleRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.moduleId !== "") {
+        writer.uint32(10).string(message.moduleId);
+      }
+      return writer;
+    },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetLessonsByModuleRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetLessonsByModuleRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetLessonsByModuleRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetLessonsByModuleRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
+
+            message.moduleId = reader.string();
+            continue;
           }
-
-          message.moduleId = reader.string();
-          continue;
         }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      return message;
+    },
+
+    fromJSON(object: any): GetLessonsByModuleRequest {
+      return {
+        moduleId: isSet(object.moduleId)
+          ? globalThis.String(object.moduleId)
+          : isSet(object.module_id)
+            ? globalThis.String(object.module_id)
+            : "",
+      };
+    },
+
+    toJSON(message: GetLessonsByModuleRequest): unknown {
+      const obj: any = {};
+      if (message.moduleId !== "") {
+        obj.moduleId = message.moduleId;
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return obj;
+    },
 
-  fromJSON(object: any): GetLessonsByModuleRequest {
-    return {
-      moduleId: isSet(object.moduleId)
-        ? globalThis.String(object.moduleId)
-        : isSet(object.module_id)
-        ? globalThis.String(object.module_id)
-        : "",
-    };
-  },
-
-  toJSON(message: GetLessonsByModuleRequest): unknown {
-    const obj: any = {};
-    if (message.moduleId !== "") {
-      obj.moduleId = message.moduleId;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GetLessonsByModuleRequest>, I>>(base?: I): GetLessonsByModuleRequest {
-    return GetLessonsByModuleRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetLessonsByModuleRequest>, I>>(object: I): GetLessonsByModuleRequest {
-    const message = createBaseGetLessonsByModuleRequest();
-    message.moduleId = object.moduleId ?? "";
-    return message;
-  },
-};
+    create<I extends Exact<DeepPartial<GetLessonsByModuleRequest>, I>>(
+      base?: I,
+    ): GetLessonsByModuleRequest {
+      return GetLessonsByModuleRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetLessonsByModuleRequest>, I>>(
+      object: I,
+    ): GetLessonsByModuleRequest {
+      const message = createBaseGetLessonsByModuleRequest();
+      message.moduleId = object.moduleId ?? "";
+      return message;
+    },
+  };
 
 function createBaseLessonData(): LessonData {
   return {
@@ -1075,7 +1152,10 @@ function createBaseLessonData(): LessonData {
 }
 
 export const LessonData: MessageFns<LessonData> = {
-  encode(message: LessonData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: LessonData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -1122,7 +1202,8 @@ export const LessonData: MessageFns<LessonData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): LessonData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLessonData();
     while (reader.pos < end) {
@@ -1255,52 +1336,56 @@ export const LessonData: MessageFns<LessonData> = {
       moduleId: isSet(object.moduleId)
         ? globalThis.String(object.moduleId)
         : isSet(object.module_id)
-        ? globalThis.String(object.module_id)
-        : "",
+          ? globalThis.String(object.module_id)
+          : "",
       isPreview: isSet(object.isPreview)
         ? globalThis.Boolean(object.isPreview)
         : isSet(object.is_preview)
-        ? globalThis.Boolean(object.is_preview)
-        : false,
-      description: isSet(object.description) ? globalThis.String(object.description) : "",
+          ? globalThis.Boolean(object.is_preview)
+          : false,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
+        : "",
       estimatedDuration: isSet(object.estimatedDuration)
         ? globalThis.Number(object.estimatedDuration)
         : isSet(object.estimated_duration)
-        ? globalThis.Number(object.estimated_duration)
-        : 0,
+          ? globalThis.Number(object.estimated_duration)
+          : 0,
       order: isSet(object.order) ? globalThis.Number(object.order) : 0,
       title: isSet(object.title) ? globalThis.String(object.title) : "",
       isPublished: isSet(object.isPublished)
         ? globalThis.Boolean(object.isPublished)
         : isSet(object.is_published)
-        ? globalThis.Boolean(object.is_published)
-        : false,
+          ? globalThis.Boolean(object.is_published)
+          : false,
       contentType: isSet(object.contentType)
         ? globalThis.String(object.contentType)
         : isSet(object.content_type)
-        ? globalThis.String(object.content_type)
-        : "",
+          ? globalThis.String(object.content_type)
+          : "",
       contentUrl: isSet(object.contentUrl)
         ? globalThis.String(object.contentUrl)
         : isSet(object.content_url)
-        ? globalThis.String(object.content_url)
-        : "",
-      metadata: isSet(object.metadata) ? ContentMetaData.fromJSON(object.metadata) : undefined,
+          ? globalThis.String(object.content_url)
+          : "",
+      metadata: isSet(object.metadata)
+        ? ContentMetaData.fromJSON(object.metadata)
+        : undefined,
       createdAt: isSet(object.createdAt)
         ? globalThis.String(object.createdAt)
         : isSet(object.created_at)
-        ? globalThis.String(object.created_at)
-        : "",
+          ? globalThis.String(object.created_at)
+          : "",
       updatedAt: isSet(object.updatedAt)
         ? globalThis.String(object.updatedAt)
         : isSet(object.updated_at)
-        ? globalThis.String(object.updated_at)
-        : "",
+          ? globalThis.String(object.updated_at)
+          : "",
       deletedAt: isSet(object.deletedAt)
         ? globalThis.String(object.deletedAt)
         : isSet(object.deleted_at)
-        ? globalThis.String(object.deleted_at)
-        : undefined,
+          ? globalThis.String(object.deleted_at)
+          : undefined,
     };
   },
 
@@ -1354,7 +1439,9 @@ export const LessonData: MessageFns<LessonData> = {
   create<I extends Exact<DeepPartial<LessonData>, I>>(base?: I): LessonData {
     return LessonData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<LessonData>, I>>(object: I): LessonData {
+  fromPartial<I extends Exact<DeepPartial<LessonData>, I>>(
+    object: I,
+  ): LessonData {
     const message = createBaseLessonData();
     message.id = object.id ?? "";
     message.moduleId = object.moduleId ?? "";
@@ -1366,9 +1453,10 @@ export const LessonData: MessageFns<LessonData> = {
     message.isPublished = object.isPublished ?? false;
     message.contentType = object.contentType ?? "";
     message.contentUrl = object.contentUrl ?? "";
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? ContentMetaData.fromPartial(object.metadata)
-      : undefined;
+    message.metadata =
+      object.metadata !== undefined && object.metadata !== null
+        ? ContentMetaData.fromPartial(object.metadata)
+        : undefined;
     message.createdAt = object.createdAt ?? "";
     message.updatedAt = object.updatedAt ?? "";
     message.deletedAt = object.deletedAt ?? undefined;
@@ -1381,7 +1469,10 @@ function createBaseLessonResponse(): LessonResponse {
 }
 
 export const LessonResponse: MessageFns<LessonResponse> = {
-  encode(message: LessonResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: LessonResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.lesson !== undefined) {
       LessonData.encode(message.lesson, writer.uint32(10).fork()).join();
     }
@@ -1392,7 +1483,8 @@ export const LessonResponse: MessageFns<LessonResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): LessonResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLessonResponse();
     while (reader.pos < end) {
@@ -1425,7 +1517,9 @@ export const LessonResponse: MessageFns<LessonResponse> = {
 
   fromJSON(object: any): LessonResponse {
     return {
-      lesson: isSet(object.lesson) ? LessonData.fromJSON(object.lesson) : undefined,
+      lesson: isSet(object.lesson)
+        ? LessonData.fromJSON(object.lesson)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1441,15 +1535,23 @@ export const LessonResponse: MessageFns<LessonResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<LessonResponse>, I>>(base?: I): LessonResponse {
+  create<I extends Exact<DeepPartial<LessonResponse>, I>>(
+    base?: I,
+  ): LessonResponse {
     return LessonResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<LessonResponse>, I>>(object: I): LessonResponse {
+  fromPartial<I extends Exact<DeepPartial<LessonResponse>, I>>(
+    object: I,
+  ): LessonResponse {
     const message = createBaseLessonResponse();
-    message.lesson = (object.lesson !== undefined && object.lesson !== null)
-      ? LessonData.fromPartial(object.lesson)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.lesson =
+      object.lesson !== undefined && object.lesson !== null
+        ? LessonData.fromPartial(object.lesson)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1459,7 +1561,10 @@ function createBaseLessonsData(): LessonsData {
 }
 
 export const LessonsData: MessageFns<LessonsData> = {
-  encode(message: LessonsData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: LessonsData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.lessons) {
       LessonData.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -1467,7 +1572,8 @@ export const LessonsData: MessageFns<LessonsData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): LessonsData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLessonsData();
     while (reader.pos < end) {
@@ -1492,7 +1598,9 @@ export const LessonsData: MessageFns<LessonsData> = {
 
   fromJSON(object: any): LessonsData {
     return {
-      lessons: globalThis.Array.isArray(object?.lessons) ? object.lessons.map((e: any) => LessonData.fromJSON(e)) : [],
+      lessons: globalThis.Array.isArray(object?.lessons)
+        ? object.lessons.map((e: any) => LessonData.fromJSON(e))
+        : [],
     };
   },
 
@@ -1507,9 +1615,12 @@ export const LessonsData: MessageFns<LessonsData> = {
   create<I extends Exact<DeepPartial<LessonsData>, I>>(base?: I): LessonsData {
     return LessonsData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<LessonsData>, I>>(object: I): LessonsData {
+  fromPartial<I extends Exact<DeepPartial<LessonsData>, I>>(
+    object: I,
+  ): LessonsData {
     const message = createBaseLessonsData();
-    message.lessons = object.lessons?.map((e) => LessonData.fromPartial(e)) || [];
+    message.lessons =
+      object.lessons?.map((e) => LessonData.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1519,7 +1630,10 @@ function createBaseLessonsResponse(): LessonsResponse {
 }
 
 export const LessonsResponse: MessageFns<LessonsResponse> = {
-  encode(message: LessonsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: LessonsResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.lessons !== undefined) {
       LessonsData.encode(message.lessons, writer.uint32(10).fork()).join();
     }
@@ -1530,7 +1644,8 @@ export const LessonsResponse: MessageFns<LessonsResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): LessonsResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLessonsResponse();
     while (reader.pos < end) {
@@ -1563,7 +1678,9 @@ export const LessonsResponse: MessageFns<LessonsResponse> = {
 
   fromJSON(object: any): LessonsResponse {
     return {
-      lessons: isSet(object.lessons) ? LessonsData.fromJSON(object.lessons) : undefined,
+      lessons: isSet(object.lessons)
+        ? LessonsData.fromJSON(object.lessons)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1579,15 +1696,23 @@ export const LessonsResponse: MessageFns<LessonsResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<LessonsResponse>, I>>(base?: I): LessonsResponse {
+  create<I extends Exact<DeepPartial<LessonsResponse>, I>>(
+    base?: I,
+  ): LessonsResponse {
     return LessonsResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<LessonsResponse>, I>>(object: I): LessonsResponse {
+  fromPartial<I extends Exact<DeepPartial<LessonsResponse>, I>>(
+    object: I,
+  ): LessonsResponse {
     const message = createBaseLessonsResponse();
-    message.lessons = (object.lessons !== undefined && object.lessons !== null)
-      ? LessonsData.fromPartial(object.lessons)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.lessons =
+      object.lessons !== undefined && object.lessons !== null
+        ? LessonsData.fromPartial(object.lessons)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1597,7 +1722,10 @@ function createBaseDeleteLessonResponse(): DeleteLessonResponse {
 }
 
 export const DeleteLessonResponse: MessageFns<DeleteLessonResponse> = {
-  encode(message: DeleteLessonResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteLessonResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.success !== undefined) {
       DeleteSuccess.encode(message.success, writer.uint32(10).fork()).join();
     }
@@ -1607,8 +1735,12 @@ export const DeleteLessonResponse: MessageFns<DeleteLessonResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteLessonResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteLessonResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteLessonResponse();
     while (reader.pos < end) {
@@ -1641,7 +1773,9 @@ export const DeleteLessonResponse: MessageFns<DeleteLessonResponse> = {
 
   fromJSON(object: any): DeleteLessonResponse {
     return {
-      success: isSet(object.success) ? DeleteSuccess.fromJSON(object.success) : undefined,
+      success: isSet(object.success)
+        ? DeleteSuccess.fromJSON(object.success)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1657,30 +1791,52 @@ export const DeleteLessonResponse: MessageFns<DeleteLessonResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteLessonResponse>, I>>(base?: I): DeleteLessonResponse {
+  create<I extends Exact<DeepPartial<DeleteLessonResponse>, I>>(
+    base?: I,
+  ): DeleteLessonResponse {
     return DeleteLessonResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteLessonResponse>, I>>(object: I): DeleteLessonResponse {
+  fromPartial<I extends Exact<DeepPartial<DeleteLessonResponse>, I>>(
+    object: I,
+  ): DeleteLessonResponse {
     const message = createBaseDeleteLessonResponse();
-    message.success = (object.success !== undefined && object.success !== null)
-      ? DeleteSuccess.fromPartial(object.success)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.success =
+      object.success !== undefined && object.success !== null
+        ? DeleteSuccess.fromPartial(object.success)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

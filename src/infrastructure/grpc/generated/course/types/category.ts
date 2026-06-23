@@ -104,7 +104,10 @@ function createBaseGetAllCategoriesRequest(): GetAllCategoriesRequest {
 }
 
 export const GetAllCategoriesRequest: MessageFns<GetAllCategoriesRequest> = {
-  encode(message: GetAllCategoriesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: GetAllCategoriesRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.includeDeleted !== undefined) {
       writer.uint32(8).bool(message.includeDeleted);
     }
@@ -114,8 +117,12 @@ export const GetAllCategoriesRequest: MessageFns<GetAllCategoriesRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetAllCategoriesRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): GetAllCategoriesRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetAllCategoriesRequest();
     while (reader.pos < end) {
@@ -151,13 +158,13 @@ export const GetAllCategoriesRequest: MessageFns<GetAllCategoriesRequest> = {
       includeDeleted: isSet(object.includeDeleted)
         ? globalThis.Boolean(object.includeDeleted)
         : isSet(object.include_deleted)
-        ? globalThis.Boolean(object.include_deleted)
-        : undefined,
+          ? globalThis.Boolean(object.include_deleted)
+          : undefined,
       activeOnly: isSet(object.activeOnly)
         ? globalThis.Boolean(object.activeOnly)
         : isSet(object.active_only)
-        ? globalThis.Boolean(object.active_only)
-        : undefined,
+          ? globalThis.Boolean(object.active_only)
+          : undefined,
     };
   },
 
@@ -172,10 +179,14 @@ export const GetAllCategoriesRequest: MessageFns<GetAllCategoriesRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetAllCategoriesRequest>, I>>(base?: I): GetAllCategoriesRequest {
+  create<I extends Exact<DeepPartial<GetAllCategoriesRequest>, I>>(
+    base?: I,
+  ): GetAllCategoriesRequest {
     return GetAllCategoriesRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetAllCategoriesRequest>, I>>(object: I): GetAllCategoriesRequest {
+  fromPartial<I extends Exact<DeepPartial<GetAllCategoriesRequest>, I>>(
+    object: I,
+  ): GetAllCategoriesRequest {
     const message = createBaseGetAllCategoriesRequest();
     message.includeDeleted = object.includeDeleted ?? undefined;
     message.activeOnly = object.activeOnly ?? undefined;
@@ -196,7 +207,10 @@ function createBaseCreateCategoryRequest(): CreateCategoryRequest {
 }
 
 export const CreateCategoryRequest: MessageFns<CreateCategoryRequest> = {
-  encode(message: CreateCategoryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CreateCategoryRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -221,8 +235,12 @@ export const CreateCategoryRequest: MessageFns<CreateCategoryRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateCategoryRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): CreateCategoryRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateCategoryRequest();
     while (reader.pos < end) {
@@ -297,14 +315,16 @@ export const CreateCategoryRequest: MessageFns<CreateCategoryRequest> = {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       slug: isSet(object.slug) ? globalThis.String(object.slug) : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
+        : undefined,
       icon: isSet(object.icon) ? globalThis.String(object.icon) : undefined,
       color: isSet(object.color) ? globalThis.String(object.color) : undefined,
       parentId: isSet(object.parentId)
         ? globalThis.String(object.parentId)
         : isSet(object.parent_id)
-        ? globalThis.String(object.parent_id)
-        : undefined,
+          ? globalThis.String(object.parent_id)
+          : undefined,
       order: isSet(object.order) ? globalThis.Number(object.order) : undefined,
     };
   },
@@ -335,10 +355,14 @@ export const CreateCategoryRequest: MessageFns<CreateCategoryRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateCategoryRequest>, I>>(base?: I): CreateCategoryRequest {
+  create<I extends Exact<DeepPartial<CreateCategoryRequest>, I>>(
+    base?: I,
+  ): CreateCategoryRequest {
     return CreateCategoryRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateCategoryRequest>, I>>(object: I): CreateCategoryRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateCategoryRequest>, I>>(
+    object: I,
+  ): CreateCategoryRequest {
     const message = createBaseCreateCategoryRequest();
     message.name = object.name ?? "";
     message.slug = object.slug ?? "";
@@ -365,7 +389,10 @@ function createBaseUpdateCategoryRequest(): UpdateCategoryRequest {
 }
 
 export const UpdateCategoryRequest: MessageFns<UpdateCategoryRequest> = {
-  encode(message: UpdateCategoryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: UpdateCategoryRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -393,8 +420,12 @@ export const UpdateCategoryRequest: MessageFns<UpdateCategoryRequest> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateCategoryRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): UpdateCategoryRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateCategoryRequest();
     while (reader.pos < end) {
@@ -478,14 +509,16 @@ export const UpdateCategoryRequest: MessageFns<UpdateCategoryRequest> = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : undefined,
       slug: isSet(object.slug) ? globalThis.String(object.slug) : undefined,
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
+        : undefined,
       icon: isSet(object.icon) ? globalThis.String(object.icon) : undefined,
       color: isSet(object.color) ? globalThis.String(object.color) : undefined,
       parentId: isSet(object.parentId)
         ? globalThis.String(object.parentId)
         : isSet(object.parent_id)
-        ? globalThis.String(object.parent_id)
-        : undefined,
+          ? globalThis.String(object.parent_id)
+          : undefined,
       order: isSet(object.order) ? globalThis.Number(object.order) : undefined,
     };
   },
@@ -519,10 +552,14 @@ export const UpdateCategoryRequest: MessageFns<UpdateCategoryRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateCategoryRequest>, I>>(base?: I): UpdateCategoryRequest {
+  create<I extends Exact<DeepPartial<UpdateCategoryRequest>, I>>(
+    base?: I,
+  ): UpdateCategoryRequest {
     return UpdateCategoryRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateCategoryRequest>, I>>(object: I): UpdateCategoryRequest {
+  fromPartial<I extends Exact<DeepPartial<UpdateCategoryRequest>, I>>(
+    object: I,
+  ): UpdateCategoryRequest {
     const message = createBaseUpdateCategoryRequest();
     message.id = object.id ?? "";
     message.name = object.name ?? undefined;
@@ -541,15 +578,22 @@ function createBaseDeleteCategoryRequest(): DeleteCategoryRequest {
 }
 
 export const DeleteCategoryRequest: MessageFns<DeleteCategoryRequest> = {
-  encode(message: DeleteCategoryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteCategoryRequest,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteCategoryRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteCategoryRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteCategoryRequest();
     while (reader.pos < end) {
@@ -584,10 +628,14 @@ export const DeleteCategoryRequest: MessageFns<DeleteCategoryRequest> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteCategoryRequest>, I>>(base?: I): DeleteCategoryRequest {
+  create<I extends Exact<DeepPartial<DeleteCategoryRequest>, I>>(
+    base?: I,
+  ): DeleteCategoryRequest {
     return DeleteCategoryRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteCategoryRequest>, I>>(object: I): DeleteCategoryRequest {
+  fromPartial<I extends Exact<DeepPartial<DeleteCategoryRequest>, I>>(
+    object: I,
+  ): DeleteCategoryRequest {
     const message = createBaseDeleteCategoryRequest();
     message.id = object.id ?? "";
     return message;
@@ -598,117 +646,143 @@ function createBaseGetCategoriesStatsRequest(): GetCategoriesStatsRequest {
   return { top: undefined };
 }
 
-export const GetCategoriesStatsRequest: MessageFns<GetCategoriesStatsRequest> = {
-  encode(message: GetCategoriesStatsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.top !== undefined) {
-      writer.uint32(8).int32(message.top);
-    }
-    return writer;
-  },
+export const GetCategoriesStatsRequest: MessageFns<GetCategoriesStatsRequest> =
+  {
+    encode(
+      message: GetCategoriesStatsRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.top !== undefined) {
+        writer.uint32(8).int32(message.top);
+      }
+      return writer;
+    },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetCategoriesStatsRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetCategoriesStatsRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetCategoriesStatsRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetCategoriesStatsRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 8) {
+              break;
+            }
+
+            message.top = reader.int32();
+            continue;
           }
-
-          message.top = reader.int32();
-          continue;
         }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      return message;
+    },
+
+    fromJSON(object: any): GetCategoriesStatsRequest {
+      return {
+        top: isSet(object.top) ? globalThis.Number(object.top) : undefined,
+      };
+    },
+
+    toJSON(message: GetCategoriesStatsRequest): unknown {
+      const obj: any = {};
+      if (message.top !== undefined) {
+        obj.top = Math.round(message.top);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return obj;
+    },
 
-  fromJSON(object: any): GetCategoriesStatsRequest {
-    return { top: isSet(object.top) ? globalThis.Number(object.top) : undefined };
-  },
-
-  toJSON(message: GetCategoriesStatsRequest): unknown {
-    const obj: any = {};
-    if (message.top !== undefined) {
-      obj.top = Math.round(message.top);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GetCategoriesStatsRequest>, I>>(base?: I): GetCategoriesStatsRequest {
-    return GetCategoriesStatsRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetCategoriesStatsRequest>, I>>(object: I): GetCategoriesStatsRequest {
-    const message = createBaseGetCategoriesStatsRequest();
-    message.top = object.top ?? undefined;
-    return message;
-  },
-};
+    create<I extends Exact<DeepPartial<GetCategoriesStatsRequest>, I>>(
+      base?: I,
+    ): GetCategoriesStatsRequest {
+      return GetCategoriesStatsRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetCategoriesStatsRequest>, I>>(
+      object: I,
+    ): GetCategoriesStatsRequest {
+      const message = createBaseGetCategoriesStatsRequest();
+      message.top = object.top ?? undefined;
+      return message;
+    },
+  };
 
 function createBaseToggleCategoryStatusRequest(): ToggleCategoryStatusRequest {
   return { id: "" };
 }
 
-export const ToggleCategoryStatusRequest: MessageFns<ToggleCategoryStatusRequest> = {
-  encode(message: ToggleCategoryStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
-    }
-    return writer;
-  },
+export const ToggleCategoryStatusRequest: MessageFns<ToggleCategoryStatusRequest> =
+  {
+    encode(
+      message: ToggleCategoryStatusRequest,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.id !== "") {
+        writer.uint32(10).string(message.id);
+      }
+      return writer;
+    },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ToggleCategoryStatusRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseToggleCategoryStatusRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): ToggleCategoryStatusRequest {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseToggleCategoryStatusRequest();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
+
+            message.id = reader.string();
+            continue;
           }
-
-          message.id = reader.string();
-          continue;
         }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      return message;
+    },
+
+    fromJSON(object: any): ToggleCategoryStatusRequest {
+      return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    },
+
+    toJSON(message: ToggleCategoryStatusRequest): unknown {
+      const obj: any = {};
+      if (message.id !== "") {
+        obj.id = message.id;
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return obj;
+    },
 
-  fromJSON(object: any): ToggleCategoryStatusRequest {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
-  },
-
-  toJSON(message: ToggleCategoryStatusRequest): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ToggleCategoryStatusRequest>, I>>(base?: I): ToggleCategoryStatusRequest {
-    return ToggleCategoryStatusRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ToggleCategoryStatusRequest>, I>>(object: I): ToggleCategoryStatusRequest {
-    const message = createBaseToggleCategoryStatusRequest();
-    message.id = object.id ?? "";
-    return message;
-  },
-};
+    create<I extends Exact<DeepPartial<ToggleCategoryStatusRequest>, I>>(
+      base?: I,
+    ): ToggleCategoryStatusRequest {
+      return ToggleCategoryStatusRequest.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<ToggleCategoryStatusRequest>, I>>(
+      object: I,
+    ): ToggleCategoryStatusRequest {
+      const message = createBaseToggleCategoryStatusRequest();
+      message.id = object.id ?? "";
+      return message;
+    },
+  };
 
 function createBaseCategoryData(): CategoryData {
   return {
@@ -730,7 +804,10 @@ function createBaseCategoryData(): CategoryData {
 }
 
 export const CategoryData: MessageFns<CategoryData> = {
-  encode(message: CategoryData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CategoryData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -777,7 +854,8 @@ export const CategoryData: MessageFns<CategoryData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CategoryData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCategoryData();
     while (reader.pos < end) {
@@ -892,7 +970,9 @@ export const CategoryData: MessageFns<CategoryData> = {
             break;
           }
 
-          message.subcategories.push(CategoryData.decode(reader, reader.uint32()));
+          message.subcategories.push(
+            CategoryData.decode(reader, reader.uint32()),
+          );
           continue;
         }
       }
@@ -909,40 +989,42 @@ export const CategoryData: MessageFns<CategoryData> = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       slug: isSet(object.slug) ? globalThis.String(object.slug) : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : undefined,
+      description: isSet(object.description)
+        ? globalThis.String(object.description)
+        : undefined,
       icon: isSet(object.icon) ? globalThis.String(object.icon) : undefined,
       color: isSet(object.color) ? globalThis.String(object.color) : undefined,
       isActive: isSet(object.isActive)
         ? globalThis.Boolean(object.isActive)
         : isSet(object.is_active)
-        ? globalThis.Boolean(object.is_active)
-        : false,
+          ? globalThis.Boolean(object.is_active)
+          : false,
       parentId: isSet(object.parentId)
         ? globalThis.String(object.parentId)
         : isSet(object.parent_id)
-        ? globalThis.String(object.parent_id)
-        : undefined,
+          ? globalThis.String(object.parent_id)
+          : undefined,
       courseCount: isSet(object.courseCount)
         ? globalThis.Number(object.courseCount)
         : isSet(object.course_count)
-        ? globalThis.Number(object.course_count)
-        : 0,
+          ? globalThis.Number(object.course_count)
+          : 0,
       order: isSet(object.order) ? globalThis.Number(object.order) : 0,
       createdAt: isSet(object.createdAt)
         ? globalThis.String(object.createdAt)
         : isSet(object.created_at)
-        ? globalThis.String(object.created_at)
-        : "",
+          ? globalThis.String(object.created_at)
+          : "",
       updatedAt: isSet(object.updatedAt)
         ? globalThis.String(object.updatedAt)
         : isSet(object.updated_at)
-        ? globalThis.String(object.updated_at)
-        : "",
+          ? globalThis.String(object.updated_at)
+          : "",
       deletedAt: isSet(object.deletedAt)
         ? globalThis.String(object.deletedAt)
         : isSet(object.deleted_at)
-        ? globalThis.String(object.deleted_at)
-        : undefined,
+          ? globalThis.String(object.deleted_at)
+          : undefined,
       subcategories: globalThis.Array.isArray(object?.subcategories)
         ? object.subcategories.map((e: any) => CategoryData.fromJSON(e))
         : [],
@@ -991,15 +1073,21 @@ export const CategoryData: MessageFns<CategoryData> = {
       obj.deletedAt = message.deletedAt;
     }
     if (message.subcategories?.length) {
-      obj.subcategories = message.subcategories.map((e) => CategoryData.toJSON(e));
+      obj.subcategories = message.subcategories.map((e) =>
+        CategoryData.toJSON(e),
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CategoryData>, I>>(base?: I): CategoryData {
+  create<I extends Exact<DeepPartial<CategoryData>, I>>(
+    base?: I,
+  ): CategoryData {
     return CategoryData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CategoryData>, I>>(object: I): CategoryData {
+  fromPartial<I extends Exact<DeepPartial<CategoryData>, I>>(
+    object: I,
+  ): CategoryData {
     const message = createBaseCategoryData();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
@@ -1014,7 +1102,8 @@ export const CategoryData: MessageFns<CategoryData> = {
     message.createdAt = object.createdAt ?? "";
     message.updatedAt = object.updatedAt ?? "";
     message.deletedAt = object.deletedAt ?? undefined;
-    message.subcategories = object.subcategories?.map((e) => CategoryData.fromPartial(e)) || [];
+    message.subcategories =
+      object.subcategories?.map((e) => CategoryData.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1024,7 +1113,10 @@ function createBaseCategoryResponse(): CategoryResponse {
 }
 
 export const CategoryResponse: MessageFns<CategoryResponse> = {
-  encode(message: CategoryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CategoryResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.category !== undefined) {
       CategoryData.encode(message.category, writer.uint32(10).fork()).join();
     }
@@ -1035,7 +1127,8 @@ export const CategoryResponse: MessageFns<CategoryResponse> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CategoryResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCategoryResponse();
     while (reader.pos < end) {
@@ -1068,7 +1161,9 @@ export const CategoryResponse: MessageFns<CategoryResponse> = {
 
   fromJSON(object: any): CategoryResponse {
     return {
-      category: isSet(object.category) ? CategoryData.fromJSON(object.category) : undefined,
+      category: isSet(object.category)
+        ? CategoryData.fromJSON(object.category)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1084,15 +1179,23 @@ export const CategoryResponse: MessageFns<CategoryResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CategoryResponse>, I>>(base?: I): CategoryResponse {
+  create<I extends Exact<DeepPartial<CategoryResponse>, I>>(
+    base?: I,
+  ): CategoryResponse {
     return CategoryResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CategoryResponse>, I>>(object: I): CategoryResponse {
+  fromPartial<I extends Exact<DeepPartial<CategoryResponse>, I>>(
+    object: I,
+  ): CategoryResponse {
     const message = createBaseCategoryResponse();
-    message.category = (object.category !== undefined && object.category !== null)
-      ? CategoryData.fromPartial(object.category)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.category =
+      object.category !== undefined && object.category !== null
+        ? CategoryData.fromPartial(object.category)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1101,86 +1204,107 @@ function createBaseGetCategoriesStatsResponse(): GetCategoriesStatsResponse {
   return { stats: undefined, error: undefined };
 }
 
-export const GetCategoriesStatsResponse: MessageFns<GetCategoriesStatsResponse> = {
-  encode(message: GetCategoriesStatsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.stats !== undefined) {
-      CategoriesStats.encode(message.stats, writer.uint32(10).fork()).join();
-    }
-    if (message.error !== undefined) {
-      Error.encode(message.error, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetCategoriesStatsResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetCategoriesStatsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.stats = CategoriesStats.decode(reader, reader.uint32());
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.error = Error.decode(reader, reader.uint32());
-          continue;
-        }
+export const GetCategoriesStatsResponse: MessageFns<GetCategoriesStatsResponse> =
+  {
+    encode(
+      message: GetCategoriesStatsResponse,
+      writer: BinaryWriter = new BinaryWriter(),
+    ): BinaryWriter {
+      if (message.stats !== undefined) {
+        CategoriesStats.encode(message.stats, writer.uint32(10).fork()).join();
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.error !== undefined) {
+        Error.encode(message.error, writer.uint32(18).fork()).join();
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      return writer;
+    },
 
-  fromJSON(object: any): GetCategoriesStatsResponse {
-    return {
-      stats: isSet(object.stats) ? CategoriesStats.fromJSON(object.stats) : undefined,
-      error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
-    };
-  },
+    decode(
+      input: BinaryReader | Uint8Array,
+      length?: number,
+    ): GetCategoriesStatsResponse {
+      const reader =
+        input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseGetCategoriesStatsResponse();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: GetCategoriesStatsResponse): unknown {
-    const obj: any = {};
-    if (message.stats !== undefined) {
-      obj.stats = CategoriesStats.toJSON(message.stats);
-    }
-    if (message.error !== undefined) {
-      obj.error = Error.toJSON(message.error);
-    }
-    return obj;
-  },
+            message.stats = CategoriesStats.decode(reader, reader.uint32());
+            continue;
+          }
+          case 2: {
+            if (tag !== 18) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<GetCategoriesStatsResponse>, I>>(base?: I): GetCategoriesStatsResponse {
-    return GetCategoriesStatsResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GetCategoriesStatsResponse>, I>>(object: I): GetCategoriesStatsResponse {
-    const message = createBaseGetCategoriesStatsResponse();
-    message.stats = (object.stats !== undefined && object.stats !== null)
-      ? CategoriesStats.fromPartial(object.stats)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
-    return message;
-  },
-};
+            message.error = Error.decode(reader, reader.uint32());
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): GetCategoriesStatsResponse {
+      return {
+        stats: isSet(object.stats)
+          ? CategoriesStats.fromJSON(object.stats)
+          : undefined,
+        error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
+      };
+    },
+
+    toJSON(message: GetCategoriesStatsResponse): unknown {
+      const obj: any = {};
+      if (message.stats !== undefined) {
+        obj.stats = CategoriesStats.toJSON(message.stats);
+      }
+      if (message.error !== undefined) {
+        obj.error = Error.toJSON(message.error);
+      }
+      return obj;
+    },
+
+    create<I extends Exact<DeepPartial<GetCategoriesStatsResponse>, I>>(
+      base?: I,
+    ): GetCategoriesStatsResponse {
+      return GetCategoriesStatsResponse.fromPartial(base ?? ({} as any));
+    },
+    fromPartial<I extends Exact<DeepPartial<GetCategoriesStatsResponse>, I>>(
+      object: I,
+    ): GetCategoriesStatsResponse {
+      const message = createBaseGetCategoriesStatsResponse();
+      message.stats =
+        object.stats !== undefined && object.stats !== null
+          ? CategoriesStats.fromPartial(object.stats)
+          : undefined;
+      message.error =
+        object.error !== undefined && object.error !== null
+          ? Error.fromPartial(object.error)
+          : undefined;
+      return message;
+    },
+  };
 
 function createBaseCategoriesData(): CategoriesData {
   return { categories: [], total: 0 };
 }
 
 export const CategoriesData: MessageFns<CategoriesData> = {
-  encode(message: CategoriesData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CategoriesData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.categories) {
       CategoryData.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -1191,7 +1315,8 @@ export const CategoriesData: MessageFns<CategoriesData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CategoriesData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCategoriesData();
     while (reader.pos < end) {
@@ -1242,12 +1367,17 @@ export const CategoriesData: MessageFns<CategoriesData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CategoriesData>, I>>(base?: I): CategoriesData {
+  create<I extends Exact<DeepPartial<CategoriesData>, I>>(
+    base?: I,
+  ): CategoriesData {
     return CategoriesData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CategoriesData>, I>>(object: I): CategoriesData {
+  fromPartial<I extends Exact<DeepPartial<CategoriesData>, I>>(
+    object: I,
+  ): CategoriesData {
     const message = createBaseCategoriesData();
-    message.categories = object.categories?.map((e) => CategoryData.fromPartial(e)) || [];
+    message.categories =
+      object.categories?.map((e) => CategoryData.fromPartial(e)) || [];
     message.total = object.total ?? 0;
     return message;
   },
@@ -1258,7 +1388,10 @@ function createBaseCategoriesStats(): CategoriesStats {
 }
 
 export const CategoriesStats: MessageFns<CategoriesStats> = {
-  encode(message: CategoriesStats, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CategoriesStats,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.stats) {
       CategoryStats.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -1266,7 +1399,8 @@ export const CategoriesStats: MessageFns<CategoriesStats> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CategoriesStats {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCategoriesStats();
     while (reader.pos < end) {
@@ -1291,7 +1425,9 @@ export const CategoriesStats: MessageFns<CategoriesStats> = {
 
   fromJSON(object: any): CategoriesStats {
     return {
-      stats: globalThis.Array.isArray(object?.stats) ? object.stats.map((e: any) => CategoryStats.fromJSON(e)) : [],
+      stats: globalThis.Array.isArray(object?.stats)
+        ? object.stats.map((e: any) => CategoryStats.fromJSON(e))
+        : [],
     };
   },
 
@@ -1303,12 +1439,17 @@ export const CategoriesStats: MessageFns<CategoriesStats> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CategoriesStats>, I>>(base?: I): CategoriesStats {
+  create<I extends Exact<DeepPartial<CategoriesStats>, I>>(
+    base?: I,
+  ): CategoriesStats {
     return CategoriesStats.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CategoriesStats>, I>>(object: I): CategoriesStats {
+  fromPartial<I extends Exact<DeepPartial<CategoriesStats>, I>>(
+    object: I,
+  ): CategoriesStats {
     const message = createBaseCategoriesStats();
-    message.stats = object.stats?.map((e) => CategoryStats.fromPartial(e)) || [];
+    message.stats =
+      object.stats?.map((e) => CategoryStats.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1318,7 +1459,10 @@ function createBaseCategoryStats(): CategoryStats {
 }
 
 export const CategoryStats: MessageFns<CategoryStats> = {
-  encode(message: CategoryStats, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CategoryStats,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.category !== "") {
       writer.uint32(10).string(message.category);
     }
@@ -1329,7 +1473,8 @@ export const CategoryStats: MessageFns<CategoryStats> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CategoryStats {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCategoryStats();
     while (reader.pos < end) {
@@ -1362,7 +1507,9 @@ export const CategoryStats: MessageFns<CategoryStats> = {
 
   fromJSON(object: any): CategoryStats {
     return {
-      category: isSet(object.category) ? globalThis.String(object.category) : "",
+      category: isSet(object.category)
+        ? globalThis.String(object.category)
+        : "",
       count: isSet(object.count) ? globalThis.Number(object.count) : 0,
     };
   },
@@ -1378,10 +1525,14 @@ export const CategoryStats: MessageFns<CategoryStats> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CategoryStats>, I>>(base?: I): CategoryStats {
+  create<I extends Exact<DeepPartial<CategoryStats>, I>>(
+    base?: I,
+  ): CategoryStats {
     return CategoryStats.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CategoryStats>, I>>(object: I): CategoryStats {
+  fromPartial<I extends Exact<DeepPartial<CategoryStats>, I>>(
+    object: I,
+  ): CategoryStats {
     const message = createBaseCategoryStats();
     message.category = object.category ?? "";
     message.count = object.count ?? 0;
@@ -1394,9 +1545,15 @@ function createBaseCategoriesResponse(): CategoriesResponse {
 }
 
 export const CategoriesResponse: MessageFns<CategoriesResponse> = {
-  encode(message: CategoriesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CategoriesResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.categories !== undefined) {
-      CategoriesData.encode(message.categories, writer.uint32(10).fork()).join();
+      CategoriesData.encode(
+        message.categories,
+        writer.uint32(10).fork(),
+      ).join();
     }
     if (message.error !== undefined) {
       Error.encode(message.error, writer.uint32(18).fork()).join();
@@ -1404,8 +1561,12 @@ export const CategoriesResponse: MessageFns<CategoriesResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): CategoriesResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): CategoriesResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCategoriesResponse();
     while (reader.pos < end) {
@@ -1438,7 +1599,9 @@ export const CategoriesResponse: MessageFns<CategoriesResponse> = {
 
   fromJSON(object: any): CategoriesResponse {
     return {
-      categories: isSet(object.categories) ? CategoriesData.fromJSON(object.categories) : undefined,
+      categories: isSet(object.categories)
+        ? CategoriesData.fromJSON(object.categories)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1454,15 +1617,23 @@ export const CategoriesResponse: MessageFns<CategoriesResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CategoriesResponse>, I>>(base?: I): CategoriesResponse {
+  create<I extends Exact<DeepPartial<CategoriesResponse>, I>>(
+    base?: I,
+  ): CategoriesResponse {
     return CategoriesResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CategoriesResponse>, I>>(object: I): CategoriesResponse {
+  fromPartial<I extends Exact<DeepPartial<CategoriesResponse>, I>>(
+    object: I,
+  ): CategoriesResponse {
     const message = createBaseCategoriesResponse();
-    message.categories = (object.categories !== undefined && object.categories !== null)
-      ? CategoriesData.fromPartial(object.categories)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.categories =
+      object.categories !== undefined && object.categories !== null
+        ? CategoriesData.fromPartial(object.categories)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
@@ -1472,7 +1643,10 @@ function createBaseDeleteCategoryResponse(): DeleteCategoryResponse {
 }
 
 export const DeleteCategoryResponse: MessageFns<DeleteCategoryResponse> = {
-  encode(message: DeleteCategoryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DeleteCategoryResponse,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.success !== undefined) {
       DeleteSuccess.encode(message.success, writer.uint32(10).fork()).join();
     }
@@ -1482,8 +1656,12 @@ export const DeleteCategoryResponse: MessageFns<DeleteCategoryResponse> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DeleteCategoryResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DeleteCategoryResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteCategoryResponse();
     while (reader.pos < end) {
@@ -1516,7 +1694,9 @@ export const DeleteCategoryResponse: MessageFns<DeleteCategoryResponse> = {
 
   fromJSON(object: any): DeleteCategoryResponse {
     return {
-      success: isSet(object.success) ? DeleteSuccess.fromJSON(object.success) : undefined,
+      success: isSet(object.success)
+        ? DeleteSuccess.fromJSON(object.success)
+        : undefined,
       error: isSet(object.error) ? Error.fromJSON(object.error) : undefined,
     };
   },
@@ -1532,30 +1712,52 @@ export const DeleteCategoryResponse: MessageFns<DeleteCategoryResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DeleteCategoryResponse>, I>>(base?: I): DeleteCategoryResponse {
+  create<I extends Exact<DeepPartial<DeleteCategoryResponse>, I>>(
+    base?: I,
+  ): DeleteCategoryResponse {
     return DeleteCategoryResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DeleteCategoryResponse>, I>>(object: I): DeleteCategoryResponse {
+  fromPartial<I extends Exact<DeepPartial<DeleteCategoryResponse>, I>>(
+    object: I,
+  ): DeleteCategoryResponse {
     const message = createBaseDeleteCategoryResponse();
-    message.success = (object.success !== undefined && object.success !== null)
-      ? DeleteSuccess.fromPartial(object.success)
-      : undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Error.fromPartial(object.error) : undefined;
+    message.success =
+      object.success !== undefined && object.success !== null
+        ? DeleteSuccess.fromPartial(object.success)
+        : undefined;
+    message.error =
+      object.error !== undefined && object.error !== null
+        ? Error.fromPartial(object.error)
+        : undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
