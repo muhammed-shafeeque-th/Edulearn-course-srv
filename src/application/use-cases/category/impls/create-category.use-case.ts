@@ -1,13 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
+import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { ICategoryRepository } from "src/domain/repositories/category.repository";
 import { Category } from "src/domain/entities/category.entity";
 import { CategoryDto } from "src/application/dtos/category.dto";
 import slugify from "slugify";
 import { CategoryAlreadyExistException } from "src/domain/exceptions/category.exceptions";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ICreateCategoryUseCase } from "../interfaces/create-category.interface";
 
 interface CreateCategoryInput {
   name: string;
@@ -19,24 +20,24 @@ interface CreateCategoryInput {
 }
 
 @Injectable()
-export class CreateCategoryUseCase {
+export class CreateCategoryUseCase implements ICreateCategoryUseCase {
   constructor(
-    private readonly categoryRepository: ICategoryRepository,
-    private readonly kafkaProducer: IKafkaProducer,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _categoryRepository: ICategoryRepository,
+    private readonly _kafkaProducer: IEventProducer,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(
     dto: CreateCategoryInput,
     idempotencyKey: string,
   ): Promise<CategoryDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "CreateCategoryUseCase.execute",
       async (span) => {
         const slug = slugify(dto.name, { lower: true, strict: true });
 
-        const categoryExist = await this.categoryRepository.findBySlug(slug);
+        const categoryExist = await this._categoryRepository.findBySlug(slug);
         if (categoryExist) {
           span.setAttribute("course.title.already_exist", true);
           throw new CategoryAlreadyExistException(categoryExist.getName());
@@ -52,8 +53,8 @@ export class CreateCategoryUseCase {
           createdAt: new Date(),
           updatedAt: new Date(),
         });
-        await this.categoryRepository.create(category);
-        this.logger.debug(`Created category: ${dto.name}`);
+        await this._categoryRepository.create(category);
+        this._logger.debug(`Created category: ${dto.name}`);
 
         return CategoryDto.fromDomain(category);
       },
