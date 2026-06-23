@@ -3,16 +3,16 @@ import { DatabaseRepositoryModule } from "src/infrastructure/database/database-r
 import { RedisModule } from "src/infrastructure/redis/redis.module";
 import { DeleteLessonUseCase } from "./delete-lesson.use-case";
 import { UpdateLessonUseCase } from "./update-leson.use-case";
-import { GetLessonsBySectionUseCase } from "./get-lessons-by-sections.use-case";
+import { GetLessonsByModuleUseCase } from "./get-lessons-by-modules.use-case";
 import { CreateLessonUseCase } from "./create-lesson.use-case";
-import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 import { GetLessonUseCase } from "./get-lesson.use-case";
+import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 
 @Module({
   imports: [DatabaseRepositoryModule, RedisModule, KafkaModule],
   providers: [
     CreateLessonUseCase,
-    GetLessonsBySectionUseCase,
+    GetLessonsByModuleUseCase,
     GetLessonUseCase,
     UpdateLessonUseCase,
     DeleteLessonUseCase,
@@ -20,7 +20,7 @@ import { GetLessonUseCase } from "./get-lesson.use-case";
   exports: [
     GetLessonUseCase,
     CreateLessonUseCase,
-    GetLessonsBySectionUseCase,
+    GetLessonsByModuleUseCase,
     UpdateLessonUseCase,
     DeleteLessonUseCase,
   ],

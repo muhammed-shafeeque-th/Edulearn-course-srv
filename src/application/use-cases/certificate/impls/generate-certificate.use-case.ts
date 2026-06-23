@@ -1,0 +1,107 @@
+import { Injectable } from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
+import { IEnrollmentRepository } from "../../../../domain/repositories/enrollment.repository";
+import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
+import { Certificate } from "../../../../domain/entities/certificate.entity";
+import { CertificateDto } from "src/application/dtos/certificate.dto";
+import {
+  BadRequestException,
+  UnauthorizedException,
+} from "src/shared/exceptions/infra.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
+import { IGenerateCertificateUseCase } from "../interfaces/generate-certificate.interface";
+
+export interface GenerateCertificateRequest {
+  enrollmentId: string;
+  userId: string;
+  studentName: string;
+}
+
+@Injectable()
+export class GenerateCertificateUseCase implements IGenerateCertificateUseCase {
+  constructor(
+    private readonly _enrollmentRepo: IEnrollmentRepository,
+    private readonly _certificateRepo: ICertificateRepository,
+  ) {}
+
+  async execute(request: GenerateCertificateRequest): Promise<CertificateDto> {
+    //  Validate enrollment exists and belongs to user
+    const enrollment = await this._enrollmentRepo.findById(
+      request.enrollmentId,
+      {
+        includeCourse: true,
+      },
+    );
+
+    let course = enrollment.getCourse();
+
+    if (!enrollment) {
+      throw new EnrollmentNotFoundException("Enrollment not found");
+    }
+
+    if (enrollment.getStudentId() !== request.userId) {
+      throw new UnauthorizedException("Not authorized");
+    }
+
+    //  Check if enrollment is completed
+    if (
+      enrollment.getStatus() !== "COMPLETED" &&
+      enrollment.getProgressPercent() !== 100
+    ) {
+      throw new BadRequestException(
+        "Course must be completed to generate certificate",
+      );
+    }
+
+    //  Check if certificate already exists
+    const existingCertificate = await this._certificateRepo.findByEnrollmentId(
+      request.enrollmentId,
+    );
+
+    if (existingCertificate) {
+      // date student name if changed
+      if (existingCertificate.getStudentName() !== request.studentName.trim()) {
+        existingCertificate.updateStudentName(request.studentName);
+        await this._certificateRepo.save(existingCertificate);
+      }
+
+      return CertificateDto.fromDomain(existingCertificate);
+    }
+
+    //  Validate student name
+    const trimmedName = request.studentName.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      throw new BadRequestException(
+        "Student name must be at least 2 characters",
+      );
+    }
+
+    if (trimmedName.length > 100) {
+      throw new BadRequestException(
+        "Student name must be less than 100 characters",
+      );
+    }
+
+    //  Generate certificate
+    const certificateId = uuidv4();
+    const certificateNumber = Certificate.generateCertificateNumber();
+    const issueDate = new Date();
+
+    const certificate = new Certificate(
+      certificateId,
+      enrollment.getId(),
+      enrollment.getStudentId(),
+      enrollment.getCourseId(),
+      course.getTitle() || "Course Title",
+      trimmedName,
+      enrollment.getCompletedAt() || new Date(),
+      certificateNumber,
+      issueDate,
+    );
+
+    //  Save certificate
+    await this._certificateRepo.save(certificate);
+
+    return CertificateDto.fromDomain(certificate);
+  }
+}

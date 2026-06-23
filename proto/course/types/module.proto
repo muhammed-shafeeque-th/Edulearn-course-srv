@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package course.module;
+
+import "course/common.proto";
+import "course/types/quiz.proto";
+import "course/types/lesson.proto";
+
+// Module Messages
+message CreateModuleRequest {
+  string course_id = 1;
+  string user_id = 11;
+  string title = 2;
+  optional string description = 3;
+  int32 order = 4;
+  bool is_published = 5;
+}
+
+message GetModuleRequest {
+  string module_id = 1;
+}
+
+message UpdateModuleRequest {
+  string module_id = 1;
+  string user_id = 11;
+  string course_id = 10;
+  string title = 2;
+  string description = 3;
+  bool is_published = 5;
+  int32 order = 4;
+}
+
+message DeleteModuleRequest {
+  string module_id = 1;
+  string course_id = 3;
+  string user_id = 2;
+}
+
+message GetModulesByCourseRequest {
+  string course_id = 1;
+}
+
+message ModuleData {
+  string id = 1;
+  string course_id = 2;
+  string title = 3;
+  repeated course.lesson.LessonData lessons = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  optional string deleted_at = 7;
+  string description = 8;
+  bool is_published = 9;
+  int32 order = 10;
+  course.quiz.QuizData quiz = 11;
+}
+
+message ModuleResponse {
+  oneof result {
+    ModuleData module = 1;
+    course.common.Error error = 2;
+  }
+}
+
+message ModulesData {
+  repeated ModuleData modules = 1;
+}
+
+message ModulesResponse {
+  oneof result {
+    ModulesData modules = 1;
+    course.common.Error error = 2;
+  }
+}
+
+message DeleteModuleResponse {
+  oneof result {
+    course.common.DeleteSuccess success = 1;
+    course.common.Error error = 2;
+  }
+}

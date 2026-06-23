@@ -1,21 +1,50 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
+    "target": "ES2022",
+
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    "lib": ["ES2022"],
+
+    "rootDir": ".",
+
+    "baseUrl": ".",
+
+    "paths": {
+      "@/*": ["src/*"],
+      "@domain/*": ["src/domain/*"],
+      "@application/*": ["src/application/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@presentation/*": ["src/presentation/*"],
+      "@shared/*": ["src/shared/*"]
+    },
+
+    "strict": true,
+
     "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "strictNullChecks": false,
+
+    "esModuleInterop": true,
+
+    "allowSyntheticDefaultImports": true,
+
+    "resolveJsonModule": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+
+    "forceConsistentCasingInFileNames": true,
+
+    "types": ["node", "jest"],
+
+    "sourceMap": true
+  },
+
+  "include": ["src/**/*", "test/**/*", "jest.config.ts"],
+
+  "exclude": ["node_modules", "dist"]
 }
