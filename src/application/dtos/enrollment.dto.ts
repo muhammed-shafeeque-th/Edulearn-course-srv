@@ -16,7 +16,7 @@ export class EnrollmentDto {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
-  course?: Course
+  course?: Course;
 
   static fromDomain(enrollment: Enrollment): EnrollmentDto {
     const dto = new EnrollmentDto();
@@ -54,14 +54,14 @@ export class EnrollmentDto {
           id: this.course.getInstructor().getId(),
           name: this.course.getInstructor().getName(),
           avatar: this.course.getInstructor().getAvatar(),
-          email: this.course.getInstructor().getEmail()
+          email: this.course.getInstructor().getEmail(),
         },
         lessonsCount: this.course.getTotalLessonCount(),
         level: this.course.getLevel(),
         rating: this.course.getRating(),
         thumbnail: this.course.getThumbnail(),
         title: this.course.getTitle(),
-      }
+      },
     };
   };
 }

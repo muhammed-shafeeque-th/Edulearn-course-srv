@@ -4,12 +4,6 @@ import { TracingService } from "./trace.service";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
-import { GrpcInstrumentation } from "@opentelemetry/instrumentation-grpc";
-import { KafkaJsInstrumentation } from "@opentelemetry/instrumentation-kafkajs";
-import { PgInstrumentation } from "@opentelemetry/instrumentation-pg";
-import { RedisInstrumentation } from "@opentelemetry/instrumentation-redis";
-import { WinstonInstrumentation } from "@opentelemetry/instrumentation-winston";
-import { NestInstrumentation } from "@opentelemetry/instrumentation-nestjs-core";
 import {
   BatchSpanProcessor,
   ParentBasedSampler,
@@ -57,15 +51,7 @@ import { AppConfigService } from "src/infrastructure/config/config.service";
           resource,
           spanProcessor,
           sampler,
-          instrumentations: [
-            getNodeAutoInstrumentations(),
-            new GrpcInstrumentation(),
-            new KafkaJsInstrumentation(),
-            new NestInstrumentation(),
-            new RedisInstrumentation(),
-            new WinstonInstrumentation(),
-            new PgInstrumentation(),
-          ],
+          instrumentations: [getNodeAutoInstrumentations()],
         });
         sdk.start();
 
@@ -74,7 +60,7 @@ import { AppConfigService } from "src/infrastructure/config/config.service";
             .shutdown()
             .then(() => console.log(`OpenTelemetry SDK shut down successfully`))
             .catch((err) =>
-              console.error("Error shutting down OpenTelemetry SDK", err)
+              console.error("Error shutting down OpenTelemetry SDK", err),
             )
             .finally(() => process.exit(1));
         });

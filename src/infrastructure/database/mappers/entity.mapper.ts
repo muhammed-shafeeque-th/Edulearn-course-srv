@@ -1,7 +1,7 @@
 import { User } from "src/domain/entities/user.entity";
 import { UserOrmEntity } from "../entities/user.entity";
-import { SectionOrmEntity } from "../entities/section.orm-entity";
-import { Section } from "src/domain/entities/section.entity";
+import { ModuleOrmEntity } from "../entities/module.orm-entity";
+import { Module } from "src/domain/entities/module.entity";
 import { ReviewOrmEntity } from "../entities/review.entity";
 import { Review } from "src/domain/entities/review.entity";
 import { QuizOrmEntity } from "../entities/quiz.orm-entity";
@@ -69,8 +69,8 @@ export class EntityMapper {
       orm.instructor = EntityMapper.toOrmUser(instructor);
     }
 
-    // Sections & their nested objects
-    // orm.sections = (course.getSections() || []).map(EntityMapper.toOrmSection);
+    // Modules & their nested objects
+    // orm.modules = (course.getModules() || []).map(EntityMapper.toOrmModule);
 
     return orm;
   }
@@ -126,7 +126,7 @@ export class EntityMapper {
       discountPrice: raw.course_discount_price ?? undefined,
       currency: raw.course_currency ?? undefined,
 
-      noOfSections: Number(raw.noOfSections ?? 0),
+      noOfModules: Number(raw.noOfModules ?? 0),
       noOfLessons: Number(raw.noOfLessons ?? 0),
       noOfQuizzes: Number(raw.noOfQuizzes ?? 0),
 
@@ -176,8 +176,8 @@ export class EntityMapper {
         updatedAt: orm.updatedAt ? new Date(orm.updatedAt) : undefined,
         deletedAt: orm.deletedAt ? new Date(orm.deletedAt) : undefined,
       },
-      sections: (Array.isArray(orm.sections) ? orm.sections : []).map(
-        EntityMapper.toDomainSection
+      modules: (Array.isArray(orm.modules) ? orm.modules : []).map(
+        EntityMapper.toDomainModule,
       ),
     });
   }
@@ -198,16 +198,24 @@ export class EntityMapper {
   }
 
   static toDomainCategory(orm: CategoryOrmEntity): Category {
-    return new Category(
-      orm.id,
-      orm.name,
-      orm.slug,
-      orm.idempotencyKey,
-      orm.description,
-      orm.parent?.id,
-      orm.createdAt,
-      orm.updatedAt
-    );
+    return new Category(orm.id, orm.name, orm.slug, {
+      idempotencyKey: orm.idempotencyKey,
+      description: orm.description,
+      icon: orm.icon,
+      color: orm.color,
+      isActive: orm.isActive,
+      order: orm.order,
+      parentId: orm.parent?.id,
+      courseCount: orm.courses
+        ? orm.courses.length
+        : Number((orm as any).courseCount) || 0,
+      createdAt: orm.createdAt,
+      updatedAt: orm.updatedAt,
+      deletedAt: orm.deletedAt,
+      subcategories: orm.subcategories
+        ? orm.subcategories.map(EntityMapper.toDomainCategory)
+        : [],
+    });
   }
 
   // --- Enrollment Mapping ---
@@ -215,9 +223,10 @@ export class EntityMapper {
   static toOrmEnrollment(enrollment: Enrollment): EnrollmentOrmEntity {
     const orm = new EnrollmentOrmEntity();
     orm.id = enrollment.getId();
-    orm.userId = enrollment.getUserId();
+    orm.studentId = enrollment.getStudentId();
     orm.courseId = enrollment.getCourseId();
     orm.orderId = enrollment.getOrderId();
+    orm.instructorId = enrollment.getInstructorId();
     orm.idempotencyKey = enrollment.getIdempotencyKey();
     orm.enrolledAt = enrollment.getEnrolledAt();
     orm.status = enrollment.getStatus();
@@ -237,7 +246,7 @@ export class EntityMapper {
 
   static toDomainEnrollment(
     orm: EnrollmentOrmEntity,
-    opts?: { withProgress: boolean }
+    opts?: { withProgress: boolean },
   ): Enrollment {
     let progressDomain: Progress[] = [];
     if (opts?.withProgress && orm.progressEntries) {
@@ -245,9 +254,10 @@ export class EntityMapper {
     }
     const enrollment = new Enrollment(
       orm.id,
-      orm.userId,
+      orm.studentId,
       orm.courseId,
       orm.orderId,
+      orm.instructorId,
       orm.idempotencyKey,
       orm.enrolledAt,
       orm.status as EnrollmentStatus,
@@ -258,7 +268,7 @@ export class EntityMapper {
       orm.deletedAt,
       progressDomain,
       orm.totalLearningUnits,
-      orm.completedLearningUnits
+      orm.completedLearningUnits,
     );
     if (orm.course) {
       const course = EntityMapper.toDomainCourse(orm.course);
@@ -298,7 +308,7 @@ export class EntityMapper {
       orm.certificateNumber,
       orm.issueDate,
       orm.createdAt,
-      orm.updatedAt
+      orm.updatedAt,
     );
   }
 
@@ -307,7 +317,7 @@ export class EntityMapper {
   static toOrmLesson(lesson: Lesson): LessonOrmEntity {
     const orm = new LessonOrmEntity();
     orm.id = lesson.getId();
-    orm.sectionId = lesson.getSectionId();
+    orm.moduleId = lesson.getModuleId();
     orm.title = lesson.getTitle();
     orm.contentType = lesson.getContentType();
     orm.idempotencyKey = lesson.getIdempotencyKey();
@@ -327,7 +337,7 @@ export class EntityMapper {
   static toDomainLesson(orm: LessonOrmEntity): Lesson {
     return new Lesson({
       id: orm.id,
-      sectionId: orm.sectionId,
+      moduleId: orm.moduleId,
       title: orm.title,
       description: orm.description,
       idempotencyKey: orm.idempotencyKey,
@@ -382,7 +392,7 @@ export class EntityMapper {
       orm.isPassed,
       orm.createdAt,
       orm.updatedAt,
-      orm.deletedAt
+      orm.deletedAt,
     );
   }
 
@@ -391,7 +401,7 @@ export class EntityMapper {
   static toOrmQuiz(quiz: Quiz): QuizOrmEntity {
     const orm = new QuizOrmEntity();
     orm.id = quiz.getId();
-    orm.sectionId = quiz.getSectionId();
+    orm.moduleId = quiz.getModuleId();
     orm.courseId = quiz.getCourseId();
     orm.title = quiz.getTitle();
     orm.description = quiz.getDescription();
@@ -401,7 +411,7 @@ export class EntityMapper {
     orm.maxAttempts = quiz.getMaxAttempts();
     orm.isRequired = quiz.getIsRequired();
     orm.questions = (quiz.getQuestions() || []).map((question) =>
-      question.toPrimitive()
+      question.toPrimitive(),
     );
     orm.createdAt = quiz.getCreatedAt();
     orm.updatedAt = quiz.getUpdatedAt();
@@ -426,7 +436,7 @@ export class EntityMapper {
 
     return new Quiz({
       id: orm.id,
-      sectionId: orm.sectionId,
+      moduleId: orm.moduleId,
       courseId: orm.courseId,
       idempotencyKey: orm.idempotencyKey,
       title: orm.title,
@@ -473,32 +483,32 @@ export class EntityMapper {
       orm.comment,
       orm.createdAt ? new Date(orm.createdAt) : undefined,
       orm.updatedAt ? new Date(orm.updatedAt) : undefined,
-      orm.deletedAt ? new Date(orm.deletedAt) : undefined
+      orm.deletedAt ? new Date(orm.deletedAt) : undefined,
     );
   }
 
-  // --- Section Mapping ---
+  // --- Module Mapping ---
 
-  static toOrmSection(section: Section): SectionOrmEntity {
-    const orm = new SectionOrmEntity();
-    orm.id = section.getId();
-    orm.courseId = section.getCourseId();
-    orm.title = section.getTitle();
-    orm.idempotencyKey = section.getIdempotencyKey();
-    orm.order = section.getOrder();
-    orm.description = section.getDescription();
-    orm.isPublished = section.getIsPublished();
-    // orm.lessons = (section.getLessons() || []).map(EntityMapper.toOrmLesson);
-    // const quiz = section.getQuiz();
+  static toOrmModule(module: Module): ModuleOrmEntity {
+    const orm = new ModuleOrmEntity();
+    orm.id = module.getId();
+    orm.courseId = module.getCourseId();
+    orm.title = module.getTitle();
+    orm.idempotencyKey = module.getIdempotencyKey();
+    orm.order = module.getOrder();
+    orm.description = module.getDescription();
+    orm.isPublished = module.getIsPublished();
+    // orm.lessons = (module.getLessons() || []).map(EntityMapper.toOrmLesson);
+    // const quiz = module.getQuiz();
     // if (quiz) orm.quiz = EntityMapper.toOrmQuiz(quiz);
-    orm.createdAt = section.getCreatedAt();
-    orm.updatedAt = section.getUpdatedAt();
-    orm.deletedAt = section.getDeletedAt();
+    orm.createdAt = module.getCreatedAt();
+    orm.updatedAt = module.getUpdatedAt();
+    orm.deletedAt = module.getDeletedAt();
     return orm;
   }
 
-  static toDomainSection(orm: SectionOrmEntity): Section {
-    return new Section({
+  static toDomainModule(orm: ModuleOrmEntity): Module {
+    return new Module({
       id: orm.id,
       courseId: orm.courseId,
       title: orm.title,
@@ -507,7 +517,7 @@ export class EntityMapper {
       description: orm.description,
       isPublished: orm.isPublished,
       lessons: (Array.isArray(orm.lessons) ? orm.lessons : []).map(
-        EntityMapper.toDomainLesson
+        EntityMapper.toDomainLesson,
       ),
       quiz: orm.quiz ? EntityMapper.toDomainQuiz(orm.quiz) : undefined,
       createdAt: orm.createdAt ? new Date(orm.createdAt) : undefined,
@@ -534,7 +544,7 @@ export class EntityMapper {
       orm.name,
       orm.avatar,
       orm.email,
-      new Date(orm.updatedAt)
+      new Date(orm.updatedAt),
     );
   }
 }

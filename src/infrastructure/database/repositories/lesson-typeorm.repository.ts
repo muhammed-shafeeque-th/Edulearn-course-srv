@@ -19,7 +19,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
     private readonly redisService: ICacheService,
     private readonly logger: LoggingService,
     private readonly tracer: TracingService,
-    private readonly metrics: MetricsService
+    private readonly metrics: MetricsService,
   ) {}
 
   async findByIdempotencyKey(idempotencyKey: string): Promise<Lesson | null> {
@@ -34,7 +34,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         this.metrics.incrementDBRequestCounter("SELECT");
         const end = this.metrics.measureDBOperationDuration(
           "lesson.findByIdempotencyKey",
-          "SELECT"
+          "SELECT",
         );
 
         // Try to find lesson by idempotencyKey
@@ -47,7 +47,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         if (!ormLesson) {
           this.logger.debug(
             `No lesson found for idempotencyKey: ${idempotencyKey}`,
-            { ctx: LessonTypeOrmRepository.name }
+            { ctx: LessonTypeOrmRepository.name },
           );
           return null;
         }
@@ -56,7 +56,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         const lesson = LessonEntityMapper.toDomainLesson(ormLesson);
 
         return lesson;
-      }
+      },
     );
   }
 
@@ -74,7 +74,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         // Measure DB operation delay
         const end = this.metrics.measureDBOperationDuration(
           "lesson.save",
-          "INSERT"
+          "INSERT",
         );
         let result: LessonOrmEntity | undefined;
         try {
@@ -82,7 +82,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         } catch (err) {
           this.logger.warn(
             `Error while saving lesson ${lesson.getId()}: ${err}`,
-            { ctx: LessonTypeOrmRepository.name }
+            { ctx: LessonTypeOrmRepository.name },
           );
           throw err;
         }
@@ -92,7 +92,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         if (!result) {
           this.logger.warn(
             `Write operation returned null/undefined (save) for lesson ${lesson.getId()}`,
-            { ctx: LessonTypeOrmRepository.name }
+            { ctx: LessonTypeOrmRepository.name },
           );
         } else {
           span.setAttribute("db.saved", true);
@@ -100,17 +100,19 @@ export class LessonTypeOrmRepository implements ILessonRepository {
 
         await Promise.all([
           this.redisService.del(CACHE_KEYS.lesson.byId(lesson.getId())),
-          this.redisService.del(CACHE_KEYS.lesson.bySection(lesson.getSectionId())),
+          this.redisService.del(
+            CACHE_KEYS.lesson.byModule(lesson.getModuleId()),
+          ),
         ]);
 
         span.setAttribute(
           "cache.invalidated.keys",
-          `[${CACHE_KEYS.lesson.byId(lesson.getId())}, ${CACHE_KEYS.lesson.bySection(lesson.getSectionId())}]`
+          `[${CACHE_KEYS.lesson.byId(lesson.getId())}, ${CACHE_KEYS.lesson.byModule(lesson.getModuleId())}]`,
         );
         this.logger.debug(`Invalidated cache for lesson ${lesson.getId()}`, {
           ctx: LessonTypeOrmRepository.name,
         });
-      }
+      },
     );
   }
 
@@ -141,16 +143,16 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         // Measure DB operation delay
         const end = this.metrics.measureDBOperationDuration(
           "lesson.findByCourseId",
-          "SELECT"
+          "SELECT",
         );
 
         // Query for lessons related to the course, filtering out deleted lessons
         const ormLessons = await this.repo.find({
           where: {
             deletedAt: null,
-            section: { courseId },
+            module: { courseId },
           },
-          relations: ["section"],
+          relations: ["module"],
           order: {
             order: "ASC",
           },
@@ -169,10 +171,10 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         span.setAttribute("db.lessons.found.count", lessons.length);
         this.logger.debug(
           `Found ${lessons.length} lessons for course ${courseId}`,
-          { ctx: LessonTypeOrmRepository.name }
+          { ctx: LessonTypeOrmRepository.name },
         );
         return lessons;
-      }
+      },
     );
   }
 
@@ -181,9 +183,9 @@ export class LessonTypeOrmRepository implements ILessonRepository {
     return this.repo.count({
       where: {
         deletedAt: null,
-        section: { courseId },
+        module: { courseId },
       },
-      relations: ["section"],
+      relations: ["module"],
     });
   }
 
@@ -210,7 +212,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         // Measure DB operation delay
         const end = this.metrics.measureDBOperationDuration(
           "lesson.findById",
-          "INSERT"
+          "INSERT",
         );
         const ormEntity = await this.repo.findOne({
           where: { id, deletedAt: null },
@@ -231,24 +233,24 @@ export class LessonTypeOrmRepository implements ILessonRepository {
           ctx: LessonTypeOrmRepository.name,
         });
         return lesson;
-      }
+      },
     );
   }
 
-  async findBySectionId(sectionId: string): Promise<Lesson[]> {
+  async findByModuleId(moduleId: string): Promise<Lesson[]> {
     return await this.tracer.startActiveSpan(
-      "LessonTypeOrmRepository.findBySectionId",
+      "LessonTypeOrmRepository.findByModuleId",
       async (span) => {
         span.setAttributes({
           "db.operation": "SELECT",
-          "section.id": sectionId,
+          "module.id": moduleId,
         });
-        const cacheKey = CACHE_KEYS.lesson.bySection(sectionId);
+        const cacheKey = CACHE_KEYS.lesson.byModule(moduleId);
         const cachedLessons =
           await this.redisService.get<LessonOrmEntity[]>(cacheKey);
         if (cachedLessons) {
           span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for lessons of section ${sectionId}`, {
+          this.logger.debug(`Cache hit for lessons of module ${moduleId}`, {
             ctx: LessonTypeOrmRepository.name,
           });
           return cachedLessons.map(LessonEntityMapper.toDomainLesson);
@@ -257,11 +259,11 @@ export class LessonTypeOrmRepository implements ILessonRepository {
 
         // Measure DB operation delay
         const end = this.metrics.measureDBOperationDuration(
-          "lesson.findBySectionId",
-          "INSERT"
+          "lesson.findByModuleId",
+          "INSERT",
         );
         const ormEntities = await this.repo.find({
-          where: { sectionId, deletedAt: null },
+          where: { moduleId, deletedAt: null },
         });
         end();
         this.metrics.incrementDBRequestCounter("SELECT");
@@ -271,11 +273,11 @@ export class LessonTypeOrmRepository implements ILessonRepository {
 
         await this.redisService.set(cacheKey, ormEntities, 3600);
         span.setAttribute("cache.set", true);
-        this.logger.debug(`Cached lessons for section ${sectionId}`, {
+        this.logger.debug(`Cached lessons for module ${moduleId}`, {
           ctx: LessonTypeOrmRepository.name,
         });
         return lessons;
-      }
+      },
     );
   }
 
@@ -294,7 +296,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         // Measure DB operation delay
         const end = this.metrics.measureDBOperationDuration(
           "lesson.delete",
-          "DELETE"
+          "DELETE",
         );
         let result;
         try {
@@ -302,7 +304,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         } catch (err) {
           this.logger.warn(
             `Error while soft-deleting lesson ${lesson.getId()}: ${err}`,
-            { ctx: LessonTypeOrmRepository.name }
+            { ctx: LessonTypeOrmRepository.name },
           );
           throw err;
         }
@@ -311,7 +313,7 @@ export class LessonTypeOrmRepository implements ILessonRepository {
         if (!result) {
           this.logger.warn(
             `Delete operation (save for softDelete) returned null or undefined for lesson ${lesson.getId()}`,
-            { ctx: LessonTypeOrmRepository.name }
+            { ctx: LessonTypeOrmRepository.name },
           );
         } else {
           span.setAttribute("lesson.deleted", true);
@@ -319,17 +321,19 @@ export class LessonTypeOrmRepository implements ILessonRepository {
 
         await Promise.all([
           this.redisService.del(CACHE_KEYS.lesson.byId(lesson.getId())),
-          this.redisService.del(CACHE_KEYS.lesson.bySection(lesson.getSectionId())),
+          this.redisService.del(
+            CACHE_KEYS.lesson.byModule(lesson.getModuleId()),
+          ),
         ]);
 
         span.setAttribute(
           "cache.invalidated.keys",
-          `[${CACHE_KEYS.lesson.byId(lesson.getId())}, ${CACHE_KEYS.lesson.bySection(lesson.getSectionId())}]`
+          `[${CACHE_KEYS.lesson.byId(lesson.getId())}, ${CACHE_KEYS.lesson.byModule(lesson.getModuleId())}]`,
         );
         this.logger.debug(`Invalidated cache for lesson ${lesson.getId()}`, {
           ctx: LessonTypeOrmRepository.name,
         });
-      }
+      },
     );
   }
 }

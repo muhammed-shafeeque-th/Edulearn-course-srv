@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ReviewDto } from "src/application/dtos/review.dto";
-import { ReviewNotFoundException } from "src/domain/exceptions/domain.exceptions";
+import { ReviewNotFoundException } from "src/domain/exceptions/review.exceptions";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";

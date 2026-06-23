@@ -3,7 +3,7 @@ syntax = "proto3";
 package course;
 
 import "course/common.proto";
-import "course/types/section.proto";
+import "course/types/module.proto";
 
 message CourseFilters {
    optional string search = 1;
@@ -141,7 +141,7 @@ message CourseData {
   optional int32 rating = 29;
   optional int32 number_of_rating = 30;
   optional int32 students = 31;
-  repeated course.section.SectionData sections = 19;
+  repeated course.module.ModuleData modules = 19;
   string created_at = 21;
   string updated_at = 22;
   optional string deleted_at = 20;
@@ -180,7 +180,7 @@ message CourseMetadata {
   optional string deleted_at = 20;
   optional int32 price = 23;
   int32 no_of_lessons = 19;
-  int32 no_of_sections = 40;
+  int32 no_of_modules = 40;
   int32 no_of_quizzes = 41;
   optional int32 discount_price = 24;
   optional string currency = 25;

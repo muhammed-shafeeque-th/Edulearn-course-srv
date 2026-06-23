@@ -3,11 +3,7 @@ import { ReviewDto } from "src/application/dtos/review.dto";
 import { Review } from "src/domain/entities/review.entity";
 import { User } from "src/domain/entities/user.entity";
 import { CourseReviewSubmittedEvent } from "src/domain/events/review.events";
-import {
-  AlreadyReviewedException,
-  CourseNotFoundException,
-  EnrollmentNotFoundException,
-} from "src/domain/exceptions/domain.exceptions";
+import { AlreadyReviewedException } from "src/domain/exceptions/review.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
@@ -19,6 +15,9 @@ import { KafkaTopics } from "src/shared/events/event.topics";
 import { v4 as uuidV4 } from "uuid";
 import { ReviewEntityMapper } from "src/infrastructure/database/mappers/review.entity.mapper";
 import { CourseEntityMapper } from "src/infrastructure/database/mappers/course.entity.mapper";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 @Injectable()
 export class AddReviewUseCase {
@@ -28,8 +27,8 @@ export class AddReviewUseCase {
     private readonly courseRepository: ICourseRepository,
     private readonly kafkaProducer: IKafkaProducer,
     private readonly logger: LoggingService,
-    private readonly tracer: TracingService
-  ) { }
+    private readonly tracer: TracingService,
+  ) {}
 
   async execute(dto: SubmitCourseReviewRequest): Promise<ReviewDto> {
     return this.tracer.startActiveSpan(
@@ -42,10 +41,10 @@ export class AddReviewUseCase {
         if (!enrollment) {
           this.logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
-            { ctx: AddReviewUseCase.name }
+            { ctx: AddReviewUseCase.name },
           );
           throw new EnrollmentNotFoundException(
-            `Enrollment with ID ${enrollmentId} not found`
+            `Enrollment with ID ${enrollmentId} not found`,
           );
         }
         const courseId = enrollment.getCourseId();
@@ -58,7 +57,7 @@ export class AddReviewUseCase {
 
         this.logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
-          { ctx: AddReviewUseCase.name }
+          { ctx: AddReviewUseCase.name },
         );
 
         // Check if course exists
@@ -66,10 +65,10 @@ export class AddReviewUseCase {
         if (!course) {
           this.logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
-            { ctx: AddReviewUseCase.name }
+            { ctx: AddReviewUseCase.name },
           );
           throw new CourseNotFoundException(
-            `Course with ID ${courseId} not found`
+            `Course with ID ${courseId} not found`,
           );
         }
 
@@ -80,25 +79,23 @@ export class AddReviewUseCase {
         ) {
           this.logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
-            { ctx: AddReviewUseCase.name }
+            { ctx: AddReviewUseCase.name },
           );
-          throw new EnrollmentNotFoundException(
-            `Enrollment-user-course mismatch`
-          );
+          throw new UnauthorizedException(`Enrollment-user-course mismatch`);
         }
 
         // Check if user already reviewed this enrollment/course
         const existingReview = await this.reviewRepository.findByUserAndCourse(
           userId,
-          courseId
+          courseId,
         );
         if (existingReview) {
           this.logger.warn(
             `User ${userId} has already reviewed course ${courseId}`,
-            { ctx: AddReviewUseCase.name }
+            { ctx: AddReviewUseCase.name },
           );
           throw new AlreadyReviewedException(
-            `User ${userId} has already reviewed this course`
+            `User ${userId} has already reviewed this course`,
           );
         }
 
@@ -106,7 +103,7 @@ export class AddReviewUseCase {
           user.id,
           user.name,
           user.avatar,
-          user.email
+          user.email,
         );
 
         // Create new review instance (include enrollmentId)
@@ -117,58 +114,58 @@ export class AddReviewUseCase {
           courseId,
           enrollmentId,
           rating,
-          comment
+          comment,
         );
 
         // Update course rating before saving
         course.rateCourse(rating);
 
         await this.reviewRepository.save(review),
-        await this.courseRepository.save(course),
-        // await Promise.all([
-        // ]);
+          await this.courseRepository.save(course),
+          // await Promise.all([
+          // ]);
 
-        // await this.courseRepository.transaction(async (manager) => {
-        //   await manager.save(ReviewEntityMapper.toOrmReview(review));
-        //   await manager.save(CourseEntityMapper.toOrmCourse(course));
-        // });
+          // await this.courseRepository.transaction(async (manager) => {
+          //   await manager.save(ReviewEntityMapper.toOrmReview(review));
+          //   await manager.save(CourseEntityMapper.toOrmCourse(course));
+          // });
 
-        // Publish review event to Kafka asynchronously (do not slow main flow by awaiting errors)
-        this.kafkaProducer
-          .produce<CourseReviewSubmittedEvent>(
-            KafkaTopics.CourseReviewSubmitted,
-            {
-              key: course.getId(),
-              value: {
-                eventId: uuidV4(),
-                timestamp: Date.now(),
-                source: "course-service",
-                eventType: "CourseReviewSubmittedEvent",
-                payload: {
-                  userId,
-                  courseId,
-                  enrollmentId,
-                  reviewId: review.getId(),
-                  rating,
-                  comment,
-                  reviewedAt: new Date().toISOString(),
+          // Publish review event to Kafka asynchronously (do not slow main flow by awaiting errors)
+          this.kafkaProducer
+            .produce<CourseReviewSubmittedEvent>(
+              KafkaTopics.CourseReviewSubmitted,
+              {
+                key: course.getId(),
+                value: {
+                  eventId: uuidV4(),
+                  timestamp: Date.now(),
+                  source: "course-service",
+                  eventType: "CourseReviewSubmittedEvent",
+                  payload: {
+                    userId,
+                    courseId,
+                    enrollmentId,
+                    reviewId: review.getId(),
+                    rating,
+                    comment,
+                    reviewedAt: new Date().toISOString(),
+                  },
                 },
-              }
-            }
-          )
-          .catch((err) => {
-            this.logger.error(
-              `Failed to send COURSE_REVIEWED event to Kafka: ${err.message}`,
-              { error: err, ctx: AddReviewUseCase.name }
-            );
-          });
+              },
+            )
+            .catch((err) => {
+              this.logger.error(
+                `Failed to send COURSE_REVIEWED event to Kafka: ${err.message}`,
+                { error: err, ctx: AddReviewUseCase.name },
+              );
+            });
 
         this.logger.log(
           `Review added for course ${courseId} by user ${userId}`,
-          { ctx: AddReviewUseCase.name }
+          { ctx: AddReviewUseCase.name },
         );
         return ReviewDto.fromDomain(review);
-      }
+      },
     );
   }
 }

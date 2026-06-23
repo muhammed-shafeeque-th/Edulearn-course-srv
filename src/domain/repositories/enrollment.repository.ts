@@ -1,21 +1,20 @@
 import { Enrollment } from "../entities/enrollment.entity";
 
-
 export interface InstructorCourseEnrollmentSummery {
   totalStudents: number;
+  enrollmentGrowth: number;
   completionRate: number;
   avgProgress: number;
 }
 
 export interface InstructorCourseEnrollmentTrend {
-  trend: CourseEnrollmentTrend[];
+  trend: EnrollmentTrend[];
 }
 
-export interface CourseEnrollmentTrend {
-  date: number;
+export interface EnrollmentTrend {
+  month: number;
   enrollments: number;
 }
-
 
 export interface RevenueStat {
   date: number;
@@ -26,14 +25,20 @@ export interface RevenueStats {
   stats: RevenueStat[];
 }
 
+export interface InstructorCourseRevenueSummery {
+  totalRevenue: number;
+  avgRevenue: number;
+  thisMonthRevenue: number;
+  revenueGrowth: number;
+}
 
 export interface InstructorCoursesEnrollmentSummery {
   totalStudents: number;
   totalEarnings: number;
   avgCompletion: number;
   activeStudents: number;
+  enrollmentGrowth: number;
 }
-
 
 /**
  * Repository contract for Enrollment aggregate and its related data.
@@ -49,33 +54,37 @@ export abstract class IEnrollmentRepository {
    */
   abstract getById(
     enrollmentId: string,
-    options?: { includeCourse?: boolean; includeProgressSummary?: boolean }
+    options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment | null>;
   /**
    /**
     * Get an enrollment summary for all courses taught by an instructor.
     */
-   abstract getInstructorCoursesEnrollmentSummery(
-     instructorId: string
-   ): Promise<InstructorCoursesEnrollmentSummery | null>;
+  abstract getInstructorCoursesEnrollmentSummery(
+    instructorId: string,
+  ): Promise<InstructorCoursesEnrollmentSummery | null>;
   /**
    /**
     * Get an enrollment summary for all courses taught by an instructor.
     */
-   abstract getInstructorCourseEnrollmentSummery(
-     instructorId: string,
-     courseId: string
-   ): Promise<InstructorCourseEnrollmentSummery | null>;
-   /**
+  abstract getInstructorCourseEnrollmentSummery(
+    instructorId: string,
+    courseId: string,
+  ): Promise<InstructorCourseEnrollmentSummery | null>;
+  /**
     /**
      * Get the enrollment trend for a specific course taught by an instructor.
      */
-    abstract getInstructorCourseEnrollmentTrend(
-      instructorId: string,
-      courseId: string,
-      from?: string,
-      to?: string
-    ): Promise<InstructorCourseEnrollmentTrend | null>;
+  abstract getInstructorCourseEnrollmentTrend(
+    instructorId: string,
+    courseId: string,
+    from?: string,
+    to?: string,
+  ): Promise<InstructorCourseEnrollmentTrend | null>;
+
+  abstract getEnrollmentTrend(
+    year: number,
+  ): Promise<InstructorCourseEnrollmentTrend | null>;
 
   /**
    * Find an enrollment by user and course ids.
@@ -83,18 +92,17 @@ export abstract class IEnrollmentRepository {
   abstract getByUserAndCourse(
     userId: string,
     courseId: string,
-    options?: { includeCourse?: boolean; includeProgressSummary?: boolean }
+    options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment | null>;
 
-   /**
+  /**
    * Retrieves monthly enrollment statistics for courses, optionally filtered by instructor and course.
    * @param year - (Optional) The unique ID of the course.
    * @returns An array of monthly enrollment stats (month and count) for the specified parameters.
    */
-   abstract getMonthlyCourseEnrollmentStats(
-    year: string
+  abstract getMonthlyCourseEnrollmentStats(
+    year: string,
   ): Promise<{ month: number; count: number }[]>;
-
 
   /**
    * Returns a list of userIds enrolled in a course.
@@ -116,7 +124,7 @@ export abstract class IEnrollmentRepository {
    */
   abstract listEnrollmentsByUser(
     userId: string,
-    options?: { includeCourse?: boolean; includeProgressSummary?: boolean }
+    options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment[]>;
 
   /**
@@ -124,7 +132,7 @@ export abstract class IEnrollmentRepository {
    */
   abstract listEnrollmentsByCourse(
     courseId: string,
-    options?: { includeCourse?: boolean; includeProgressSummary?: boolean }
+    options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment[]>;
 
   /**
@@ -133,7 +141,7 @@ export abstract class IEnrollmentRepository {
   abstract getByIdAndUser(
     enrollmentId: string,
     userId: string,
-    options?: { includeCourse?: boolean; includeProgressSummary?: boolean }
+    options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment | null>;
 
   /**
@@ -145,4 +153,9 @@ export abstract class IEnrollmentRepository {
    * Remove an enrollment.
    */
   abstract getRevenueStatus(year: string): Promise<RevenueStats>;
+
+  abstract getInstructorCourseRevenueSummery(
+    instructorId: string,
+    courseId: string,
+  ): Promise<InstructorCourseRevenueSummery | null>;
 }

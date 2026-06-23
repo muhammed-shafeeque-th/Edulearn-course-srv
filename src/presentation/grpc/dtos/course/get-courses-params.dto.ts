@@ -14,16 +14,14 @@ import {
 import { Type } from "class-transformer";
 import { PaginationDto } from "../pagination.dto";
 
-
 export class CourseFiltersDto {
   @IsOptional()
   @IsString()
   search?: string;
-  
+
   @IsOptional()
   @IsString()
   status?: string;
-
 
   @IsArray()
   @IsString({ each: true })
@@ -59,7 +57,6 @@ export class GetCoursesParamsDto {
   @Type(() => CourseFiltersDto)
   filters?: CourseFiltersDto;
 }
-
 
 export class GetCoursesRequestDto {
   @IsOptional()

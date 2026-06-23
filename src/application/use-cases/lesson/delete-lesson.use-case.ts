@@ -1,12 +1,16 @@
-import { Injectable} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
-import { CourseNotFoundException, LessonNotFoundException, UnauthorizedException } from "src/domain/exceptions/domain.exceptions";
+import {
+  LessonNotFoundException,
+} from "src/domain/exceptions/lesson.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { LessonDeletedEvent } from "src/domain/events/lesson.events";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DeleteLessonDto } from "src/presentation/grpc/dtos/lesson/delete-lesson.dto";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 
 @Injectable()
 export class DeleteLessonUseCase {
@@ -33,12 +37,14 @@ export class DeleteLessonUseCase {
         if (!course) {
           span.setAttribute("course.found", false);
           throw new CourseNotFoundException(
-            `Course with ID ${dto.courseId} not found`
+            `Course with ID ${dto.courseId} not found`,
           );
         }
 
-        if(course.getInstructorId() !== dto.userId) {
-          throw new UnauthorizedException("You are not authorized to perform this operation");
+        if (course.getInstructorId() !== dto.userId) {
+          throw new UnauthorizedException(
+            "You are not authorized to perform this operation",
+          );
         }
 
         const lesson = await this.lessonRepository.findById(dto.lessonId);
@@ -53,7 +59,6 @@ export class DeleteLessonUseCase {
           LessonDeletedEvent.name,
           new LessonDeletedEvent(dto.courseId),
         );
-
 
         span.setAttribute("lesson.deleted", true);
         this.logger.log(`Lesson ${dto.lessonId} deleted`, {

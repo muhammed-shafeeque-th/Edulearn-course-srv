@@ -22,14 +22,14 @@ export class LoggingService implements LoggerService {
   public constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: WinstonLogger,
-    private readonly configService: AppConfigService
+    private readonly configService: AppConfigService,
   ) {}
 
   // Private helper to build common log entry structure
   private buildLogEntry(
     level: string,
     message: string,
-    logContext?: LogContext
+    logContext?: LogContext,
   ) {
     // Get current active OpenTelemetry span context for correlation
     const activeSpan = trace.getSpan(context.active());
@@ -46,7 +46,10 @@ export class LoggingService implements LoggerService {
       correlationId: logContext?.correlationId,
       service: logContext?.service || this.configService.serviceName,
       environment: this.configService.nodeEnv || "development",
-      caller: this.getCaller() + " ",
+      caller:
+        this.configService.nodeEnv !== "production"
+          ? this.getCaller() + " "
+          : undefined,
       // Include any other custom context provided directly
       ...logContext,
     };
@@ -88,7 +91,7 @@ export class LoggingService implements LoggerService {
     for (const line of stackLines) {
       if (
         line &&
-        !line.includes("logging.service.ts") &&
+        !line.includes("logging.service") &&
         (line.startsWith("at ") || line.match(/\(([^)]+)\)/))
       ) {
         // Extract file path and line number
