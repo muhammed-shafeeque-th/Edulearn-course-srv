@@ -1,34 +1,27 @@
 import { Injectable } from "@nestjs/common";
 import { QuizDto } from "src/application/dtos/quiz.dto";
 import { Quiz, Question, QuestionType } from "src/domain/entities/quiz.entity";
-import {
-  CourseNotFoundException,
-  UnauthorizedException,
-} from "src/domain/exceptions/domain.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IQuizRepository } from "src/domain/repositories/quiz.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { CreateQuizDto } from "src/presentation/grpc/dtos/quiz/create-quiz.dto";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { v4 as uuidV4 } from "uuid";
+import { ICreateQuizUseCase } from "../interfaces/create-quiz.interface";
 
 @Injectable()
-export class CreateQuizUseCase {
+export class CreateQuizUseCase implements ICreateQuizUseCase {
   constructor(
-    private readonly courseRepository: ICourseRepository,
-    private readonly quizRepository: IQuizRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _quizRepository: IQuizRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
-  /**
-   * Creates a quiz for a course section.
-   * @param dto CreateQuizDto - The quiz data transfer object
-   * @param idempotencyKey string - Key for idempotency and deduplication
-   * @returns Promise<QuizDto>
-   */
   async execute(dto: CreateQuizDto, idempotencyKey: string): Promise<QuizDto> {
-    return this.tracer.startActiveSpan(
+    return this._tracer.startActiveSpan(
       "CreateQuizUseCase.execute",
       async (span) => {
         try {
@@ -41,51 +34,51 @@ export class CreateQuizUseCase {
           });
 
           const existingQuiz =
-            await this.quizRepository.findByIdempotencyKey(idempotencyKey);
+            await this._quizRepository.findByIdempotencyKey(idempotencyKey);
           if (existingQuiz) {
             span.setAttribute("idempotency.duplicate", true);
-            this.logger.info(
-              `Quiz creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateQuizUseCase.name}`
+             this._logger.debug(
+              `Quiz creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateQuizUseCase.name}`,
             );
             return QuizDto.fromDomain(existingQuiz);
           }
 
-          const existingSectionQuiz = await this.quizRepository.findBySectionId(
-            dto.sectionId
+          const existingModuleQuiz = await this._quizRepository.findByModuleId(
+            dto.moduleId,
           );
-          if (existingSectionQuiz) {
-            span.setAttribute("section.quiz.duplicate", true);
-            this.logger.info(
-              `Quiz creation deduplicated by sectionId: ${dto.sectionId} in ${CreateQuizUseCase.name}`
+          if (existingModuleQuiz) {
+            span.setAttribute("module.quiz.duplicate", true);
+             this._logger.debug(
+              `Quiz creation deduplicated by moduleId: ${dto.moduleId} in ${CreateQuizUseCase.name}`,
             );
-            return QuizDto.fromDomain(existingSectionQuiz);
+            return QuizDto.fromDomain(existingModuleQuiz);
           }
 
-          this.logger.log(`Creating quiz for course ${dto.courseId}`, {
+           this._logger.log(`Creating quiz for course ${dto.courseId}`, {
             ctx: CreateQuizUseCase.name,
           });
 
           // Validate course existence
-          const course = await this.courseRepository.findById(dto.courseId);
+          const course = await this._courseRepository.findById(dto.courseId);
           if (!course) {
             span.setAttribute("course.found", false);
-            this.logger.warn(
-              `Course not found: ${dto.courseId} in ${CreateQuizUseCase.name}`
+             this._logger.warn(
+              `Course not found: ${dto.courseId} in ${CreateQuizUseCase.name}`,
             );
             throw new CourseNotFoundException(
-              `Course with ID ${dto.courseId} not found`
+              `Course with ID ${dto.courseId} not found`,
             );
           }
           span.setAttribute("course.found", true);
 
           // Authorization check
           if (course.getInstructorId() !== dto.userId) {
-            this.logger.warn(
+             this._logger.warn(
               `Unauthorized attempt by user ${dto.userId} to create quiz for course ${dto.courseId}`,
-              { ctx: CreateQuizUseCase.name }
+              { ctx: CreateQuizUseCase.name },
             );
             throw new UnauthorizedException(
-              "You are not authorized to perform this operation"
+              "You are not authorized to perform this operation",
             );
           }
 
@@ -107,7 +100,7 @@ export class CreateQuizUseCase {
           const quizId = uuidV4();
           const quiz = new Quiz({
             id: quizId,
-            sectionId: dto.sectionId,
+            moduleId: dto.moduleId,
             courseId: dto.courseId,
             idempotencyKey,
             title: dto.title,
@@ -119,24 +112,22 @@ export class CreateQuizUseCase {
             isRequired: dto.isRequired,
           });
 
-          await this.quizRepository.save(quiz);
+          await this._quizRepository.save(quiz);
           span.setAttribute("quiz.saved", true);
 
-          this.logger.log(`Quiz created for course ${dto.courseId}`, {
+           this._logger.log(`Quiz created for course ${dto.courseId}`, {
             ctx: CreateQuizUseCase.name,
           });
           return QuizDto.fromDomain(quiz);
-        } catch (error) {
-          this.logger.error(
+        } catch (error: any) {
+           this._logger.error(
             `Error creating quiz: ${error.message}`,
 
-            { stack: error.stack, ctx: CreateQuizUseCase.name }
+            { stack: error.stack, ctx: CreateQuizUseCase.name },
           );
-          span.setAttribute("quiz.error", true);
-          span.recordException(error);
           throw error;
         }
-      }
+      },
     );
   }
 }

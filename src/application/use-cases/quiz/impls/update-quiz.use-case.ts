@@ -1,35 +1,28 @@
 import { Injectable } from "@nestjs/common";
 import { QuizDto } from "src/application/dtos/quiz.dto";
 import { Question, QuestionType } from "src/domain/entities/quiz.entity";
-import {
-  CourseNotFoundException,
-  QuizNotFoundException,
-  UnauthorizedException,
-} from "src/domain/exceptions/domain.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
+import { QuizNotFoundException } from "src/domain/exceptions/quiz.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IQuizRepository } from "src/domain/repositories/quiz.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UpdateQuizDto } from "src/presentation/grpc/dtos/quiz/update-quiz.dto";
+import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { v4 as uuidV4 } from "uuid";
+import { IUpdateQuizUseCase } from "../interfaces/update-quiz.interface";
 
 @Injectable()
-export class UpdateQuizUseCase {
+export class UpdateQuizUseCase implements IUpdateQuizUseCase {
   constructor(
-    private readonly quizRepository: IQuizRepository,
-    private readonly courseRepository: ICourseRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly _quizRepository: IQuizRepository,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
-  /**
-   * Updates a quiz entity.
-   *
-   * @param dto UpdateQuizDto - Data Transfer Object containing update info
-   * @returns Promise<QuizDto> - The updated quiz
-   * @throws CourseNotFoundException, QuizNotFoundException, UnauthorizedException
-   */
   async execute(dto: UpdateQuizDto): Promise<QuizDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "UpdateQuizUseCase.execute",
       async (span) => {
         try {
@@ -40,50 +33,49 @@ export class UpdateQuizUseCase {
             "quiz.passingScore": dto.passingScore,
             "quiz.questionsCount": dto.questions.length,
           });
-          this.logger.log(`Updating quiz ${dto.quizId}`, {
+           this._logger.log(`Updating quiz ${dto.quizId}`, {
             ctx: UpdateQuizUseCase.name,
           });
 
           // Validate course existence
-          const course = await this.courseRepository.findById(dto.courseId);
+          const course = await this._courseRepository.findById(dto.courseId);
           if (!course) {
             span.setAttribute("course.found", false);
-            this.logger.warn(`Course with ID ${dto.courseId} not found`, {
+             this._logger.warn(`Course with ID ${dto.courseId} not found`, {
               ctx: UpdateQuizUseCase.name,
             });
             throw new CourseNotFoundException(
-              `Course with ID ${dto.courseId} not found`
+              `Course with ID ${dto.courseId} not found`,
             );
           }
           span.setAttribute("course.found", true);
 
           // Authorization check
           if (course.getInstructorId() !== dto.userId) {
-            this.logger.warn(
+             this._logger.warn(
               `Unauthorized attempt by user ${dto.userId} to update quiz ${dto.quizId}`,
-              { ctx: UpdateQuizUseCase.name }
+              { ctx: UpdateQuizUseCase.name },
             );
             throw new UnauthorizedException(
-              "You are not authorized to perform this operation"
+              "You are not authorized to perform this operation",
             );
           }
 
           // Fetch quiz to update
-          const quiz = await this.quizRepository.findById(dto.quizId);
+          const quiz = await this._quizRepository.findById(dto.quizId);
           if (!quiz) {
             span.setAttribute("quiz.found", false);
-            this.logger.warn(`Quiz ${dto.quizId} not found for update`, {
+             this._logger.warn(`Quiz ${dto.quizId} not found for update`, {
               ctx: UpdateQuizUseCase.name,
             });
             throw new QuizNotFoundException(`Quiz ${dto.quizId} not found`);
           }
           span.setAttribute("quiz.found", true);
 
-          // Prepare and validate questions
           const questions: Question[] = dto.questions.map((question) => {
             // Defensive construction, domain validation
             return new Question({
-              id: question.id,
+              id: question.id ?? uuidV4(),
               question: question.question,
               correctAnswer: question.correctAnswer,
               type: question.type as QuestionType,
@@ -105,25 +97,24 @@ export class UpdateQuizUseCase {
             questions,
           });
 
-          await this.quizRepository.save(quiz);
+          await this._quizRepository.save(quiz);
           span.setAttribute("quiz.updated", true);
 
-          this.logger.log(`Quiz ${dto.quizId} updated`, {
+           this._logger.log(`Quiz ${dto.quizId} updated`, {
             ctx: UpdateQuizUseCase.name,
           });
           return QuizDto.fromDomain(quiz);
-        } catch (error) {
-          this.logger.error(`Error updating quiz: ${error.message}`, {
+        } catch (error: any) {
+           this._logger.error(`Error updating quiz: ${error.message}`, {
             stack: error.stack,
             ctx: UpdateQuizUseCase.name,
           });
           if (span) {
             span.setAttribute("quiz.update.error", true);
-            span.recordException(error);
           }
           throw error;
         }
-      }
+      },
     );
   }
 }
