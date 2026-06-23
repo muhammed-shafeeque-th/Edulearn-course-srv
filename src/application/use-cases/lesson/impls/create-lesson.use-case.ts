@@ -7,35 +7,34 @@ import {
   Lesson,
 } from "src/domain/entities/lesson.entity";
 import { LessonCreatedEvent } from "src/domain/events/lesson.events";
-import {
-  CourseNotFoundException,
-} from "src/domain/exceptions/course.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ModuleNotFoundException } from "src/domain/exceptions/module.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
 import { IModuleRepository } from "src/domain/repositories/module.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { CreateLessonDto } from "src/presentation/grpc/dtos/lesson/create-lesson.dto";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { v4 as uuidV4 } from "uuid";
+import { ICreateLessonUseCase } from "../interfaces/create-lesson.interface";
 
 @Injectable()
-export class CreateLessonUseCase {
+export class CreateLessonUseCase implements ICreateLessonUseCase {
   constructor(
-    private readonly moduleRepository: IModuleRepository,
-    private readonly courseRepository: ICourseRepository,
-    private readonly eventEmitter: EventEmitter2,
-    private readonly lessonRepository: ILessonRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _moduleRepository: IModuleRepository,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _eventEmitter: EventEmitter2,
+    private readonly _lessonRepository: ILessonRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(
     dto: CreateLessonDto,
     idempotencyKey: string,
   ): Promise<LessonDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "CreateLessonUseCase.execute",
       async (span) => {
         span.setAttributes({
@@ -45,19 +44,19 @@ export class CreateLessonUseCase {
 
         // Check for existing course by idempotency key
         const existingLesson =
-          await this.lessonRepository.findByIdempotencyKey(idempotencyKey);
+          await this._lessonRepository.findByIdempotencyKey(idempotencyKey);
         if (existingLesson) {
           span.setAttribute("idempotency.duplicate", true);
-          this.logger.debug(
+           this._logger.debug(
             `Lesson creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateLessonUseCase.name}`,
           );
           return LessonDto.fromDomain(existingLesson);
         }
 
-        this.logger.log(`Creating lesson for module ${dto.moduleId}`, {
+         this._logger.log(`Creating lesson for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
-        const course = await this.courseRepository.findById(dto.courseId);
+        const course = await this._courseRepository.findById(dto.courseId);
         if (!course) {
           span.setAttribute("course.found", false);
           throw new CourseNotFoundException(
@@ -71,7 +70,7 @@ export class CreateLessonUseCase {
           );
         }
 
-        const module = await this.moduleRepository.findById(dto.moduleId);
+        const module = await this._moduleRepository.findById(dto.moduleId);
         if (!module) {
           span.setAttribute("module.found", false);
           throw new ModuleNotFoundException(`Module ${dto.moduleId} not found`);
@@ -93,16 +92,16 @@ export class CreateLessonUseCase {
           duration: dto.estimatedDuration,
         });
 
-        await this.lessonRepository.save(lesson);
+        await this._lessonRepository.save(lesson);
         span.setAttribute("lesson.saved", true);
 
         // Emit application event AFTER persistence succeeds
-        this.eventEmitter.emit(
+        this._eventEmitter.emit(
           LessonCreatedEvent.name,
           new LessonCreatedEvent(dto.courseId),
         );
 
-        this.logger.log(`Lesson created for module ${dto.moduleId}`, {
+         this._logger.log(`Lesson created for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         return LessonDto.fromDomain(lesson);

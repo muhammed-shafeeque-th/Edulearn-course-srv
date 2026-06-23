@@ -1,39 +1,38 @@
 import { Injectable } from "@nestjs/common";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
-import {
-  LessonNotFoundException,
-} from "src/domain/exceptions/lesson.exceptions";
+import { LessonNotFoundException } from "src/domain/exceptions/lesson.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { LessonDeletedEvent } from "src/domain/events/lesson.events";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DeleteLessonDto } from "src/presentation/grpc/dtos/lesson/delete-lesson.dto";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IDeleteLessonUseCase } from "../interfaces/delete-lesson.interface";
 
 @Injectable()
-export class DeleteLessonUseCase {
+export class DeleteLessonUseCase implements IDeleteLessonUseCase {
   constructor(
-    private readonly lessonRepository: ILessonRepository,
-    private readonly courseRepository: ICourseRepository,
-    private readonly eventEmitter: EventEmitter2,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _lessonRepository: ILessonRepository,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _eventEmitter: EventEmitter2,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(dto: DeleteLessonDto): Promise<void> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "DeleteLessonUseCase.execute",
       async (span) => {
         span.setAttributes({
           "lesson.id": dto.lessonId,
         });
-        this.logger.log(`Deleting lesson ${dto.lessonId}`, {
+         this._logger.log(`Deleting lesson ${dto.lessonId}`, {
           ctx: DeleteLessonUseCase.name,
         });
 
-        const course = await this.courseRepository.findById(dto.courseId);
+        const course = await this._courseRepository.findById(dto.courseId);
         if (!course) {
           span.setAttribute("course.found", false);
           throw new CourseNotFoundException(
@@ -47,21 +46,21 @@ export class DeleteLessonUseCase {
           );
         }
 
-        const lesson = await this.lessonRepository.findById(dto.lessonId);
+        const lesson = await this._lessonRepository.findById(dto.lessonId);
         if (!lesson) {
           span.setAttribute("lesson.found", false);
           throw new LessonNotFoundException(`Lesson ${dto.lessonId} not found`);
         }
 
-        await this.lessonRepository.delete(lesson);
+        await this._lessonRepository.delete(lesson);
 
-        this.eventEmitter.emit(
+        this._eventEmitter.emit(
           LessonDeletedEvent.name,
           new LessonDeletedEvent(dto.courseId),
         );
 
         span.setAttribute("lesson.deleted", true);
-        this.logger.log(`Lesson ${dto.lessonId} deleted`, {
+         this._logger.log(`Lesson ${dto.lessonId} deleted`, {
           ctx: DeleteLessonUseCase.name,
         });
       },
