@@ -6,7 +6,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "proto:gen": "npx protoc --plugin=protoc-gen-ts_proto=\"D:\\Edulearn\\api-gateway\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" --ts_proto_out=./src/infrastructure/grpc/generated --ts_proto_opt=outputServices=grpc-js,esModuleInterop=true -I ./proto ./proto/*.proto",
