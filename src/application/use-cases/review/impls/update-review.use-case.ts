@@ -1,30 +1,29 @@
 import { Injectable } from "@nestjs/common";
 import { ReviewDto } from "src/application/dtos/review.dto";
 import { ReviewNotFoundException } from "src/domain/exceptions/certificate.exceptions";
-import {
-  CourseNotFoundException,
-} from "src/domain/exceptions/course.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { UpdateReviewRequest } from "src/infrastructure/grpc/generated/course/types/review";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IUpdateReviewUseCase } from "../interfaces/update-review.interface";
 
 @Injectable()
-export class UpdateReviewUseCase {
+export class UpdateReviewUseCase implements IUpdateReviewUseCase {
   constructor(
-    private readonly reviewRepository: IReviewRepository,
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly courseRepository: ICourseRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _reviewRepository: IReviewRepository,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(dto: UpdateReviewRequest): Promise<ReviewDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "UpdateReviewUseCase.execute",
       async (span) => {
         const { comment, enrollmentId, rating, reviewId, userId } = dto;
@@ -32,9 +31,9 @@ export class UpdateReviewUseCase {
           "review.id": reviewId,
         });
         const enrollment =
-          await this.enrollmentRepository.getById(enrollmentId);
+          await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-          this.logger.warn(
+           this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: UpdateReviewUseCase.name },
           );
@@ -50,17 +49,17 @@ export class UpdateReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-        this.logger.log(
+         this._logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: UpdateReviewUseCase.name },
         );
 
         // Check if course exists
-        const course = await this.courseRepository.findById(courseId, {
+        const course = await this._courseRepository.findById(courseId, {
           withModules: false,
         });
         if (!course) {
-          this.logger.warn(
+           this._logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
             { ctx: UpdateReviewUseCase.name },
           );
@@ -74,20 +73,18 @@ export class UpdateReviewUseCase {
           enrollment.getStudentId() !== userId ||
           enrollment.getCourseId() !== courseId
         ) {
-          this.logger.error(
+           this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
             { ctx: UpdateReviewUseCase.name },
           );
-          throw new UnauthorizedException(
-            `Enrollment-user-course mismatch`,
-          );
+          throw new UnauthorizedException(`Enrollment-user-course mismatch`);
         }
 
-        this.logger.log(`Updating review ${reviewId}`, {
+         this._logger.log(`Updating review ${reviewId}`, {
           ctx: UpdateReviewUseCase.name,
         });
 
-        const review = await this.reviewRepository.findById(reviewId);
+        const review = await this._reviewRepository.findById(reviewId);
         if (!review) {
           span.setAttribute("review.found", false);
           throw new ReviewNotFoundException(`Review ${reviewId} not found`);
@@ -101,12 +98,12 @@ export class UpdateReviewUseCase {
         review.validateRating();
 
         // await Promise.all([
-        await this.reviewRepository.save(review);
-        await this.courseRepository.update(course);
+        await this._reviewRepository.save(review);
+        await this._courseRepository.update(course);
         // ]);
         span.setAttribute("review.updated", true);
 
-        this.logger.log(`Review ${reviewId} updated`, {
+         this._logger.log(`Review ${reviewId} updated`, {
           ctx: UpdateReviewUseCase.name,
         });
         return ReviewDto.fromDomain(review);

@@ -8,9 +8,9 @@ import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { SubmitCourseReviewRequest } from "src/infrastructure/grpc/generated/course/types/review";
-import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { IEventProducer } from "@/application/adaptors/event-producer.interface";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { v4 as uuidV4 } from "uuid";
 import { ReviewEntityMapper } from "src/infrastructure/database/mappers/review.entity.mapper";
@@ -18,28 +18,29 @@ import { CourseEntityMapper } from "src/infrastructure/database/mappers/course.e
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IAddReviewUseCase } from "../interfaces/add-review.interface";
 
 @Injectable()
-export class AddReviewUseCase {
+export class AddReviewUseCase implements IAddReviewUseCase {
   constructor(
-    private readonly reviewRepository: IReviewRepository,
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly courseRepository: ICourseRepository,
-    private readonly kafkaProducer: IKafkaProducer,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _reviewRepository: IReviewRepository,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _courseRepository: ICourseRepository,
+    private readonly _kafkaProducer: IEventProducer,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(dto: SubmitCourseReviewRequest): Promise<ReviewDto> {
-    return this.tracer.startActiveSpan(
+    return this._tracer.startActiveSpan(
       "AddReviewUseCase.execute",
       async (span) => {
         const { comment, enrollmentId, rating, userId, user } = dto;
         // Fetch enrollment and courseId in one db call if possible for optimization
         const enrollment =
-          await this.enrollmentRepository.getById(enrollmentId);
+          await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-          this.logger.warn(
+           this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -55,15 +56,15 @@ export class AddReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-        this.logger.log(
+         this._logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: AddReviewUseCase.name },
         );
 
         // Check if course exists
-        const course = await this.courseRepository.findById(courseId);
+        const course = await this._courseRepository.findById(courseId);
         if (!course) {
-          this.logger.warn(
+           this._logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -77,7 +78,7 @@ export class AddReviewUseCase {
           enrollment.getStudentId() !== userId ||
           enrollment.getCourseId() !== courseId
         ) {
-          this.logger.error(
+           this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -85,12 +86,12 @@ export class AddReviewUseCase {
         }
 
         // Check if user already reviewed this enrollment/course
-        const existingReview = await this.reviewRepository.findByUserAndCourse(
+        const existingReview = await this._reviewRepository.findByUserAndCourse(
           userId,
           courseId,
         );
         if (existingReview) {
-          this.logger.warn(
+           this._logger.warn(
             `User ${userId} has already reviewed course ${courseId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -120,18 +121,18 @@ export class AddReviewUseCase {
         // Update course rating before saving
         course.rateCourse(rating);
 
-        await this.reviewRepository.save(review),
-          await this.courseRepository.save(course),
+        await this._reviewRepository.save(review),
+          await this._courseRepository.save(course),
           // await Promise.all([
           // ]);
 
-          // await this.courseRepository.transaction(async (manager) => {
+          // await this._courseRepository.transaction(async (manager) => {
           //   await manager.save(ReviewEntityMapper.toOrmReview(review));
           //   await manager.save(CourseEntityMapper.toOrmCourse(course));
           // });
 
           // Publish review event to Kafka asynchronously (do not slow main flow by awaiting errors)
-          this.kafkaProducer
+          this._kafkaProducer
             .produce<CourseReviewSubmittedEvent>(
               KafkaTopics.CourseReviewSubmitted,
               {
@@ -154,13 +155,13 @@ export class AddReviewUseCase {
               },
             )
             .catch((err) => {
-              this.logger.error(
+               this._logger.error(
                 `Failed to send COURSE_REVIEWED event to Kafka: ${err.message}`,
                 { error: err, ctx: AddReviewUseCase.name },
               );
             });
 
-        this.logger.log(
+         this._logger.log(
           `Review added for course ${courseId} by user ${userId}`,
           { ctx: AddReviewUseCase.name },
         );

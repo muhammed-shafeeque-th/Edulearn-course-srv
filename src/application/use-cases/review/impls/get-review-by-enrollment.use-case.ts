@@ -1,40 +1,41 @@
 import { Injectable } from "@nestjs/common";
 import { ReviewDto } from "src/application/dtos/review.dto";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
-import {
-  ReviewNotFoundException,
-} from "src/domain/exceptions/review.exceptions";
+import { ReviewNotFoundException } from "src/domain/exceptions/review.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { GetReviewByEnrollmentRequest } from "src/infrastructure/grpc/generated/course/types/review";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IGetReviewByEnrollmentUseCase } from "../interfaces/get-review-by-enrollment.interface";
 
 @Injectable()
-export class GetReviewByEnrollmentUseCase {
+export class GetReviewByEnrollmentUseCase
+  implements IGetReviewByEnrollmentUseCase
+{
   constructor(
-    private readonly reviewRepository: IReviewRepository,
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _reviewRepository: IReviewRepository,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(dto: GetReviewByEnrollmentRequest): Promise<ReviewDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "GetReviewByEnrollmentUseCase.execute",
       async (span) => {
         const { enrollmentId, userId } = dto;
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
-        this.logger.log(`Fetching enrollment ${enrollmentId}`, {
+         this._logger.log(`Fetching enrollment ${enrollmentId}`, {
           ctx: GetReviewByEnrollmentUseCase.name,
         });
         const enrollment =
-          await this.enrollmentRepository.getById(enrollmentId);
+          await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-          this.logger.warn(
+           this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: GetReviewByEnrollmentUseCase.name },
           );
@@ -44,24 +45,22 @@ export class GetReviewByEnrollmentUseCase {
         }
 
         if (enrollment.getStudentId() !== userId) {
-          this.logger.error(
+           this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}`,
             { ctx: GetReviewByEnrollmentUseCase.name },
           );
-          throw new UnauthorizedException(
-            `Enrollment-user-course mismatch`,
-          );
+          throw new UnauthorizedException(`Enrollment-user-course mismatch`);
         }
 
         const review =
-          await this.reviewRepository.findByEnrollmentId(enrollmentId);
+          await this._reviewRepository.findByEnrollmentId(enrollmentId);
         if (!review) {
           span.setAttribute("review.found", false);
           throw new ReviewNotFoundException(
             `Not found review by enrollment id ${enrollmentId}`,
           );
         }
-        this.logger.log(`found review by enrollment id ${enrollmentId} `, {
+         this._logger.log(`found review by enrollment id ${enrollmentId} `, {
           ctx: GetReviewByEnrollmentUseCase.name,
         });
 
