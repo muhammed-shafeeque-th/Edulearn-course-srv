@@ -4,37 +4,37 @@ import {
   InstructorCoursesEnrollmentSummery,
 } from "src/domain/repositories/enrollment.repository";
 import { GetInstructorCoursesEnrollmentSummeryRequest } from "src/infrastructure/grpc/generated/course/types/stats";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { IGetInstructorCoursesEnrollmentSummeryUseCase } from "../interfaces/get-courses-enrollment-summery.interface";
 
-/**
- * Use case to get a summary of enrollments across all courses for an instructor.
- */
 @Injectable()
-export class GetInstructorCoursesEnrollmentSummeryUseCase {
+export class GetInstructorCoursesEnrollmentSummeryUseCase
+  implements IGetInstructorCoursesEnrollmentSummeryUseCase
+{
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(
     data: GetInstructorCoursesEnrollmentSummeryRequest,
   ): Promise<InstructorCoursesEnrollmentSummery | null> {
-    return this.tracer.startActiveSpan(
+    return this._tracer.startActiveSpan(
       "GetInstructorCoursesEnrollmentSummeryUseCase.execute",
       async (span) => {
         span.setAttributes({
           "instructor.id": data.instructorId,
         });
 
-        this.logger.log(
+         this._logger.log(
           `Fetching courses enrollment summary for instructor ${data.instructorId}`,
           { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );
 
         const summary =
-          await this.enrollmentRepository.getInstructorCoursesEnrollmentSummery(
+          await this._enrollmentRepository.getInstructorCoursesEnrollmentSummery(
             data.instructorId,
           );
         console.log(
@@ -43,7 +43,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase {
 
         if (!summary) {
           span.setAttribute("summary.found", false);
-          this.logger.warn(
+           this._logger.warn(
             `No enrollment summary found for instructor ${data.instructorId}`,
             { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
           );
@@ -56,7 +56,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase {
         span.setAttribute("summary.avgCompletion", summary.avgCompletion);
         span.setAttribute("summary.activeStudents", summary.activeStudents);
 
-        this.logger.log(
+         this._logger.log(
           `Successfully fetched enrollment summary for instructor ${data.instructorId}`,
           { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );

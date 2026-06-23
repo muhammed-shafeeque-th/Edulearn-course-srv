@@ -1,40 +1,40 @@
 import { Injectable } from "@nestjs/common";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 
 @Injectable()
 export class DeleteEnrollmentUseCase {
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(enrollmentId: string): Promise<void> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "DeleteEnrollmentUseCase.execute",
       async (span) => {
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
 
-        this.logger.log(`Deleting enrollment ${enrollmentId}`, {
+         this._logger.log(`Deleting enrollment ${enrollmentId}`, {
           ctx: DeleteEnrollmentUseCase.name,
         });
 
         const enrollment =
-          await this.enrollmentRepository.getById(enrollmentId);
+          await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
           throw new EnrollmentNotFoundException(
             `Enrollment ${enrollmentId} not found`,
           );
         }
 
-        await this.enrollmentRepository.remove(enrollment);
+        await this._enrollmentRepository.remove(enrollment);
 
-        this.logger.log(`Enrollment ${enrollmentId} deleted`, {
+         this._logger.log(`Enrollment ${enrollmentId} deleted`, {
           ctx: DeleteEnrollmentUseCase.name,
         });
       },

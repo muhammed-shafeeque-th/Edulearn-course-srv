@@ -1,35 +1,38 @@
 import { Injectable } from "@nestjs/common";
 import { EnrollmentDto } from "src/application/dtos/enrollment.dto";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { IGetEnrollmentsByUserUseCase } from "../interfaces/get-enrollment-by-user.interface";
 
 @Injectable()
-export class GetEnrollmentsByUserUseCase {
+export class GetEnrollmentsByUserUseCase
+  implements IGetEnrollmentsByUserUseCase
+{
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(userId: string): Promise<EnrollmentDto[]> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "GetEnrollmentsByUserUseCase.execute",
       async (span) => {
         span.setAttributes({
           "user.id": userId,
         });
-        this.logger.log(`Fetching enrollments by user ${userId}`, {
+         this._logger.log(`Fetching enrollments by user ${userId}`, {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
 
         const enrollments =
-          await this.enrollmentRepository.listEnrollmentsByUser(userId, {
+          await this._enrollmentRepository.listEnrollmentsByUser(userId, {
             includeCourse: true,
             includeProgressSummary: true,
           });
 
-        this.logger.log(`Enrollments of user ${userId} fetched`, {
+         this._logger.log(`Enrollments of user ${userId} fetched`, {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
         return enrollments.map(EnrollmentDto.fromDomain);

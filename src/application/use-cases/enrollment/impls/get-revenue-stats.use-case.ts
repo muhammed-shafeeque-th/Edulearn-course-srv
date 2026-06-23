@@ -4,18 +4,19 @@ import {
   GetRevenueStatsRequest,
   RevenueStats,
 } from "src/infrastructure/grpc/generated/course/types/stats";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { IGetRevenueStatsUseCase } from "../interfaces/get-revenue-stats.interface";
 
 /**
  * Use case to fetch revenue statistics for enrollments by year.
  */
 @Injectable()
-export class GetRevenueStatsUseCase {
+export class GetRevenueStatsUseCase implements IGetRevenueStatsUseCase {
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   /**
@@ -24,11 +25,11 @@ export class GetRevenueStatsUseCase {
    * @returns The revenue statistics for enrollments in that year.
    */
   async execute(data: GetRevenueStatsRequest): Promise<RevenueStats | null> {
-    return this.tracer.startActiveSpan(
+    return this._tracer.startActiveSpan(
       "GetRevenueStatsUseCase.execute",
       async (span) => {
         span.setAttribute("year", data.year);
-        this.logger.log(`Fetching revenue stats for year ${data.year}`, {
+         this._logger.log(`Fetching revenue stats for year ${data.year}`, {
           ctx: GetRevenueStatsUseCase.name,
         });
 
@@ -37,11 +38,11 @@ export class GetRevenueStatsUseCase {
             throw new Error(`Invalid input year: ${data.year}`);
           }
 
-          const stats = await this.enrollmentRepository.getRevenueStatus(
+          const stats = await this._enrollmentRepository.getRevenueStatus(
             data.year,
           );
 
-          this.logger.log(
+           this._logger.log(
             `Successfully fetched revenue stats for year ${data.year}`,
             { ctx: GetRevenueStatsUseCase.name },
           );
@@ -49,7 +50,7 @@ export class GetRevenueStatsUseCase {
           return stats;
         } catch (error) {
           span.setAttribute("error", true);
-          this.logger.error(
+           this._logger.error(
             `Error fetching revenue stats: ${error instanceof Error ? error.message : error}`,
             { ctx: GetRevenueStatsUseCase.name, error },
           );

@@ -1,14 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { Progress, UnitType } from "src/domain/entities/progress.entity";
-import {
-  CourseNotFoundException,
-} from "src/domain/exceptions/course.exceptions";
+import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IGetEnrollmentDetailUseCase } from "../interfaces/get-enrollment-detail.interface";
 
 interface LessonDetailDTO {
   id: string;
@@ -70,34 +69,34 @@ export interface EnrollmentDetailDTO {
 }
 
 @Injectable()
-export class GetEnrollmentDetailUseCase {
+export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
   constructor(
-    private readonly enrollmentRepo: IEnrollmentRepository,
-    private readonly courseRepo: ICourseRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepo: IEnrollmentRepository,
+    private readonly _courseRepo: ICourseRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(
     enrollmentId: string,
     userId: string,
   ): Promise<EnrollmentDetailDTO> {
-    return this.tracer.startActiveSpan(
+    return this._tracer.startActiveSpan(
       `${GetEnrollmentDetailUseCase.name}.execute`,
       async (span) => {
         try {
-          this.logger.log(`Fetching enrollment [${enrollmentId}] detail`, {
+           this._logger.log(`Fetching enrollment [${enrollmentId}] detail`, {
             ctx: GetEnrollmentDetailUseCase.name,
             userId,
           });
 
-          const enrollment = await this.enrollmentRepo.getById(enrollmentId, {
+          const enrollment = await this._enrollmentRepo.findById(enrollmentId, {
             includeCourse: false,
             includeProgressSummary: true,
           });
 
           if (!enrollment) {
-            this.logger.warn(
+             this._logger.warn(
               `Enrollment [${enrollmentId}] not found for user [${userId}]`,
               { ctx: GetEnrollmentDetailUseCase.name },
             );
@@ -106,7 +105,7 @@ export class GetEnrollmentDetailUseCase {
             );
           }
           if (enrollment.getStudentId() !== userId) {
-            this.logger.warn(
+             this._logger.warn(
               `User [${userId}] not authorized to access enrollment [${enrollmentId}]`,
               { ctx: GetEnrollmentDetailUseCase.name },
             );
@@ -115,12 +114,12 @@ export class GetEnrollmentDetailUseCase {
             );
           }
 
-          const course = await this.courseRepo.findById(
+          const course = await this._courseRepo.findById(
             enrollment.getCourseId(),
           );
 
           if (!course) {
-            this.logger.warn(
+             this._logger.warn(
               `Course not found for enrollment [${enrollmentId}] (user [${userId}])`,
               { ctx: GetEnrollmentDetailUseCase.name },
             );
@@ -199,7 +198,7 @@ export class GetEnrollmentDetailUseCase {
               };
             });
 
-          this.logger.log(`Enrollment [${enrollmentId}] detail fetched`, {
+           this._logger.log(`Enrollment [${enrollmentId}] detail fetched`, {
             ctx: GetEnrollmentDetailUseCase.name,
             userId,
           });
@@ -214,7 +213,7 @@ export class GetEnrollmentDetailUseCase {
             modules,
           };
         } catch (error) {
-          this.logger.error(
+           this._logger.error(
             `Failed to get enrollment detail [${enrollmentId}] for user [${userId}]`,
             { err: error, ctx: GetEnrollmentDetailUseCase.name },
           );

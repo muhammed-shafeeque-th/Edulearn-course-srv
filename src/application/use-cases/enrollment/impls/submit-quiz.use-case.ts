@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import {
-  EnrollmentNotFoundException,
-} from "src/domain/exceptions/enrollment.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { QuizNotFoundException } from "src/domain/exceptions/quiz.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { IQuizRepository } from "src/domain/repositories/quiz.repository";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { ISubmitQuizUseCase } from "../interfaces/submit-quiz.interface";
 
 export interface SubmitQuizCommandDTO {
   enrollmentId: string;
@@ -25,14 +24,14 @@ export interface SubmitQuizResultDTO {
 }
 
 @Injectable()
-export class SubmitQuizUseCase {
+export class SubmitQuizUseCase implements ISubmitQuizUseCase {
   constructor(
-    private readonly enrollmentRepo: IEnrollmentRepository,
-    private readonly quizRepo: IQuizRepository,
+    private readonly _enrollmentRepo: IEnrollmentRepository,
+    private readonly _quizRepo: IQuizRepository,
   ) {}
 
   async execute(cmd: SubmitQuizCommandDTO): Promise<SubmitQuizResultDTO> {
-    const enrollment = await this.enrollmentRepo.getById(cmd.enrollmentId, {
+    const enrollment = await this._enrollmentRepo.findById(cmd.enrollmentId, {
       includeCourse: false,
       includeProgressSummary: true,
     });
@@ -44,7 +43,7 @@ export class SubmitQuizUseCase {
       throw new UnauthorizedException();
     }
 
-    const quiz = await this.quizRepo.findById(cmd.quizId);
+    const quiz = await this._quizRepo.findById(cmd.quizId);
 
     if (!quiz) {
       throw new QuizNotFoundException("Quiz not found");
@@ -62,7 +61,7 @@ export class SubmitQuizUseCase {
       requirePassingScore,
     );
 
-    await this.enrollmentRepo.upsert(enrollment);
+    await this._enrollmentRepo.upsert(enrollment);
 
     return {
       enrollmentId: enrollment.getId(),

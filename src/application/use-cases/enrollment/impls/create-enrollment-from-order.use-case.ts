@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import {
   Enrollment,
   EnrollmentStatus,
@@ -8,24 +6,27 @@ import {
 import { UnitType, Progress } from "src/domain/entities/progress.entity";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
-import { IKafkaProducer } from "src/application/services/kafka-producer.interface";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { IEventProducer } from "@/application/adaptors/event-producer.interface";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { EnrollmentCreatedEvent } from "src/domain/events/enrollment.events";
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { v4 as uuidV4 } from "uuid";
 import { IEventProcessRepository } from "src/domain/repositories/event-process-repository.interface";
 import { InAppNotificationEvent } from "src/domain/events/other-events";
 import { OrderCompletedEvent } from "src/domain/events/order-events";
+import { ICreateEnrollmentFromOrderUseCase } from "../interfaces/create-enrollment-from-order.interface";
 
 @Injectable()
-export class CreateEnrollmentFromOrderUseCase {
+export class CreateEnrollmentFromOrderUseCase
+  implements ICreateEnrollmentFromOrderUseCase
+{
   constructor(
-    private readonly enrollmentRepo: IEnrollmentRepository,
-    private readonly courseRepo: ICourseRepository,
-    private readonly kafkaProducer: IKafkaProducer,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepo: IEnrollmentRepository,
+    private readonly _courseRepo: ICourseRepository,
+    private readonly _kafkaProducer: IEventProducer,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(event: OrderCompletedEvent): Promise<void> {
@@ -35,7 +36,7 @@ export class CreateEnrollmentFromOrderUseCase {
       !Array.isArray(payload.items) ||
       payload.items.length === 0
     ) {
-      this.logger.warn("Order payload is empty or malformed.", {
+       this._logger.warn("Order payload is empty or malformed.", {
         orderId: payload?.orderId,
       });
       return;
@@ -44,21 +45,21 @@ export class CreateEnrollmentFromOrderUseCase {
     for (const item of payload.items) {
       try {
         // Skip/deduplicate if enrollment already exists
-        const existing = await this.enrollmentRepo.getByUserAndCourse(
+        const existing = await this._enrollmentRepo.findByUserAndCourse(
           payload.userId,
           item.courseId,
           { includeCourse: false, includeProgressSummary: false },
         );
         if (existing) {
-          this.logger.warn(
+           this._logger.warn(
             `User [${payload.userId}] already enrolled into course [${item.courseId}], skipping.`,
           );
           continue;
         }
 
-        const course = await this.courseRepo.findById(item.courseId);
+        const course = await this._courseRepo.findById(item.courseId);
         if (!course) {
-          this.logger.warn(
+           this._logger.warn(
             `Course [${item.courseId}] not found, skipping enrollment.`,
           );
           continue;
@@ -116,13 +117,13 @@ export class CreateEnrollmentFromOrderUseCase {
           0,
         );
 
-        await this.enrollmentRepo.upsert(enrollment);
-        this.logger.log(
+        await this._enrollmentRepo.upsert(enrollment);
+         this._logger.log(
           `Enrollment [${enrollmentId}] created for user [${payload.userId}] in course [${item.courseId}].`,
         );
 
         course.incrementEnrollment();
-        await this.courseRepo.save(course);
+        await this._courseRepo.save(course);
 
         // Publish related events (Kafka)
         await this.publishCourseEnrolledEvents(
@@ -130,8 +131,8 @@ export class CreateEnrollmentFromOrderUseCase {
           course.getInstructorId(),
           payload.amount,
         );
-      } catch (error) {
-        this.logger.error(
+      } catch (error: any) {
+         this._logger.error(
           `Failed to create enrollment for user [${payload.userId}] and course [${item.courseId}]: ${error?.message}`,
           error?.stack,
         );
@@ -145,7 +146,7 @@ export class CreateEnrollmentFromOrderUseCase {
     amount: number,
   ): Promise<void> {
     try {
-      await this.kafkaProducer.produce<EnrollmentCreatedEvent>(
+      await this._kafkaProducer.produce<EnrollmentCreatedEvent>(
         KafkaTopics.CourseEnrollmentCreated,
         {
           key: enrollment.getCourseId(),
@@ -167,8 +168,8 @@ export class CreateEnrollmentFromOrderUseCase {
           },
         },
       );
-    } catch (error) {
-      this.logger.error(
+    } catch (error: any) {
+       this._logger.error(
         "Failed to publish EnrollmentCreatedEvent to Kafka",
         error?.stack,
       );
@@ -176,7 +177,7 @@ export class CreateEnrollmentFromOrderUseCase {
     }
 
     try {
-      await this.kafkaProducer.produce<InAppNotificationEvent>(
+      await this._kafkaProducer.produce<InAppNotificationEvent>(
         KafkaTopics.NotificationInAppChannel,
         {
           key: enrollment.getCourseId(),
@@ -200,7 +201,7 @@ export class CreateEnrollmentFromOrderUseCase {
         },
       );
     } catch (error) {
-      this.logger.error("Error while publishing InAppNotification event", {
+       this._logger.error("Error while publishing InAppNotification event", {
         error,
       });
     }
@@ -209,10 +210,10 @@ export class CreateEnrollmentFromOrderUseCase {
   // private async getLessonsForCourse(courseId: string): Promise<LessonDTO[]> {
   //   try {
   //     // Fetch all lessons for the given courseId
-  //     const lessons = await this.lessonRepository.findByCourseId(courseId);
+  //     const lessons = await this._lessonRepository.findByCourseId(courseId);
 
   //     if (!lessons) {
-  //       this.logger.warn(
+  //        this._logger.warn(
   //         `Lesson repository returned null/undefined for courseId=${courseId}`
   //       );
   //       throw new NotFoundException(
@@ -226,11 +227,11 @@ export class CreateEnrollmentFromOrderUseCase {
   //       .sort((a, b) => a.getOrder() - b.getOrder());
 
   //     if (publishedLessons.length === 0) {
-  //       this.logger.warn(`No published lessons found for courseId=${courseId}`);
+  //        this._logger.warn(`No published lessons found for courseId=${courseId}`);
   //       return [];
   //     }
 
-  //     this.logger.debug(
+  //      this._logger.debug(
   //       `Found ${publishedLessons.length} published lessons for courseId=${courseId}`
   //     );
   //     // Optionally, map to only include .id if you prefer
@@ -244,7 +245,7 @@ export class CreateEnrollmentFromOrderUseCase {
   //     if (err instanceof NotFoundException) {
   //       throw err;
   //     }
-  //     this.logger.error(
+  //      this._logger.error(
   //       `Error retrieving lessons for courseId=${courseId}: ${err?.message}`,
   //       err?.stack
   //     );

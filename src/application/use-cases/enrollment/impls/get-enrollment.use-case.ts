@@ -1,33 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { EnrollmentDto } from "src/application/dtos/enrollment.dto";
-import {
-  EnrollmentNotFoundException,
-} from "src/domain/exceptions/enrollment.exceptions";
+import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
+import { IGetEnrollmentUseCase } from "../interfaces/get-enrollment.interface";
 
 @Injectable()
-export class GetEnrollmentUseCase {
+export class GetEnrollmentUseCase implements IGetEnrollmentUseCase {
   constructor(
-    private readonly enrollmentRepository: IEnrollmentRepository,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _enrollmentRepository: IEnrollmentRepository,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   async execute(enrollmentId: string, userId: string): Promise<EnrollmentDto> {
-    return await this.tracer.startActiveSpan(
+    return await this._tracer.startActiveSpan(
       "GetEnrollmentUseCase.execute",
       async (span) => {
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
-        this.logger.log(`Fetching enrollment ${enrollmentId}`, {
+         this._logger.log(`Fetching enrollment ${enrollmentId}`, {
           ctx: GetEnrollmentUseCase.name,
         });
 
-        const enrollment = await this.enrollmentRepository.getByIdAndUser(
+        const enrollment = await this._enrollmentRepository.findByIdAndUser(
           enrollmentId,
           userId,
           { includeCourse: true },
@@ -44,7 +43,7 @@ export class GetEnrollmentUseCase {
           );
         }
 
-        this.logger.log(`Enrollment ${enrollmentId} fetched`, {
+         this._logger.log(`Enrollment ${enrollmentId} fetched`, {
           ctx: GetEnrollmentUseCase.name,
         });
         return EnrollmentDto.fromDomain(enrollment);
