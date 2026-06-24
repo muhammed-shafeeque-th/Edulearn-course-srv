@@ -4,8 +4,7 @@ export type KafkaMessageObject<T> = {
   headers?: any;
 };
 
-
-export abstract class IKafkaProducer {
+export abstract class IEventProducer {
   abstract produce<T = Record<string, any>>(
     topic: string,
     message: KafkaMessageObject<T>,
