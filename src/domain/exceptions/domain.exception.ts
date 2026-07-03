@@ -1,5 +1,5 @@
-import { BaseException } from 'src/shared/exceptions/base-exception';
-import { ErrorCode } from 'src/shared/exceptions/error-codes';
+import { BaseException } from "src/shared/exceptions/base-exception";
+import { ErrorCode } from "src/shared/exceptions/error-codes";
 
 export abstract class DomainException extends BaseException {
   constructor(

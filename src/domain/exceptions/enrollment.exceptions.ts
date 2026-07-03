@@ -5,18 +5,30 @@ import { DomainException } from "./domain.exception";
 
 export class EnrollmentNotFoundException extends DomainException {
   constructor(message?: string) {
-    super(ErrorCode.NOT_FOUND, message || "The enrollment was not found.", 'ENROLLMENT_NOT_FOUND');
+    super(
+      ErrorCode.NOT_FOUND,
+      message || "The enrollment was not found.",
+      "ENROLLMENT_NOT_FOUND",
+    );
   }
 }
 
 export class AlreadyEnrolledException extends DomainException {
   constructor(message?: string) {
-    super(ErrorCode.ALREADY_EXISTS, message || "User is already enrolled.", 'ALREADY_ENROLLED');
+    super(
+      ErrorCode.ALREADY_EXISTS,
+      message || "User is already enrolled.",
+      "ALREADY_ENROLLED",
+    );
   }
 }
 
 export class EnrollmentDomainException extends DomainException {
   constructor(message?: string) {
-    super(ErrorCode.BUSINESS_RULE_VIOLATION, message || "An enrollment domain error occurred.", 'ENROLLMENT_DOMAIN');
+    super(
+      ErrorCode.BUSINESS_RULE_VIOLATION,
+      message || "An enrollment domain error occurred.",
+      "ENROLLMENT_DOMAIN",
+    );
   }
 }
