@@ -1,6 +1,7 @@
 import { BaseEvent } from "./base.event";
 
-export interface EnrollmentCreatedEvent extends BaseEvent<{
+export interface EnrollmentCreatedEvent
+  extends BaseEvent<{
     enrollmentId: string;
     courseId: string;
     instructorId: string;
@@ -9,4 +10,4 @@ export interface EnrollmentCreatedEvent extends BaseEvent<{
     orderId: string;
     enrolledAt: string;
     timestamp: number;
-}> { }
+  }> {}

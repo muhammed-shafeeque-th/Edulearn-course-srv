@@ -1,12 +1,8 @@
 import { CourseStatus } from "../entities/course.entity";
 import { BaseEvent } from "./base.event";
 
-
-
-
-
-
-export interface CourseReviewSubmittedEvent extends BaseEvent<{
+export interface CourseReviewSubmittedEvent
+  extends BaseEvent<{
     userId: string;
     courseId: string;
     enrollmentId: string;
@@ -14,5 +10,4 @@ export interface CourseReviewSubmittedEvent extends BaseEvent<{
     rating: number;
     comment: string;
     reviewedAt: string;
-}> { }
-
+  }> {}
