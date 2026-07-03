@@ -1,9 +1,8 @@
 import { BaseEvent } from "./base.event";
 
 export const USER_EVENT_TYPES = {
-  UPDATED: 'UserUpdatedEvent'
+  UPDATED: "UserUpdatedEvent",
 } as const;
-
 
 export interface UserUpdatedEvent
   extends BaseEvent<{

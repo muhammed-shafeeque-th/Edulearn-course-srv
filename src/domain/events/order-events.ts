@@ -1,32 +1,27 @@
 import { BaseEvent } from "./base.event";
 
-
 export const ORDER_EVENT_TYPES = {
-    SUCCEEDED: 'CourseOrderSucceeded'
-  } as const;
-  
+  SUCCEEDED: "CourseOrderSucceeded",
+} as const;
 
 class OrderCompletedItemPayload {
-    courseId: string;
+  courseId: string;
 
-    price: number;
+  price: number;
 }
 
 export class OrderCompletedEventPayload {
+  orderId: string;
 
-    orderId: string;
+  eventId: string;
 
-    eventId: string;
+  userId: string;
 
-    userId: string;
+  items: OrderCompletedItemPayload[];
 
-    items: OrderCompletedItemPayload[];
+  amount: number;
 
-    amount: number;
-
-    currency: string
+  currency: string;
 }
 
 export type OrderCompletedEvent = BaseEvent<OrderCompletedEventPayload>;
-
-
