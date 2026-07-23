@@ -1,16 +1,28 @@
 import { Global, Module } from "@nestjs/common";
-import { MetricsService } from "./metrics.service";
-import { PrometheusModule } from "@willsoto/nestjs-prometheus";
+import { MetricService } from "./metrics.service";
+import { IMetricService } from "src/application/adaptors/metric.service";
+import { MetricsModule } from "@edulearn/nest";
+import { AppConfigService } from "@/infrastructure/config/config.service";
 
 @Global()
 @Module({
   imports: [
-    PrometheusModule.register({
-      defaultMetrics: { enabled: true, config: {} },
-      path: "/metrics",
+    MetricsModule.forRootAsync({
+      inject: [AppConfigService],
+
+      useFactory: (config: AppConfigService) => ({
+        namespace: config.nodeEnv,
+        subsystem: "course_service" ,
+
+        version: config.serviceVersion,
+        port: config.apiPort,
+        defaultLabels: {
+          service: config.serviceName,
+        },
+      }),
     }),
   ],
-  providers: [MetricsService],
-  exports: [MetricsService],
+  providers: [{ provide: IMetricService, useClass: MetricService }],
+  exports: [IMetricService],
 })
-export class MetricsModule {}
+export class AppMetricsModule {}
