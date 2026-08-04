@@ -1,4 +1,5 @@
 import { Enrollment } from "../entities/enrollment.entity";
+import { IBaseRepository } from "./base.repository";
 
 export interface InstructorCourseEnrollmentSummery {
   totalStudents: number;
@@ -43,7 +44,7 @@ export interface InstructorCoursesEnrollmentSummery {
 /**
  * Repository contract for Enrollment aggregate and its related data.
  */
-export abstract class IEnrollmentRepository {
+export abstract class IEnrollmentRepository extends IBaseRepository<Enrollment> {
   /**
    * Create or update an enrollment entity in the persistence layer.
    */
@@ -52,7 +53,7 @@ export abstract class IEnrollmentRepository {
   /**
    * Find an enrollment by its unique identifier.
    */
-  abstract getById(
+  abstract findById(
     enrollmentId: string,
     options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment | null>;
@@ -89,7 +90,7 @@ export abstract class IEnrollmentRepository {
   /**
    * Find an enrollment by user and course ids.
    */
-  abstract getByUserAndCourse(
+  abstract findByUserAndCourse(
     userId: string,
     courseId: string,
     options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
@@ -138,7 +139,7 @@ export abstract class IEnrollmentRepository {
   /**
    * Find enrollment by enrollmentId and userId.
    */
-  abstract getByIdAndUser(
+  abstract findByIdAndUser(
     enrollmentId: string,
     userId: string,
     options?: { includeCourse?: boolean; includeProgressSummary?: boolean },

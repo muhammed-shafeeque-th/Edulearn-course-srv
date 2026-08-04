@@ -1,17 +1,18 @@
 import { Certificate } from "../entities/certificate.entity";
+import { IBaseRepository, PaginatedResult } from "./base.repository";
 
-export abstract class ICertificateRepository {
+export abstract class ICertificateRepository extends IBaseRepository<Certificate> {
   abstract save(certificate: Certificate): Promise<void>;
-  abstract findById(id: string): Promise<Certificate | null>;
   abstract findByEnrollmentId(
-    enrollmentId: string
+    enrollmentId: string,
   ): Promise<Certificate | null>;
+  abstract findById(id: string): Promise<Certificate | null>;
   abstract findByCertificateNumber(
-    certificateNumber: string
+    certificateNumber: string,
   ): Promise<Certificate | null>;
   abstract findByUserId(
     userId: string,
     offset?: number,
     limit?: number,
-  ): Promise<{ certificates: Certificate[]; total: number }>;
+  ): Promise<PaginatedResult<Certificate>>;
 }

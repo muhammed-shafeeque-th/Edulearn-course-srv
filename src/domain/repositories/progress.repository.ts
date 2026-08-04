@@ -1,6 +1,7 @@
 import { Progress } from "../entities/progress.entity";
+import { IBaseRepository } from "./base.repository";
 
-export abstract class IProgressRepository {
+export abstract class IProgressRepository extends IBaseRepository<Progress> {
   abstract save(progress: Progress): Promise<void>;
   abstract findByEnrollmentId(progressId: string): Promise<Progress[]>;
   abstract findById(id: string): Promise<Progress | null>;
@@ -12,5 +13,6 @@ export abstract class IProgressRepository {
     enrollmentId: string,
     lessonId: string,
   ): Promise<Progress | null>;
+
   abstract delete(progress: Progress): Promise<void>;
 }
