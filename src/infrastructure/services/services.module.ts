@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { ICertificatePDFGenerator } from "src/application/services/pdf-certificate-generator.adapter";
+import { ICertificatePDFGenerator } from "src/application/adaptors/pdf-certificate-generator.adapter";
 import { CertificatePDFGeneratorImpl } from "./pdf-service";
 
 @Module({
