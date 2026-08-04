@@ -1,67 +1,72 @@
-# =========================
-# Stage 1: Builder
-# =========================
-FROM node:20-alpine AS builder
+ARG BASE_IMAGE=ghcr.io/muhammed-shafeeque-th/edulearn-node:22
+
+# Stage 1: Dependency
+FROM ${BASE_IMAGE} AS dependencies
 
 WORKDIR /app
 
-# Enable Corepack (ensures correct Yarn version)
-RUN corepack enable
+ENV NODE_ENV=development
 
-# Install build dependencies for native modules
-RUN apk add --no-cache python3 make g++ bash
 
-# Copy Yarn dependency manifests
+# Copy package files first for caching
 COPY package.json yarn.lock ./
 
-# Install all dependencies (including dev)
-RUN yarn install --frozen-lockfile
+# Use cache mount for faster repeated builds (BuildKit)
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
+    yarn install --frozen-lockfile --ignore-optional
 
-# Copy source code
-COPY . .
+# Stage 2: Dependency
+FROM dependencies AS builder
 
-# Build the application
-RUN yarn build
+# Copy source and configs
+COPY tsconfig*.json ./
+COPY src ./src
 
+# Build (keep your existing build for stability)
+RUN yarn run build
 
-# =========================
-# Stage 2: Production
-# =========================
-FROM node:20-alpine AS production
+# Prune to production dependencies in builder
+RUN yarn install \
+    --production=true \
+    --frozen-lockfile \
+    --ignore-optional \
+    --non-interactive
+
+#  Cleanup unnecessary files from node_modules with node-prune
+ARG NODE_PRUNE_VERSION=v1.0.2
+
+RUN  apk add --no-cache curl \
+  && curl -sfL https://gobinaries.com/tj/node-prune | sh -s -- -b /usr/local/bin \
+  && node-prune \
+  && yarn cache clean \
+  && rm -rf \
+       /tmp/* \
+       /root/.cache \
+       /usr/local/share/.cache
+
+# Stage 2: Runtime (Lightweight)
+FROM node:22.17.1-alpine3.22 AS runner
 
 WORKDIR /app
 
-# Enable Corepack
-RUN corepack enable
-
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Copy dependency manifests
-COPY package.json yarn.lock ./
-
-# Install ONLY production dependencies
 ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile --production && yarn cache clean
 
-# Copy built output
-COPY --from=builder /app/dist ./dist
+LABEL org.opencontainers.image.title="edulearn-course"
+LABEL org.opencontainers.image.description="EduLearn Chat Service"
+LABEL org.opencontainers.image.source="https://github.com/muhammed-shafeeque-th/Edulearn-course"
 
-# Copy proto files
-COPY --from=builder /app/proto ./proto
+# Non-root user
+RUN addgroup -S edulearn_admin && adduser -S edulearn_user -G edulearn_admin
 
-# Fix permissions
-RUN chown -R appuser:appgroup /app
+# Copy only essentials from builder
+COPY --from=builder --chown=edulearn_user:edulearn_admin /app/dist ./dist
+COPY --from=builder --chown=edulearn_user:edulearn_admin /app/node_modules ./node_modules
+COPY --from=builder --chown=edulearn_user:edulearn_admin /app/package.json ./
 
-# Switch to non-root user
-USER appuser
 
-# Expose port
-EXPOSE 3001
+USER edulearn_user
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+EXPOSE 50053
 
-# Start application
+# Direct start (no yarn overhead, better signal handling)
 CMD ["node", "dist/main.js"]
