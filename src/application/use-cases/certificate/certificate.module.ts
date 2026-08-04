@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { DatabaseRepositoryModule } from "src/infrastructure/database/database-repository.module";
-import { RedisModule } from "src/infrastructure/redis/redis.module";
+import { RedisModule } from "@/infrastructure/redis/redis.module";
 import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 import { GenerateCertificateUseCase } from "./impls/generate-certificate.use-case";
 import { GetCertificateUseCase } from "./impls/get-certificate.use-case";

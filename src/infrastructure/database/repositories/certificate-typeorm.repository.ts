@@ -3,118 +3,86 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ICertificateRepository } from "../../../domain/repositories/certificate.repository";
 import { Certificate } from "../../../domain/entities/certificate.entity";
-import { LoggingService } from "../../observability/logging/logging.service";
 import { CertificateEntityMapper } from "../mappers/certificate.entity.mapper";
 import { CertificateOrmEntity } from "../entities/certificate-orm.entity";
-import { ICacheService } from "src/application/services/cache-service";
-import { CACHE_KEYS } from "src/infrastructure/redis/cache-keys";
-
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { PaginatedResult } from "src/domain/repositories/base.repository";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { BaseRepository } from "./base.repository";
 
 @Injectable()
-export class CertificateTypeOrmRepository implements ICertificateRepository {
+export class CertificateTypeOrmRepository
+  extends BaseRepository<Certificate, CertificateOrmEntity>
+  implements ICertificateRepository
+{
+  protected contextName = "CertificateTypeOrmRepository";
+
   constructor(
     @InjectRepository(CertificateOrmEntity)
-    private readonly repo: Repository<CertificateOrmEntity>,
-    private readonly redisService: ICacheService,
-    private readonly logger: LoggingService
-  ) {}
+    repo: Repository<CertificateOrmEntity>,
+    logger: ILoggerService,
+    tracer: ITraceService,
+  ) {
+    super(repo, logger, tracer);
+  }
 
   async save(certificate: Certificate): Promise<void> {
-    const orm = CertificateEntityMapper.toOrmCertificate(certificate);
-    await this.repo.save(orm);
+    return this.execute("save", async (span) => {
+      const orm = CertificateEntityMapper.toOrmCertificate(certificate);
+      await this.repo.save(orm);
 
-    // Invalidate cache
-    await Promise.all([
-      this.redisService.del(CACHE_KEYS.certificate.byId(certificate.getId())),
-      this.redisService.del(CACHE_KEYS.certificate.byEnrollmentId(certificate.getEnrollmentId())),
-      this.redisService.del(CACHE_KEYS.certificate.byCertificateNumber(certificate.getCertificateNumber())),
-      this.redisService.del(CACHE_KEYS.certificate.allByUserId(certificate.getUserId())),
-    ]);
-
-    this.logger.debug(`Certificate saved: ${certificate.getId()}`);
+      this.logger.debug(`Certificate saved: ${certificate.getId()}`);
+    });
   }
 
   async findById(id: string): Promise<Certificate | null> {
-    const cacheKey = CACHE_KEYS.certificate.byId(id);
-    const cached = await this.redisService.get<CertificateOrmEntity>(cacheKey);
+    return this.execute("findById", async (span) => {
+      const orm = await this.repo.findOne({ where: { id } });
+      if (!orm) return null;
 
-    if (cached) {
-      return CertificateEntityMapper.toDomainCertificate(cached);
-    }
-
-    const orm = await this.repo.findOne({ where: { id } });
-    if (!orm) return null;
-
-    await this.redisService.set(cacheKey, orm, 3600);
-    return CertificateEntityMapper.toDomainCertificate(orm);
+      return CertificateEntityMapper.toDomainCertificate(orm);
+    });
   }
 
   async findByEnrollmentId(enrollmentId: string): Promise<Certificate | null> {
-    const cacheKey = CACHE_KEYS.certificate.byEnrollmentId(enrollmentId);
-    const cached = await this.redisService.get<CertificateOrmEntity>(cacheKey);
+    return this.execute("findByEnrollmentId", async (span) => {
+      const orm = await this.repo.findOne({ where: { enrollmentId } });
+      if (!orm) return null;
 
-    if (cached) {
-      return CertificateEntityMapper.toDomainCertificate(cached);
-    }
-
-    const orm = await this.repo.findOne({ where: { enrollmentId } });
-    if (!orm) return null;
-
-    await this.redisService.set(cacheKey, orm, 3600);
-    return CertificateEntityMapper.toDomainCertificate(orm);
+      return CertificateEntityMapper.toDomainCertificate(orm);
+    });
   }
 
   async findByCertificateNumber(
-    certificateNumber: string
+    certificateNumber: string,
   ): Promise<Certificate | null> {
-    const cacheKey = CACHE_KEYS.certificate.byCertificateNumber(certificateNumber);
-    const cached = await this.redisService.get<CertificateOrmEntity>(cacheKey);
+    return this.execute("findByCertificateNumber", async (span) => {
+      const orm = await this.repo.findOne({ where: { certificateNumber } });
+      if (!orm) return null;
 
-    if (cached) {
-      return CertificateEntityMapper.toDomainCertificate(cached);
-    }
-
-    const orm = await this.repo.findOne({ where: { certificateNumber } });
-    if (!orm) return null;
-
-    await this.redisService.set(cacheKey, orm, 3600);
-    return CertificateEntityMapper.toDomainCertificate(orm);
+      return CertificateEntityMapper.toDomainCertificate(orm);
+    });
   }
 
   async findByUserId(
     userId: string,
     offset: number = 0,
-    limit: number = 10
-  ): Promise<{ certificates: Certificate[]; total: number }> {
-    const cacheKey = CACHE_KEYS.certificate.byUserId(userId, offset, limit);
-    const cached = await this.redisService.get<{
-      certificates: CertificateOrmEntity[];
-      total: number;
-    }>(cacheKey);
+    limit: number = 10,
+  ): Promise<PaginatedResult<Certificate>> {
+    return this.execute("findByUserId", async (span) => {
+      const [ormEntities, total] = await this.repo.findAndCount({
+        where: { userId },
+        order: { createdAt: "DESC" },
+        skip: offset,
+        take: limit,
+      });
 
-    if (cached) {
       return {
-        certificates: cached.certificates.map(CertificateEntityMapper.toDomainCertificate),
-        total: cached.total,
+        data: ormEntities.map(CertificateEntityMapper.toDomainCertificate),
+        total,
+        limit,
+        page: offset,
       };
-    }
-
-    const [ormEntities, total] = await this.repo.findAndCount({
-      where: { userId },
-      order: { createdAt: "DESC" },
-      skip: offset,
-      take: limit,
     });
-
-    await this.redisService.set(
-      cacheKey,
-      { certificates: ormEntities, total },
-      3600
-    );
-
-    return {
-      certificates: ormEntities.map(CertificateEntityMapper.toDomainCertificate),
-      total,
-    };
   }
 }

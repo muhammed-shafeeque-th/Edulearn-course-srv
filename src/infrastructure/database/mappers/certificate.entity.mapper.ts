@@ -3,15 +3,7 @@ import { UserOrmEntity } from "../entities/user.entity";
 import { Certificate } from "src/domain/entities/certificate.entity";
 import { CertificateOrmEntity } from "../entities/certificate-orm.entity";
 
-/**
- * EntityMapper handles mapping between domain entities and ORM/database entities.
- * Add new methods as new mappings are needed.
- * Follows best practices: single-responsibility, reusability, null/undef checking, date normalization, and minimal knowledge of property structure.
- */
 export class CertificateEntityMapper {
-  
-  // -------- Certificate -----------
-
   static toOrmCertificate(certificate: Certificate): CertificateOrmEntity {
     const orm = new CertificateOrmEntity();
     orm.id = certificate.getId();
@@ -40,9 +32,7 @@ export class CertificateEntityMapper {
       orm.certificateNumber,
       orm.issueDate,
       orm.createdAt,
-      orm.updatedAt
+      orm.updatedAt,
     );
   }
-
-  
 }

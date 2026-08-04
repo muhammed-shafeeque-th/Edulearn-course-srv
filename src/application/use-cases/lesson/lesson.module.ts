@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { DatabaseRepositoryModule } from "src/infrastructure/database/database-repository.module";
-import { RedisModule } from "src/infrastructure/redis/redis.module";
+import { RedisModule } from "@/infrastructure/redis/redis.module";
 import { DeleteLessonUseCase } from "./impls/delete-lesson.use-case";
 import { UpdateLessonUseCase } from "./impls/update-leson.use-case";
 import { GetLessonsByModuleUseCase } from "./impls/get-lessons-by-modules.use-case";

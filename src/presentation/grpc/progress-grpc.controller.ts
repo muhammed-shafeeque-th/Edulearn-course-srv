@@ -1,15 +1,13 @@
-import { Controller } from "@nestjs/common";
+import { Controller, UseFilters } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
-import { DomainException } from "src/domain/exceptions/domain.exceptions";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
+import { DomainException } from "src/domain/exceptions/domain.exception";
 import { Error } from "src/infrastructure/grpc/generated/course/common";
 import { Metadata } from "@grpc/grpc-js";
-import { CreateProgressUseCase } from "src/application/use-cases/progress/create-progress.user-case";
-import { GetProgressUseCase } from "src/application/use-cases/progress/get-progress.use-case";
-import { GetProgressesByEnrollmentUseCase } from "src/application/use-cases/progress/get-progress-by-enrollment.use-case";
-import { UpdateProgressUseCase } from "src/application/use-cases/progress/update-progress.use-case";
-import { DeleteProgressUseCase } from "src/application/use-cases/progress/delete-progress.use-case";
+import { ICreateProgressUseCase } from "src/application/use-cases/progress/interfaces/create-progress.interface";
+import { IGetProgressUseCase } from "src/application/use-cases/progress/interfaces/get-progress.interface";
+import { IGetProgressesByEnrollmentUseCase } from "src/application/use-cases/progress/interfaces/get-progress-by-enrollment.interface";
+import { IUpdateProgressUseCase } from "src/application/use-cases/progress/interfaces/update-progress.interface";
+import { IDeleteProgressUseCase } from "src/application/use-cases/progress/interfaces/delete-progress.interface";
 import {
   CreateProgressRequest,
   DeleteProgressRequest,
@@ -26,31 +24,35 @@ import {
   UpdateLessonProgressResponse,
   UpdateProgressRequest,
 } from "src/infrastructure/grpc/generated/course/types/progress";
-import { ProgressDto } from "src/application/dtos/progress.dto";
-import { UpdateLessonProgressUseCase } from "src/application/use-cases/progress/update-lesson-progress.use-case";
-import { SubmitQuizAttemptUseCase } from "src/application/use-cases/progress/submit-quiz-attempt.use-case";
-import { GetEnrollmentProgressUseCase } from "src/application/use-cases/progress/get-enrollment-progress.use-case";
+import { IUpdateLessonProgressUseCase } from "src/application/use-cases/progress/interfaces/update-lesson-progress.interface";
+import { ISubmitQuizAttemptUseCase } from "src/application/use-cases/progress/interfaces/submit-quiz-attempt.interface";
+import { IGetEnrollmentProgressUseCase } from "src/application/use-cases/progress/interfaces/get-enrollment-progress.interface";
+import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
 
 @Controller()
+@UseFilters(GrpcExceptionFilter)
 export class ProgressGrpcController {
   constructor(
-    private readonly createProgressUseCase: CreateProgressUseCase,
-    private readonly getProgressUseCase: GetProgressUseCase,
-    private readonly getEnrollmentProgressesUseCase: GetEnrollmentProgressUseCase,
-    private readonly updateLessonProgressUseCase: UpdateLessonProgressUseCase,
-    private readonly submitQuizAttemptUseCase: SubmitQuizAttemptUseCase,
-    private readonly deleteProgressUseCase: DeleteProgressUseCase,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService
+    private readonly _createProgressUseCase: ICreateProgressUseCase,
+    private readonly _getProgressUseCase: IGetProgressUseCase,
+    private readonly _getEnrollmentProgressesUseCase: IGetEnrollmentProgressUseCase,
+    private readonly _updateLessonProgressUseCase: IUpdateLessonProgressUseCase,
+    private readonly _submitQuizAttemptUseCase: ISubmitQuizAttemptUseCase,
+    private readonly _deleteProgressUseCase: IDeleteProgressUseCase,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   private createErrorResponse(error: DomainException): Error {
     return {
-      code: error.errorCode,
+      code: error.code,
       message: error.message,
-      details:  "serializeError" in error && typeof error.serializeError === "function"
-      ? error.serializeError()
-      : [{ message: error.message }],
+      details:
+        "serializeError" in error && typeof error.serializeError === "function"
+          ? error.serializeError()
+          : [{ message: error.message }],
     };
   }
 
@@ -58,33 +60,28 @@ export class ProgressGrpcController {
   @GrpcMethod("EnrollmentService", "CreateProgress")
   async createProgress(
     data: CreateProgressRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ProgressResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ProgressGrpcController.CreateProgress",
         async (span) => {
           span.setAttribute("enrollment.id", data.enrollmentId);
 
-          const progressDto = await this.createProgressUseCase.execute(
+          const progressDto = await this._createProgressUseCase.execute(
             data.enrollmentId,
-            data.lessonId
+            data.lessonId,
           );
           return {
             progress: progressDto.toGrpcResponse(),
           };
-        }
+        },
       );
-    } catch (error) {
-      this.logger.error(`Failed to create progress: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to create progress: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -92,32 +89,27 @@ export class ProgressGrpcController {
   @GrpcMethod("EnrollmentService", "GetProgress")
   async getProgress(
     data: GetProgressRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<ProgressResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ProgressGrpcController.GetProgress",
         async (span) => {
           span.setAttribute("progress.id", data.progressId);
 
-          const progressDto = await this.getProgressUseCase.execute(
-            data.progressId
+          const progressDto = await this._getProgressUseCase.execute(
+            data.progressId,
           );
           return {
             progress: progressDto.toGrpcResponse(),
           };
-        }
+        },
       );
-    } catch (error) {
-      this.logger.error(`Failed to get progress: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to get progress: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -125,17 +117,17 @@ export class ProgressGrpcController {
   @GrpcMethod("EnrollmentService", "UpdateLessonProgress")
   async updateProgress(
     data: UpdateLessonProgressRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<UpdateLessonProgressResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ProgressGrpcController.UpdateLessonProgress",
         async (span) => {
           span.setAttribute("enrollment.id", data.enrollmentId);
           span.setAttribute("lesson.id", data.lessonId);
 
           const progressResponse =
-            await this.updateLessonProgressUseCase.execute({
+            await this._updateLessonProgressUseCase.execute({
               currentTime: data.currentTime,
               duration: data.duration,
               enrollmentId: data.enrollmentId,
@@ -145,50 +137,40 @@ export class ProgressGrpcController {
           return {
             progress: progressResponse,
           };
-        }
+        },
       );
-    } catch (error) {
-      this.logger.error(`Failed to update lesson progress: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to update lesson progress: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
   @GrpcMethod("EnrollmentService", "SubmitQuizProgress")
   async submitQuizProgress(
     data: SubmitQuizAttemptRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<SubmitQuizAttemptResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ProgressGrpcController.SubmitQuizProgress",
         async (span) => {
           span.setAttribute("enrollment.id", data.enrollmentId);
           span.setAttribute("quiz.id", data.quizId);
 
           const progressResponse =
-            await this.submitQuizAttemptUseCase.execute(data);
+            await this._submitQuizAttemptUseCase.execute(data);
           return {
             progress: progressResponse,
           };
-        }
+        },
       );
-    } catch (error) {
-      this.logger.error(`Failed to submit quiz attempt: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to submit quiz attempt: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -196,28 +178,23 @@ export class ProgressGrpcController {
   @GrpcMethod("EnrollmentService", "DeleteProgress")
   async deleteProgress(
     data: DeleteProgressRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<DeleteProgressResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ProgressGrpcController.DeleteProgress",
         async (span) => {
           span.setAttribute("progress.id", data.progressId);
 
-          await this.deleteProgressUseCase.execute(data.progressId);
+          await this._deleteProgressUseCase.execute(data.progressId);
           return { success: { deleted: true } };
-        }
+        },
       );
-    } catch (error) {
-      this.logger.error(`Failed to delete progress: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to delete progress: ${error.message}`, {
         error,
       });
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }
@@ -225,33 +202,28 @@ export class ProgressGrpcController {
   @GrpcMethod("EnrollmentService", "GetProgressByEnrollment")
   async getProgressByEnrollment(
     data: GetProgressByEnrollmentRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ): Promise<EnrollmentProgressResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ProgressGrpcController.GetProgressByEnrollment",
         async (span) => {
           span.setAttribute("enrollment.id", data.enrollmentId);
           span.setAttribute("user.id", data.userId);
 
           const progressResponse =
-            await this.getEnrollmentProgressesUseCase.execute(data);
+            await this._getEnrollmentProgressesUseCase.execute(data);
           return {
             progress: progressResponse,
           };
-        }
+        },
       );
-    } catch (error) {
-      this.logger.error(
+    } catch (error: any) {
+      this._logger.error(
         `Failed to get progress by enrollment: ${error.message}`,
-        { error }
+        { error },
       );
 
-      if (error instanceof DomainException) {
-        return {
-          error: this.createErrorResponse(error),
-        };
-      }
       throw error;
     }
   }

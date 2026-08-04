@@ -17,8 +17,8 @@ export class AppConfigService {
     return this.configService.get<string>("SERVICE_VERSION", "1.0.0");
   }
 
-  get apiPort(): number {
-    return this.configService.get<number>("API_PORT", 3002);
+  get httpPort(): number {
+    return this.configService.get<number>("HTTP_PORT", 3000);
   }
 
   get grpcPort(): number {
@@ -27,10 +27,10 @@ export class AppConfigService {
 
   // DB config
 
-   get databaseUrl(): string {
+  get databaseUrl(): string {
     return this.configService.get<string>(
       "DATABASE_URL",
-      "postgresql://postgres:password@localhost:5432/edulearn"
+      "postgresql://postgres:password@localhost:5432/edulearn",
     );
   }
   get databaseHost(): string {
@@ -46,7 +46,7 @@ export class AppConfigService {
     return this.configService.get<string>("DATABASE_PASSWORD", "password");
   }
   get databaseName(): string {
-    return this.configService.get<string>("DATABASE_NAME", "edulearn");
+    return this.configService.get<string>("DATABASE_NAME", "course_service");
   }
 
   get databaseMaxConnections(): number {
@@ -58,16 +58,31 @@ export class AppConfigService {
   }
 
   // Redis config
-  
+
   get redisUrl(): string {
     return this.configService.get<string>(
       "REDIS_URL",
-      "redis://localhost:6379/0"
+      "redis://localhost:6379/0",
     );
+  }
+  get redisDb(): number {
+    return this.configService.get<number>("REDIS_DB", 2);
+  }
+  get redisHost(): string {
+    return this.configService.get<string>("REDIS_HOST", "localhost");
+  }
+  get redisPort(): number {
+    return this.configService.get<number>("REDIS_PORT", 6379);
   }
 
   get redisMaxConnections(): number {
     return this.configService.get<number>("REDIS_MAX_CONNECTIONS", 100);
+  }
+  get redisKeyPrefix(): string {
+    return this.configService.get<string>(
+      "REDIS_KEY_PREFIX",
+      "edulearn:course:",
+    );
   }
 
   get redisMinConnections(): number {
@@ -78,9 +93,8 @@ export class AppConfigService {
     return this.configService.get<number>("REDIS_TTL_DEFAULT", 86400);
   }
 
-
   // Kafka config
-  
+
   get kafkaBrokers(): string[] {
     return this.configService
       .get<string>("KAFKA_BROKER", "localhost:9092")
@@ -94,7 +108,7 @@ export class AppConfigService {
   get kafkaConsumerGroup(): string {
     return this.configService.get<string>(
       "KAFKA_CONSUMER_GROUP",
-      "course-service-group"
+      "course-service-group",
     );
   }
 
@@ -106,21 +120,9 @@ export class AppConfigService {
     return this.configService.get<number>("KAFKA_FETCH_MAX_BYTES", 5242880);
   }
 
-  // JWT config
-   get jwtSecret(): string {
-    return this.configService.get<string>("JWT_TOKEN_SECRET", "your-secret-key");
-  }
-
-  get jwtExpiresIn(): string {
-    return this.configService.get<string>("JWT_TOKEN_EXPIRY", "1h");
-  }
-
 
   // Observability config
 
-  get jaegerEndpoint(): string {
-    return this.configService.get<string>("JAEGER_ENDPOINT", "development");
-  }
 
   get tracingSamplingRatio(): number {
     return this.configService.get<number>("TRACING_SAMPLING_RATIO", 0.1);
@@ -129,21 +131,9 @@ export class AppConfigService {
   get logLevel(): string {
     return this.configService.get<string>("LOG_LEVEL", "info");
   }
- 
 
-  get jaegerHost(): string {
-    return this.configService.get<string>("JAEGER_HOST", "localhost");
+  get collectorUrl(): string {
+    return this.configService.get<string>('OTLP_ENDPOINT', 'info');
   }
 
-  get jaegerPort(): number {
-    return this.configService.get<number>("JAEGER_PORT", 6831);
-  }
-
-  get lokiUrl(): string {
-    return this.configService.get<string>("LOKI_URL", "http://localhost:3100");
-  }
-
-  get prometheusPort(): number {
-    return this.configService.get<number>("PROMETHEUS_PORT", 9091);
-  }
 }

@@ -3,22 +3,25 @@ import {
   Injectable,
   OnModuleDestroy,
   OnModuleInit,
-} from '@nestjs/common';
-import { LoggingService } from 'src/infrastructure/observability/logging/logging.service';
-import { TracingService } from '../observability/tracing/trace.service';
-import { ClientKafka } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
-import { KAFKA_CLIENT } from './constants';
-import { IKafkaProducer, KafkaMessageObject } from 'src/application/services/kafka-producer.interface';
+} from "@nestjs/common";
+import { ClientKafka } from "@nestjs/microservices";
+import { lastValueFrom } from "rxjs";
+import { KAFKA_CLIENT } from "./constants";
+import {
+  IEventProducer,
+  KafkaMessageObject,
+} from "@/application/adaptors/event-producer.interface";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
 
 @Injectable()
 export class KafkaProducerImpl
-  implements IKafkaProducer, OnModuleInit, OnModuleDestroy
+  implements IEventProducer, OnModuleInit, OnModuleDestroy
 {
   constructor(
     @Inject(KAFKA_CLIENT) private readonly kafkaClient: ClientKafka,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly logger: ILoggerService,
+    private readonly tracer: ITraceService,
   ) {}
 
   async onModuleInit() {
@@ -33,15 +36,15 @@ export class KafkaProducerImpl
 
   async produce<T = any>(topic: string, message: KafkaMessageObject<T>) {
     return await this.tracer.startActiveSpan(
-      'KafkaProducerImpl.produce',
+      "KafkaProducerImpl.produce",
       async (span) => {
         try {
-          span.setAttribute('kafka.topic', topic);
-          span.setAttribute('kafka.message', JSON.stringify(message));
+          span.setAttribute("kafka.topic", topic);
+          span.setAttribute("kafka.message", JSON.stringify(message));
 
           // emit() returns an Observable, so we convert to Promise
           await lastValueFrom(this.kafkaClient.emit(topic, message));
-          this.logger.info(
+          this.logger.debug(
             `Message send to topic ${topic}: ${JSON.stringify(message)}`,
             { ctx: KafkaProducerImpl.name },
           );

@@ -16,218 +16,212 @@ import {
   RevenueStats,
 } from "../../../domain/repositories/enrollment.repository";
 import { Enrollment } from "../../../domain/entities/enrollment.entity";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
-import { MetricsService } from "src/infrastructure/observability/metrics/metrics.service";
+import { IMetricService } from "src/application/adaptors/metric.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
 import { ProgressOrmEntity } from "../entities/progress.orm-entity";
 import { EnrollmentEntityMapper } from "../mappers/enrollment.entity.mapper";
-import { ICacheService } from "src/application/services/cache-service";
-import { CACHE_KEYS } from "src/infrastructure/redis/cache-keys";
+import { ICacheService } from "src/application/adaptors/cache-service";
+import { CACHE_KEYS } from "@/infrastructure/redis/cache-keys";
+import { BaseRepository } from "./base.repository";
 
 @Injectable()
-export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
+export class EnrollmentTypeOrmRepository
+  extends BaseRepository<Enrollment, EnrollmentOrmEntity>
+  implements IEnrollmentRepository
+{
+  protected contextName: string = EnrollmentTypeOrmRepository.name;
   constructor(
     @InjectRepository(EnrollmentOrmEntity)
-    private readonly enrollmentRepo: Repository<EnrollmentOrmEntity>,
+    repo: Repository<EnrollmentOrmEntity>,
 
-    @InjectRepository(ProgressOrmEntity)
-    private readonly progressRepo: Repository<ProgressOrmEntity>,
-    private readonly redisService: ICacheService,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
-    private readonly metrics: MetricsService,
-  ) {}
-
-  async upsert(enrollment: Enrollment): Promise<void> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.upsert",
-      async (span) => {
-        try {
-          span.setAttributes({
-            "db.operation": "INSERT/UPDATE",
-            "enrollment.id": enrollment.getId(),
-            "enrollment.course.id": enrollment.getCourseId(),
-          });
-
-          const ormEnrollment =
-            EnrollmentEntityMapper.toOrmEnrollment(enrollment);
-
-          const end = this.metrics.measureDBOperationDuration(
-            "enrollment.save",
-            "INSERT",
-          );
-          const savedEntity = await this.enrollmentRepo.save(ormEnrollment);
-          end();
-          this.metrics.incrementDBRequestCounter("INSERT");
-
-          if (!savedEntity) {
-            this.logger.warn(
-              `Save operation returned null or undefined for enrollment ${enrollment.getId()}`,
-              { ctx: EnrollmentTypeOrmRepository.name },
-            );
-          }
-
-          // Cache invalidation
-          const patterns = [
-            CACHE_KEYS.enrollment.byEnrollmentId(enrollment.getId()),
-            CACHE_KEYS.enrollment.byUserOnly(enrollment.getStudentId()),
-            CACHE_KEYS.enrollment.byUserAndCoursePattern(
-              enrollment.getStudentId(),
-              enrollment.getCourseId(),
-            ),
-            CACHE_KEYS.enrollment.byCourseOnly(enrollment.getCourseId()),
-          ];
-          await Promise.all(
-            patterns.map((pattern) => this.redisService.delByPattern(pattern)),
-          );
-
-          this.logger.debug(
-            `Invalidated cache for enrollment ${enrollment.getId()}`,
-            {
-              ctx: EnrollmentTypeOrmRepository.name,
-            },
-          );
-        } catch (err) {
-          this.logger.error(
-            `Error saving enrollment ${enrollment.getId()}: ${err}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          throw err;
-        }
-      },
-    );
+    redisService: ICacheService,
+    logger: ILoggerService,
+    tracer: ITraceService,
+    metrics: IMetricService,
+  ) {
+    super(repo, logger, tracer, metrics, redisService);
   }
 
-  async getByIdAndUser(
+  async upsert(enrollment: Enrollment): Promise<void> {
+    return this.execute("upsert", async (span) => {
+      try {
+        span.setAttributes({
+          "db.operation": "INSERT/UPDATE",
+          "enrollment.id": enrollment.getId(),
+          "enrollment.course.id": enrollment.getCourseId(),
+        });
+
+        const ormEnrollment =
+          EnrollmentEntityMapper.toOrmEnrollment(enrollment);
+
+        const end = this.metrics.measureDBOperationDuration(
+          "enrollment.save",
+          "INSERT",
+        );
+        const savedEntity = await this.repo.save(ormEnrollment);
+        end();
+        this.metrics.incrementDBRequestCounter("INSERT");
+
+        if (!savedEntity) {
+          this.logger.warn(
+            `Save operation returned null or undefined for enrollment ${enrollment.getId()}`,
+            { ctx: EnrollmentTypeOrmRepository.name },
+          );
+        }
+
+        // Cache invalidation
+        const patterns = [
+          CACHE_KEYS.enrollment.byEnrollmentId(enrollment.getId()),
+          CACHE_KEYS.enrollment.byUserOnly(enrollment.getStudentId()),
+          CACHE_KEYS.enrollment.byUserAndCoursePattern(
+            enrollment.getStudentId(),
+            enrollment.getCourseId(),
+          ),
+          CACHE_KEYS.enrollment.byCourseOnly(enrollment.getCourseId()),
+        ];
+        await Promise.all(
+          patterns.map((pattern) => this.cache.delByPattern(pattern)),
+        );
+
+        this.logger.debug(
+          `Invalidated cache for enrollment ${enrollment.getId()}`,
+          {
+            ctx: EnrollmentTypeOrmRepository.name,
+          },
+        );
+      } catch (err) {
+        this.logger.error(
+          `Error saving enrollment ${enrollment.getId()}: ${err}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+        throw err;
+      }
+    });
+  }
+
+  async findByIdAndUser(
     enrollmentId: string,
     studentId: string,
     options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment | null> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.findByIdAndUserId",
-      async (span) => {
-        const { includeCourse = false, includeProgressSummary = false } =
-          options ?? {};
-        const withProgress = includeProgressSummary;
-        const cacheKey = CACHE_KEYS.enrollment.byIdAndUser(
-          enrollmentId,
-          studentId,
-          {
-            includeCourse,
-            withProgress,
-          },
-        );
+    return this.execute("findByIdAndUserId", async (span) => {
+      const { includeCourse = false, includeProgressSummary = false } =
+        options ?? {};
+      const withProgress = includeProgressSummary;
+      const cacheKey = CACHE_KEYS.enrollment.byIdAndUser(
+        enrollmentId,
+        studentId,
+        {
+          includeCourse,
+          withProgress,
+        },
+      );
 
-        // Try cache
-        const cached =
-          await this.redisService.get<EnrollmentOrmEntity>(cacheKey);
-        if (cached) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(
-            `Cache hit for enrollmentId="${enrollmentId}" studentId="${studentId}"`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          return EnrollmentEntityMapper.toDomainEnrollment(cached, {
-            withProgress,
-          });
-        }
-        span.setAttribute("cache.hit", false);
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.findByIdAndUserId",
-          "SELECT",
-        );
-        const relations: string[] = [];
-        if (includeCourse) {
-          relations.push("course");
-          relations.push("course.instructor");
-        }
-        if (withProgress) {
-          relations.push("progressEntries");
-        }
-        const orm = await this.enrollmentRepo.findOne({
-          where: {
-            id: enrollmentId,
-            studentId,
-            deletedAt: null,
-          },
-          relations,
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        if (!orm) {
-          span.setAttribute("db.found", false);
-          return null;
-        }
-        span.setAttribute("db.found", true);
-
-        await this.redisService.set(cacheKey, orm, 3600);
+      // Try cache
+      const cached = await this.cache.get<EnrollmentOrmEntity>(cacheKey);
+      if (cached) {
+        span.setAttribute("cache.hit", true);
         this.logger.debug(
-          `Cached enrollment for enrollmentId="${enrollmentId}" studentId="${studentId}"`,
+          `Cache hit for enrollmentId="${enrollmentId}" studentId="${studentId}"`,
           { ctx: EnrollmentTypeOrmRepository.name },
         );
-        return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
-      },
-    );
+        return EnrollmentEntityMapper.toDomainEnrollment(cached, {
+          withProgress,
+        });
+      }
+      span.setAttribute("cache.hit", false);
+
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.findByIdAndUserId",
+        "SELECT",
+      );
+      const relations: string[] = [];
+      if (includeCourse) {
+        relations.push("course");
+        relations.push("course.instructor");
+      }
+      if (withProgress) {
+        relations.push("progressEntries");
+      }
+      const orm = await this.repo.findOne({
+        where: {
+          id: enrollmentId,
+          studentId,
+          deletedAt: null,
+        },
+        relations,
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      if (!orm) {
+        span.setAttribute("db.found", false);
+        return null;
+      }
+      span.setAttribute("db.found", true);
+
+      await this.cache.set(cacheKey, orm, 3600);
+      this.logger.debug(
+        `Cached enrollment for enrollmentId="${enrollmentId}" studentId="${studentId}"`,
+        { ctx: EnrollmentTypeOrmRepository.name },
+      );
+      return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
+    });
   }
 
-  async getById(
+  async findById(
     enrollmentId: string,
     options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
   ): Promise<Enrollment | null> {
     const { includeCourse = true, includeProgressSummary = false } =
       options ?? {};
     const withProgress = includeProgressSummary;
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.findById",
-      async (span) => {
-        const cacheKey = CACHE_KEYS.enrollment.byId(enrollmentId, {
-          includeCourse,
-          withProgress,
-        });
-        const cached =
-          await this.redisService.get<EnrollmentOrmEntity>(cacheKey);
-        if (cached) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for enrollment ${enrollmentId}`, {
-            ctx: EnrollmentTypeOrmRepository.name,
-          });
-          return EnrollmentEntityMapper.toDomainEnrollment(cached, {
-            withProgress,
-          });
-        }
-        span.setAttribute("cache.hit", false);
-
-        const relations: string[] = [];
-        if (includeCourse) relations.push("course");
-        if (includeProgressSummary) relations.push("progressEntries");
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.findById",
-          "SELECT",
-        );
-        const orm = await this.enrollmentRepo.findOne({
-          where: { id: enrollmentId, deletedAt: null },
-          relations,
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        if (!orm) {
-          span.setAttribute("db.found", false);
-          return null;
-        }
-        span.setAttribute("db.found", true);
-
-        await this.redisService.set(cacheKey, orm, 3600);
-        this.logger.debug(`Cached enrollment ${enrollmentId}`, {
+    return this.execute("findById", async (span) => {
+      const cacheKey = CACHE_KEYS.enrollment.byId(enrollmentId, {
+        includeCourse,
+        withProgress,
+      });
+      const cached = await this.cache.get<EnrollmentOrmEntity>(cacheKey);
+      if (cached) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(`Cache hit for enrollment ${enrollmentId}`, {
           ctx: EnrollmentTypeOrmRepository.name,
         });
+        return EnrollmentEntityMapper.toDomainEnrollment(cached, {
+          withProgress,
+        });
+      }
+      span.setAttribute("cache.hit", false);
 
-        return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
-      },
-    );
+      const relations: string[] = [];
+      if (includeCourse) relations.push("course");
+      if (includeProgressSummary) relations.push("progressEntries");
+
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.findById",
+        "SELECT",
+      );
+      const orm = await this.repo.findOne({
+        where: { id: enrollmentId, deletedAt: null },
+        relations,
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      if (!orm) {
+        span.setAttribute("db.found", false);
+        return null;
+      }
+      span.setAttribute("db.found", true);
+
+      await this.cache.set(cacheKey, orm, 3600);
+      this.logger.debug(`Cached enrollment ${enrollmentId}`, {
+        ctx: EnrollmentTypeOrmRepository.name,
+      });
+
+      return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
+    });
   }
 
   async findByUserId(
@@ -237,57 +231,53 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
     const { withCourse = true, withProgressSummary = false } = options ?? {};
     const withProgress = withProgressSummary;
 
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.findByUserId",
-      async (span) => {
-        const cacheKey = CACHE_KEYS.enrollment.byUser(studentId, {
-          withCourse,
-          withProgress,
+    return this.execute("findByUserId", async (span) => {
+      const cacheKey = CACHE_KEYS.enrollment.byUser(studentId, {
+        withCourse,
+        withProgress,
+      });
+      const cached = await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
+      if (cached) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(`Cache hit for enrollments of user ${studentId}`, {
+          ctx: EnrollmentTypeOrmRepository.name,
         });
-        const cached =
-          await this.redisService.get<EnrollmentOrmEntity[]>(cacheKey);
-        if (cached) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for enrollments of user ${studentId}`, {
-            ctx: EnrollmentTypeOrmRepository.name,
-          });
-          return cached.map((e) =>
-            EnrollmentEntityMapper.toDomainEnrollment(e, { withProgress }),
-          );
-        }
-        span.setAttribute("cache.hit", false);
-
-        const relations: string[] = [];
-        if (withCourse) {
-          relations.push("course");
-          relations.push("course.instructor");
-        }
-        if (withProgress) {
-          relations.push("progressEntries");
-        }
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.findByUserId",
-          "SELECT",
-        );
-        const ormEntities = await this.enrollmentRepo.find({
-          where: { studentId, deletedAt: null },
-          relations,
-          order: { createdAt: "DESC" },
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        await this.redisService.set(cacheKey, ormEntities, 600);
-
-        return ormEntities.map((e) =>
+        return cached.map((e) =>
           EnrollmentEntityMapper.toDomainEnrollment(e, { withProgress }),
         );
-      },
-    );
+      }
+      span.setAttribute("cache.hit", false);
+
+      const relations: string[] = [];
+      if (withCourse) {
+        relations.push("course");
+        relations.push("course.instructor");
+      }
+      if (withProgress) {
+        relations.push("progressEntries");
+      }
+
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.findByUserId",
+        "SELECT",
+      );
+      const ormEntities = await this.repo.find({
+        where: { studentId, deletedAt: null },
+        relations,
+        order: { createdAt: "DESC" },
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      await this.cache.set(cacheKey, ormEntities, 600);
+
+      return ormEntities.map((e) =>
+        EnrollmentEntityMapper.toDomainEnrollment(e, { withProgress }),
+      );
+    });
   }
 
-  async getByUserAndCourse(
+  async findByUserAndCourse(
     studentId: string,
     courseId: string,
     options?: { includeCourse?: boolean; includeProgressSummary?: boolean },
@@ -296,136 +286,126 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
       options ?? {};
     const withProgress = includeProgressSummary;
 
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.findByUserIdAndCourseId",
-      async (span) => {
-        const cacheKey = CACHE_KEYS.enrollment.byUserAndCourse(
-          studentId,
-          courseId,
-          {
-            includeCourse,
-            withProgress,
-          },
+    return this.execute("findByUserIdAndCourseId", async (span) => {
+      const cacheKey = CACHE_KEYS.enrollment.byUserAndCourse(
+        studentId,
+        courseId,
+        {
+          includeCourse,
+          withProgress,
+        },
+      );
+      const cached = await this.cache.get<EnrollmentOrmEntity>(cacheKey);
+      if (cached) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(
+          `Cache hit for enrollment of user ${studentId} in course ${courseId}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
         );
-        const cached =
-          await this.redisService.get<EnrollmentOrmEntity>(cacheKey);
-        if (cached) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(
-            `Cache hit for enrollment of user ${studentId} in course ${courseId}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          return EnrollmentEntityMapper.toDomainEnrollment(cached, {
-            withProgress,
-          });
-        }
-        span.setAttribute("cache.hit", false);
-
-        const relations: string[] = [];
-        if (includeCourse) relations.push("course");
-        if (withProgress) relations.push("progressEntries");
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.findByUserIdAndCourseId",
-          "SELECT",
-        );
-        const orm = await this.enrollmentRepo.findOne({
-          where: { studentId, courseId, deletedAt: null },
-          relations,
+        return EnrollmentEntityMapper.toDomainEnrollment(cached, {
+          withProgress,
         });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
+      }
+      span.setAttribute("cache.hit", false);
 
-        if (!orm) {
-          span.setAttribute("db.found", false);
-          return null;
-        }
-        span.setAttribute("db.found", true);
+      const relations: string[] = [];
+      if (includeCourse) relations.push("course");
+      if (withProgress) relations.push("progressEntries");
 
-        await this.redisService.set(cacheKey, orm, 3600);
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.findByUserIdAndCourseId",
+        "SELECT",
+      );
+      const orm = await this.repo.findOne({
+        where: { studentId, courseId, deletedAt: null },
+        relations,
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
 
-        return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
-      },
-    );
+      if (!orm) {
+        span.setAttribute("db.found", false);
+        return null;
+      }
+      span.setAttribute("db.found", true);
+
+      await this.cache.set(cacheKey, orm, 3600);
+
+      return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
+    });
   }
 
   async remove(enrollment: Enrollment): Promise<void> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.delete",
-      async (span) => {
-        try {
-          enrollment.softDelete();
-          const orm = EnrollmentEntityMapper.toOrmEnrollment(enrollment);
+    return this.execute("delete", async (span) => {
+      try {
+        enrollment.softDelete();
+        const orm = EnrollmentEntityMapper.toOrmEnrollment(enrollment);
 
-          span.setAttributes({
-            "db.operation": "DELETE",
-            "enrollment.id": enrollment.getId(),
-            "enrollment.course.id": enrollment.getCourseId(),
-          });
+        span.setAttributes({
+          "db.operation": "DELETE",
+          "enrollment.id": enrollment.getId(),
+          "enrollment.course.id": enrollment.getCourseId(),
+        });
 
-          const end = this.metrics.measureDBOperationDuration(
-            "enrollment.delete",
-            "UPDATE",
-          );
-          const result = await this.enrollmentRepo.save(orm);
-          end();
-          this.metrics.incrementDBRequestCounter("UPDATE");
+        const end = this.metrics.measureDBOperationDuration(
+          "enrollment.delete",
+          "UPDATE",
+        );
+        const result = await this.repo.save(orm);
+        end();
+        this.metrics.incrementDBRequestCounter("UPDATE");
 
-          if (!result) {
-            this.logger.warn(
-              `Delete operation (save for softDelete) returned null or undefined for enrollment ${enrollment.getId()}`,
-              { ctx: EnrollmentTypeOrmRepository.name },
-            );
-          }
-
-          // Invalidate all related cache keys
-          const patterns = [
-            CACHE_KEYS.enrollment.byEnrollmentId(enrollment.getId()),
-            CACHE_KEYS.enrollment.byUserAndCoursePattern(
-              enrollment.getStudentId(),
-              enrollment.getCourseId(),
-            ),
-            CACHE_KEYS.enrollment.byUserOnly(enrollment.getStudentId()),
-            CACHE_KEYS.enrollment.byCourseOnly(enrollment.getCourseId()),
-          ];
-          await Promise.all(
-            patterns.map((pattern) => this.redisService.delByPattern(pattern)),
-          );
-          span.setAttribute("cache.invalidated", true);
-          this.logger.debug(
-            `Invalidated cache for enrollment ${enrollment.getId()}`,
+        if (!result) {
+          this.logger.warn(
+            `Delete operation (save for softDelete) returned null or undefined for enrollment ${enrollment.getId()}`,
             { ctx: EnrollmentTypeOrmRepository.name },
           );
-        } catch (error) {
-          this.logger.error(
-            `Error during soft-delete for enrollment ${enrollment.getId()}: ${error}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          throw error;
         }
-      },
-    );
+
+        // Invalidate all related cache keys
+        const patterns = [
+          CACHE_KEYS.enrollment.byEnrollmentId(enrollment.getId()),
+          CACHE_KEYS.enrollment.byUserAndCoursePattern(
+            enrollment.getStudentId(),
+            enrollment.getCourseId(),
+          ),
+          CACHE_KEYS.enrollment.byUserOnly(enrollment.getStudentId()),
+          CACHE_KEYS.enrollment.byCourseOnly(enrollment.getCourseId()),
+        ];
+        await Promise.all(
+          patterns.map((pattern) => this.cache.delByPattern(pattern)),
+        );
+        span.setAttribute("cache.invalidated", true);
+        this.logger.debug(
+          `Invalidated cache for enrollment ${enrollment.getId()}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+      } catch (error) {
+        this.logger.error(
+          `Error during soft-delete for enrollment ${enrollment.getId()}: ${error}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+        throw error;
+      }
+    });
   }
 
   async listCourseIdsByStudent(studentId: string): Promise<string[]> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.listCourseIdsByStudent",
-      async (span) => {
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.listCourseIdsByStudent",
-          "SELECT",
-        );
-        const enrollments = await this.enrollmentRepo.find({
-          where: { studentId, deletedAt: null },
-          select: ["courseId"],
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-        const courseIds = enrollments.map((e) => e.courseId);
-        span.setAttribute("result.count", courseIds.length);
-        return courseIds;
-      },
-    );
+    return this.execute("listCourseIdsByStudent", async (span) => {
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.listCourseIdsByStudent",
+        "SELECT",
+      );
+      const enrollments = await this.repo.find({
+        where: { studentId, deletedAt: null },
+        select: ["courseId"],
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+      const courseIds = enrollments.map((e) => e.courseId);
+      span.setAttribute("result.count", courseIds.length);
+      return courseIds;
+    });
   }
 
   async listEnrollmentsByCourse(
@@ -436,53 +416,49 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
       options ?? {};
     const withProgress = includeProgressSummary;
 
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.listEnrollmentsByCourse",
-      async (span) => {
-        const cacheKey = CACHE_KEYS.enrollment.byCourse(courseId, {
-          withCourse: includeCourse,
-          withProgress,
+    return this.execute("listEnrollmentsByCourse", async (span) => {
+      const cacheKey = CACHE_KEYS.enrollment.byCourse(courseId, {
+        withCourse: includeCourse,
+        withProgress,
+      });
+      const cached = await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
+      if (cached) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(`Cache hit for enrollments of course ${courseId}`, {
+          ctx: EnrollmentTypeOrmRepository.name,
         });
-        const cached =
-          await this.redisService.get<EnrollmentOrmEntity[]>(cacheKey);
-        if (cached) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for enrollments of course ${courseId}`, {
-            ctx: EnrollmentTypeOrmRepository.name,
-          });
-          return cached.map((entity) =>
-            EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
-          );
-        }
-        span.setAttribute("cache.hit", false);
-
-        const relations: string[] = [];
-        if (includeCourse) {
-          relations.push("course");
-          relations.push("course.instructor");
-        }
-        if (withProgress) {
-          relations.push("progressEntries");
-        }
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.listEnrollmentsByCourse",
-          "SELECT",
-        );
-        const enrollments = await this.enrollmentRepo.find({
-          where: { courseId, deletedAt: null },
-          relations,
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        await this.redisService.set(cacheKey, enrollments, 600);
-
-        return enrollments.map((entity) =>
+        return cached.map((entity) =>
           EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
         );
-      },
-    );
+      }
+      span.setAttribute("cache.hit", false);
+
+      const relations: string[] = [];
+      if (includeCourse) {
+        relations.push("course");
+        relations.push("course.instructor");
+      }
+      if (withProgress) {
+        relations.push("progressEntries");
+      }
+
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.listEnrollmentsByCourse",
+        "SELECT",
+      );
+      const enrollments = await this.repo.find({
+        where: { courseId, deletedAt: null },
+        relations,
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      await this.cache.set(cacheKey, enrollments, 600);
+
+      return enrollments.map((entity) =>
+        EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
+      );
+    });
   }
 
   async listEnrollmentsByUser(
@@ -493,111 +469,101 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
       options ?? {};
     const withProgress = includeProgressSummary;
 
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.listEnrollmentsByUser",
-      async (span) => {
-        const cacheKey = CACHE_KEYS.enrollment.byUser(studentId, {
-          withCourse: includeCourse,
-          withProgress,
+    return this.execute("listEnrollmentsByUser", async (span) => {
+      const cacheKey = CACHE_KEYS.enrollment.byUser(studentId, {
+        withCourse: includeCourse,
+        withProgress,
+      });
+      const cached = await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
+      if (cached) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(`Cache hit for enrollments of user ${studentId}`, {
+          ctx: EnrollmentTypeOrmRepository.name,
         });
-        const cached =
-          await this.redisService.get<EnrollmentOrmEntity[]>(cacheKey);
-        if (cached) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for enrollments of user ${studentId}`, {
-            ctx: EnrollmentTypeOrmRepository.name,
-          });
-          return cached.map((entity) =>
-            EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
-          );
-        }
-        span.setAttribute("cache.hit", false);
-
-        const relations: string[] = [];
-        if (includeCourse) {
-          relations.push("course");
-          relations.push("course.instructor");
-        }
-        if (withProgress) {
-          relations.push("progressEntries");
-        }
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.listEnrollmentsByUser",
-          "SELECT",
-        );
-        const enrollments = await this.enrollmentRepo.find({
-          where: { studentId, deletedAt: null },
-          relations,
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        await this.redisService.set(cacheKey, enrollments, 600);
-
-        return enrollments.map((entity) =>
+        return cached.map((entity) =>
           EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
         );
-      },
-    );
+      }
+      span.setAttribute("cache.hit", false);
+
+      const relations: string[] = [];
+      if (includeCourse) {
+        relations.push("course");
+        relations.push("course.instructor");
+      }
+      if (withProgress) {
+        relations.push("progressEntries");
+      }
+
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.listEnrollmentsByUser",
+        "SELECT",
+      );
+      const enrollments = await this.repo.find({
+        where: { studentId, deletedAt: null },
+        relations,
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      await this.cache.set(cacheKey, enrollments, 600);
+
+      return enrollments.map((entity) =>
+        EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
+      );
+    });
   }
 
   async listStudentIdsByCourse(courseId: string): Promise<string[]> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.listStudentIdsByCourse",
-      async (span) => {
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.listStudentIdsByCourse",
-          "SELECT",
-        );
-        const enrollments = await this.enrollmentRepo.find({
-          where: { courseId, deletedAt: null },
-          select: ["studentId"],
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
+    return this.execute("listStudentIdsByCourse", async (span) => {
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.listStudentIdsByCourse",
+        "SELECT",
+      );
+      const enrollments = await this.repo.find({
+        where: { courseId, deletedAt: null },
+        select: ["studentId"],
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
 
-        const studentIds = enrollments.map((e) => e.studentId);
-        span.setAttribute("result.count", studentIds.length);
-        return studentIds;
-      },
-    );
+      const studentIds = enrollments.map((e) => e.studentId);
+      span.setAttribute("result.count", studentIds.length);
+      return studentIds;
+    });
   }
 
   async listStudentIdsByInstructor(instructorId: string): Promise<string[]> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.listStudentIdsByInstructor",
-      async (span) => {
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.listStudentIdsByInstructor",
-          "SELECT",
-        );
-        // EnrollmentOrmEntity should have instructorId (populated through a join)
-        // Doing a join to the course for this
-        const enrollments = await this.enrollmentRepo
-          .createQueryBuilder("enrollment")
-          .leftJoin("enrollment.course", "course")
-          .where("course.instructorId = :instructorId", { instructorId })
-          .andWhere("enrollment.deletedAt IS NULL")
-          .select("enrollment.studentId")
-          .getMany();
+    return this.execute("listStudentIdsByInstructor", async (span) => {
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.listStudentIdsByInstructor",
+        "SELECT",
+      );
+      // EnrollmentOrmEntity should have instructorId (populated through a join)
+      // Doing a join to the course for this
+      const enrollments = await this.repo
+        .createQueryBuilder("enrollment")
+        .leftJoin("enrollment.course", "course")
+        .where("course.instructorId = :instructorId", { instructorId })
+        .andWhere("enrollment.deletedAt IS NULL")
+        .select("enrollment.studentId")
+        .getMany();
 
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
 
-        const studentIds = enrollments.map((e) => e.studentId);
-        span.setAttribute("result.count", studentIds.length);
-        return Array.from(new Set(studentIds));
-      },
-    );
+      const studentIds = enrollments.map((e) => e.studentId);
+      span.setAttribute("result.count", studentIds.length);
+      return Array.from(new Set(studentIds));
+    });
   }
 
   async getInstructorCourseEnrollmentSummery(
     instructorId: string,
     courseId: string,
   ): Promise<InstructorCourseEnrollmentSummery | null> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getInstructorCourseEnrollmentSummery",
+    return this.execute(
+      "getInstructorCourseEnrollmentSummery",
       async (span) => {
         try {
           const end = this.metrics.measureDBOperationDuration(
@@ -618,7 +584,7 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
           );
 
           // Aggregate required fields in one go, using the correct progress column
-          const result = await this.enrollmentRepo
+          const result = await this.repo
             .createQueryBuilder("enrollment")
             .leftJoin("enrollment.course", "course")
             .where("course.id = :courseId", { courseId })
@@ -672,150 +638,141 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
     from?: string,
     to?: string,
   ): Promise<InstructorCourseEnrollmentTrend | null> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getInstructorCourseEnrollmentTrend",
-      async (span) => {
-        try {
-          const qb = this.enrollmentRepo
-            .createQueryBuilder("enrollment")
-            .leftJoin("enrollment.course", "course")
-            .where("course.id = :courseId", { courseId })
-            .andWhere("course.instructorId = :instructorId", { instructorId })
-            .andWhere("enrollment.deletedAt IS NULL");
+    return this.execute("getInstructorCourseEnrollmentTrend", async (span) => {
+      try {
+        const qb = this.repo
+          .createQueryBuilder("enrollment")
+          .leftJoin("enrollment.course", "course")
+          .where("course.id = :courseId", { courseId })
+          .andWhere("course.instructorId = :instructorId", { instructorId })
+          .andWhere("enrollment.deletedAt IS NULL");
 
-          if (from) qb.andWhere("enrollment.createdAt >= :from", { from });
-          if (to) qb.andWhere("enrollment.createdAt <= :to", { to });
+        if (from) qb.andWhere("enrollment.createdAt >= :from", { from });
+        if (to) qb.andWhere("enrollment.createdAt <= :to", { to });
 
-          qb.select([
-            "EXTRACT(MONTH FROM enrollment.createdAt) AS month",
-            "COUNT(enrollment.id) AS enrollments",
-          ])
-            .groupBy("month")
-            .orderBy("month", "ASC");
+        qb.select([
+          "EXTRACT(MONTH FROM enrollment.createdAt) AS month",
+          "COUNT(enrollment.id) AS enrollments",
+        ])
+          .groupBy("month")
+          .orderBy("month", "ASC");
 
-          const raw = await qb.getRawMany();
+        const raw = await qb.getRawMany();
 
-          const trendData = new Array(12).fill(0).map((_, i) => ({
-            month: i,
-            enrollments: 0,
-          }));
+        const trendData = new Array(12).fill(0).map((_, i) => ({
+          month: i,
+          enrollments: 0,
+        }));
 
-          raw.forEach((row: any) => {
-            const m = Number(row.month) - 1; // 1-indexed to 0-indexed
-            if (m >= 0 && m < 12) {
-              trendData[m].enrollments = Number(row.enrollments);
-            }
-          });
+        raw.forEach((row: any) => {
+          const m = Number(row.month) - 1; // 1-indexed to 0-indexed
+          if (m >= 0 && m < 12) {
+            trendData[m].enrollments = Number(row.enrollments);
+          }
+        });
 
-          const trend: InstructorCourseEnrollmentTrend = {
-            trend: trendData,
-          };
-          return trend;
-        } catch (error) {
-          this.logger.error(
-            `Error in getInstructorCourseEnrollmentTrend: ${error}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          throw error;
-        }
-      },
-    );
+        const trend: InstructorCourseEnrollmentTrend = {
+          trend: trendData,
+        };
+        return trend;
+      } catch (error) {
+        this.logger.error(
+          `Error in getInstructorCourseEnrollmentTrend: ${error}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+        throw error;
+      }
+    });
   }
   async getEnrollmentTrend(
     year: number,
   ): Promise<InstructorCourseEnrollmentTrend | null> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getEnrollmentTrend",
-      async (span) => {
-        try {
-          const qb = this.enrollmentRepo
-            .createQueryBuilder("enrollment")
-            .select("EXTRACT(MONTH FROM enrollment.createdAt) AS month")
-            .addSelect("COUNT(enrollment.id)", "enrollments")
-            .where("EXTRACT(YEAR FROM enrollment.createdAt) = :year", { year })
-            .andWhere("enrollment.deletedAt IS NULL")
-            .groupBy("month")
-            .orderBy("month", "ASC");
+    return this.execute("getEnrollmentTrend", async (span) => {
+      try {
+        const qb = this.repo
+          .createQueryBuilder("enrollment")
+          .select("EXTRACT(MONTH FROM enrollment.createdAt) AS month")
+          .addSelect("COUNT(enrollment.id)", "enrollments")
+          .where("EXTRACT(YEAR FROM enrollment.createdAt) = :year", { year })
+          .andWhere("enrollment.deletedAt IS NULL")
+          .groupBy("month")
+          .orderBy("month", "ASC");
 
-          const raw = await qb.getRawMany();
+        const raw = await qb.getRawMany();
 
-          const trendData = new Array(12).fill(0).map((_, i) => ({
-            month: i,
-            enrollments: 0,
-          }));
+        const trendData = new Array(12).fill(0).map((_, i) => ({
+          month: i,
+          enrollments: 0,
+        }));
 
-          raw.forEach((row: any) => {
-            const m = Number(row.month) - 1; // 1-indexed to 0-indexed
-            if (m >= 0 && m < 12) {
-              trendData[m].enrollments = Number(row.enrollments);
-            }
-          });
+        raw.forEach((row: any) => {
+          const m = Number(row.month) - 1; // 1-indexed to 0-indexed
+          if (m >= 0 && m < 12) {
+            trendData[m].enrollments = Number(row.enrollments);
+          }
+        });
 
-          const trend: InstructorCourseEnrollmentTrend = {
-            trend: trendData,
-          };
-          return trend;
-        } catch (error) {
-          this.logger.error(`Error in getEnrollmentTrend: ${error}`, {
-            ctx: EnrollmentTypeOrmRepository.name,
-          });
-          throw error;
-        }
-      },
-    );
+        const trend: InstructorCourseEnrollmentTrend = {
+          trend: trendData,
+        };
+        return trend;
+      } catch (error) {
+        this.logger.error(`Error in getEnrollmentTrend: ${error}`, {
+          ctx: EnrollmentTypeOrmRepository.name,
+        });
+        throw error;
+      }
+    });
   }
 
   async getRevenueStatus(year: string): Promise<RevenueStats> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getRevenueStatus",
-      async (span) => {
-        try {
-          // Validate the year input (expecting a four-digit year)
-          if (!/^\d{4}$/.test(year)) {
-            throw new Error(`Invalid year parameter: ${year}`);
-          }
-
-          // Filter enrollments by year, group by date, and sum their revenue
-          const qb = this.enrollmentRepo
-            .createQueryBuilder("enrollment")
-            .leftJoin("enrollment.course", "course")
-            .where("enrollment.deletedAt IS NULL")
-            .andWhere("EXTRACT(YEAR FROM enrollment.createdAt) = :year", {
-              year,
-            });
-
-          qb.select([
-            "CAST(enrollment.createdAt AS DATE) as date",
-            "SUM(COALESCE(course.discountPrice, course.price)) as revenue",
-          ])
-            .groupBy("date")
-            .orderBy("date", "ASC");
-
-          const raw = await qb.getRawMany();
-
-          // Return stats as an array of {date, revenue}
-          const stats = raw.map((row: any) => ({
-            date: new Date(row.date).getTime(),
-            revenue: Number(row.revenue || 0),
-          }));
-
-          return { stats };
-        } catch (error) {
-          this.logger.error(
-            `Error in getRevenueStatus: ${error instanceof Error ? error.message : error}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          throw error;
+    return this.execute("getRevenueStatus", async (span) => {
+      try {
+        // Validate the year input (expecting a four-digit year)
+        if (!/^\d{4}$/.test(year)) {
+          throw new Error(`Invalid year parameter: ${year}`);
         }
-      },
-    );
+
+        // Filter enrollments by year, group by date, and sum their revenue
+        const qb = this.repo
+          .createQueryBuilder("enrollment")
+          .leftJoin("enrollment.course", "course")
+          .where("enrollment.deletedAt IS NULL")
+          .andWhere("EXTRACT(YEAR FROM enrollment.createdAt) = :year", {
+            year,
+          });
+
+        qb.select([
+          "CAST(enrollment.createdAt AS DATE) as date",
+          "SUM(COALESCE(course.discountPrice, course.price)) as revenue",
+        ])
+          .groupBy("date")
+          .orderBy("date", "ASC");
+
+        const raw = await qb.getRawMany();
+
+        // Return stats as an array of {date, revenue}
+        const stats = raw.map((row: any) => ({
+          date: new Date(row.date).getTime(),
+          revenue: Number(row.revenue || 0),
+        }));
+
+        return { stats };
+      } catch (error) {
+        this.logger.error(
+          `Error in getRevenueStatus: ${error instanceof Error ? error.message : error}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+        throw error;
+      }
+    });
   }
 
   async getInstructorCoursesEnrollmentSummery(
     instructorId: string,
   ): Promise<InstructorCoursesEnrollmentSummery | null> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getInstructorCoursesEnrollmentSummery",
+    return this.execute(
+      "getInstructorCoursesEnrollmentSummery",
       async (span) => {
         const activeSince = new Date();
         activeSince.setDate(activeSince.getDate() - 30);
@@ -833,7 +790,7 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
 
         try {
           // Total students & active students (last 30 days)
-          const stats = await this.enrollmentRepo
+          const stats = await this.repo
             .createQueryBuilder("enrollment")
             .leftJoin("enrollment.course", "course")
             .where("course.instructorId = :instructorId", { instructorId })
@@ -895,165 +852,148 @@ export class EnrollmentTypeOrmRepository implements IEnrollmentRepository {
   async getMonthlyCourseEnrollmentStats(
     year: string,
   ): Promise<{ month: number; count: number }[]> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getMonthlyCourseEnrollmentStats",
-      async (span) => {
-        try {
-          // Group by month for the given year
-          const qb = this.enrollmentRepo
-            .createQueryBuilder("enrollment")
-            .where("YEAR(enrollment.createdAt) = :year", { year })
-            .andWhere("enrollment.deletedAt IS NULL")
-            .select([
-              "MONTH(enrollment.createdAt) as month",
-              "COUNT(enrollment.id) as count",
-            ])
-            .groupBy("month")
-            .orderBy("month", "ASC");
+    return this.execute("getMonthlyCourseEnrollmentStats", async (span) => {
+      try {
+        // Group by month for the given year
+        const qb = this.repo
+          .createQueryBuilder("enrollment")
+          .where("YEAR(enrollment.createdAt) = :year", { year })
+          .andWhere("enrollment.deletedAt IS NULL")
+          .select([
+            "MONTH(enrollment.createdAt) as month",
+            "COUNT(enrollment.id) as count",
+          ])
+          .groupBy("month")
+          .orderBy("month", "ASC");
 
-          const raw = await qb.getRawMany();
+        const raw = await qb.getRawMany();
 
-          return raw.map((row: any) => ({
-            month: Number(row.month),
-            count: Number(row.count),
-          }));
-        } catch (error) {
-          this.logger.error(
-            `Error in getMonthlyCourseEnrollmentStats: ${error}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          throw error;
-        }
-      },
-    );
+        return raw.map((row: any) => ({
+          month: Number(row.month),
+          count: Number(row.count),
+        }));
+      } catch (error) {
+        this.logger.error(
+          `Error in getMonthlyCourseEnrollmentStats: ${error}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+        throw error;
+      }
+    });
   }
 
   async findByCourseId(courseId: string): Promise<Enrollment[]> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.findByCourseId",
-      async (span) => {
-        span.setAttributes({
-          "db.operation": "SELECT",
-          "enrollment.course.id": courseId,
-        });
+    return this.execute("findByCourseId", async (span) => {
+      span.setAttributes({
+        "db.operation": "SELECT",
+        "enrollment.course.id": courseId,
+      });
 
-        // This one doesn't take course/progress options (legacy api)
-        const cacheKey = `enrollments:course:${courseId}`;
-        const cachedEnrollments =
-          await this.redisService.get<EnrollmentOrmEntity[]>(cacheKey);
+      // This one doesn't take course/progress options (legacy api)
+      const cacheKey = `enrollments:course:${courseId}`;
+      const cachedEnrollments =
+        await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
 
-        if (cachedEnrollments) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for enrollments of course ${courseId}`, {
-            ctx: EnrollmentTypeOrmRepository.name,
-          });
-          return cachedEnrollments.map((entity) =>
-            EnrollmentEntityMapper.toDomainEnrollment(entity),
-          );
-        }
-        span.setAttribute("cache.hit", false);
-
-        const end = this.metrics.measureDBOperationDuration(
-          "enrollment.findByCourseId",
-          "SELECT",
-        );
-        const ormEntities = await this.enrollmentRepo.find({
-          where: { courseId, deletedAt: null },
-        });
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        const enrollments = ormEntities.map((entity) =>
-          EnrollmentEntityMapper.toDomainEnrollment(entity),
-        );
-        span.setAttribute("db.enrollment.course.count", enrollments.length);
-
-        await this.redisService.set(cacheKey, ormEntities, 3600);
-        this.logger.debug(`Cached enrollments for course ${courseId}`, {
+      if (cachedEnrollments) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(`Cache hit for enrollments of course ${courseId}`, {
           ctx: EnrollmentTypeOrmRepository.name,
         });
-        span.setAttribute("cache.set", true);
-        return enrollments;
-      },
-    );
+        return cachedEnrollments.map((entity) =>
+          EnrollmentEntityMapper.toDomainEnrollment(entity),
+        );
+      }
+      span.setAttribute("cache.hit", false);
+
+      const end = this.metrics.measureDBOperationDuration(
+        "enrollment.findByCourseId",
+        "SELECT",
+      );
+      const ormEntities = await this.repo.find({
+        where: { courseId, deletedAt: null },
+      });
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      const enrollments = ormEntities.map((entity) =>
+        EnrollmentEntityMapper.toDomainEnrollment(entity),
+      );
+      span.setAttribute("db.enrollment.course.count", enrollments.length);
+
+      await this.cache.set(cacheKey, ormEntities, 3600);
+      this.logger.debug(`Cached enrollments for course ${courseId}`, {
+        ctx: EnrollmentTypeOrmRepository.name,
+      });
+      span.setAttribute("cache.set", true);
+      return enrollments;
+    });
   }
 
   async getInstructorCourseRevenueSummery(
     instructorId: string,
     courseId: string,
   ): Promise<InstructorCourseRevenueSummery | null> {
-    return this.tracer.startActiveSpan(
-      "EnrollmentTypeOrmRepository.getInstructorCourseRevenueSummery",
-      async (span) => {
-        const now = new Date();
-        const currentMonthStart = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          1,
-        );
-        const prevMonthStart = new Date(
-          now.getFullYear(),
-          now.getMonth() - 1,
-          1,
-        );
+    return this.execute("getInstructorCourseRevenueSummery", async (span) => {
+      const now = new Date();
+      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-        try {
-          const stats = await this.enrollmentRepo
-            .createQueryBuilder("enrollment")
-            .leftJoin("enrollment.course", "course")
-            .where("course.id = :courseId", { courseId })
-            .andWhere("course.instructorId = :instructorId", { instructorId })
-            .andWhere("enrollment.deletedAt IS NULL")
-            .select(
-              "SUM(COALESCE(course.discountPrice, course.price))",
-              "total_revenue",
-            )
-            .addSelect(
-              "AVG(COALESCE(course.discountPrice, course.price))",
-              "avg_revenue",
-            )
-            .addSelect(
-              "SUM(CASE WHEN enrollment.createdAt >= :currentMonthStart THEN COALESCE(course.discountPrice, course.price) ELSE 0 END)",
-              "this_month_revenue",
-            )
-            .addSelect(
-              "SUM(CASE WHEN enrollment.createdAt >= :prevMonthStart AND enrollment.createdAt < :currentMonthStart THEN COALESCE(course.discountPrice, course.price) ELSE 0 END)",
-              "prev_month_revenue",
-            )
-            .setParameters({ currentMonthStart, prevMonthStart })
-            .getRawOne();
+      try {
+        const stats = await this.repo
+          .createQueryBuilder("enrollment")
+          .leftJoin("enrollment.course", "course")
+          .where("course.id = :courseId", { courseId })
+          .andWhere("course.instructorId = :instructorId", { instructorId })
+          .andWhere("enrollment.deletedAt IS NULL")
+          .select(
+            "SUM(COALESCE(course.discountPrice, course.price))",
+            "total_revenue",
+          )
+          .addSelect(
+            "AVG(COALESCE(course.discountPrice, course.price))",
+            "avg_revenue",
+          )
+          .addSelect(
+            "SUM(CASE WHEN enrollment.createdAt >= :currentMonthStart THEN COALESCE(course.discountPrice, course.price) ELSE 0 END)",
+            "this_month_revenue",
+          )
+          .addSelect(
+            "SUM(CASE WHEN enrollment.createdAt >= :prevMonthStart AND enrollment.createdAt < :currentMonthStart THEN COALESCE(course.discountPrice, course.price) ELSE 0 END)",
+            "prev_month_revenue",
+          )
+          .setParameters({ currentMonthStart, prevMonthStart })
+          .getRawOne();
 
-          if (!stats) return null;
+        if (!stats) return null;
 
-          const parse = (val: any) => (val ? Number(val) : 0);
+        const parse = (val: any) => (val ? Number(val) : 0);
 
-          const totalRevenue = parse(stats.total_revenue);
-          const avgRevenue = parse(stats.avg_revenue);
-          const thisMonthRevenue = parse(stats.this_month_revenue);
-          const prevMonthRevenue = parse(stats.prev_month_revenue);
+        const totalRevenue = parse(stats.total_revenue);
+        const avgRevenue = parse(stats.avg_revenue);
+        const thisMonthRevenue = parse(stats.this_month_revenue);
+        const prevMonthRevenue = parse(stats.prev_month_revenue);
 
-          let revenueGrowth = 0;
-          if (prevMonthRevenue > 0) {
-            revenueGrowth =
-              ((thisMonthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100;
-          } else if (thisMonthRevenue > 0) {
-            revenueGrowth = 100;
-          }
-
-          return {
-            totalRevenue,
-            avgRevenue,
-            thisMonthRevenue,
-            revenueGrowth: Math.round(revenueGrowth),
-          };
-        } catch (error) {
-          this.logger.error(
-            `Error in getInstructorCourseRevenueSummery: ${error}`,
-            { ctx: EnrollmentTypeOrmRepository.name },
-          );
-          throw error;
+        let revenueGrowth = 0;
+        if (prevMonthRevenue > 0) {
+          revenueGrowth =
+            ((thisMonthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100;
+        } else if (thisMonthRevenue > 0) {
+          revenueGrowth = 100;
         }
-      },
-    );
+
+        return {
+          totalRevenue,
+          avgRevenue,
+          thisMonthRevenue,
+          revenueGrowth: Math.round(revenueGrowth),
+        };
+      } catch (error) {
+        this.logger.error(
+          `Error in getInstructorCourseRevenueSummery: ${error}`,
+          { ctx: EnrollmentTypeOrmRepository.name },
+        );
+        throw error;
+      }
+    });
   }
 }

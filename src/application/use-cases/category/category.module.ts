@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { DatabaseRepositoryModule } from "src/infrastructure/database/database-repository.module";
-import { RedisModule } from "src/infrastructure/redis/redis.module";
+import { RedisModule } from "@/infrastructure/redis/redis.module";
 import { CreateCategoryUseCase } from "./impls/create-category.use-case";
 import { GetCategoryUseCase } from "./impls/get-category.use-case";
 import { GetCoursesByCategoryUseCase } from "./impls/get-courses-by-category.use-case";

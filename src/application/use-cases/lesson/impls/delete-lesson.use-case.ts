@@ -5,7 +5,7 @@ import { ILessonRepository } from "src/domain/repositories/lesson.repository";
 import { LessonNotFoundException } from "src/domain/exceptions/lesson.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
 import { LessonDeletedEvent } from "src/domain/events/lesson.events";
-import { EventEmitter2 } from "@nestjs/event-emitter";
+// import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DeleteLessonDto } from "src/presentation/grpc/dtos/lesson/delete-lesson.dto";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
@@ -16,7 +16,7 @@ export class DeleteLessonUseCase implements IDeleteLessonUseCase {
   constructor(
     private readonly _lessonRepository: ILessonRepository,
     private readonly _courseRepository: ICourseRepository,
-    private readonly _eventEmitter: EventEmitter2,
+    // private readonly _eventEmitter: EventEmitter2,
     private readonly _logger: ILoggerService,
     private readonly _tracer: ITraceService,
   ) {}
@@ -54,10 +54,10 @@ export class DeleteLessonUseCase implements IDeleteLessonUseCase {
 
         await this._lessonRepository.delete(lesson);
 
-        this._eventEmitter.emit(
-          LessonDeletedEvent.name,
-          new LessonDeletedEvent(dto.courseId),
-        );
+        // this._eventEmitter.emit(
+        //   LessonDeletedEvent.name,
+        //   new LessonDeletedEvent(dto.courseId),
+        // );
 
         span.setAttribute("lesson.deleted", true);
          this._logger.log(`Lesson ${dto.lessonId} deleted`, {

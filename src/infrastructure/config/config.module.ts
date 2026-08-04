@@ -1,6 +1,6 @@
-import { Global, Module } from '@nestjs/common';
-import { ConfigModule as NestConfigModule } from '@nestjs/config';
-import { AppConfigService } from './config.service';
+import { Global, Module } from "@nestjs/common";
+import { ConfigModule as NestConfigModule } from "@nestjs/config";
+import { AppConfigService } from "./config.service";
 // import { validate } from './validate.config';
 
 @Global()
@@ -8,7 +8,9 @@ import { AppConfigService } from './config.service';
   imports: [
     NestConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      ...(process.env.NODE_ENV === "development"
+        ? { envFilePath: ".env" }
+        : { ignoreEnvFile: true }),
       cache: true, // Enable caching for better performance
       // validate: validate,
     }),

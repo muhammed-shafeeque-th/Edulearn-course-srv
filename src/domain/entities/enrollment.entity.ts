@@ -1,6 +1,4 @@
-import {
-  EnrollmentDomainException,
-} from "../exceptions/enrollment.exceptions";
+import { EnrollmentDomainException } from "../exceptions/enrollment.exceptions";
 import { ProgressNotFoundException } from "../exceptions/progress.exceptions";
 import { Course } from "./course.entity";
 import { UnitType, Progress } from "./progress.entity";

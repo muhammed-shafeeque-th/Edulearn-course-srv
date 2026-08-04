@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { DatabaseRepositoryModule } from "src/infrastructure/database/database-repository.module";
-import { RedisModule } from "src/infrastructure/redis/redis.module";
+import { RedisModule } from "@/infrastructure/redis/redis.module";
 import { DeleteQuizUseCase } from "./impls/delete-quiz.use-case";
 import { UpdateQuizUseCase } from "./impls/update-quiz.use-case";
 import { GetQuizzesByCourseUseCase } from "./impls/get-quizes-by-course.use-case";

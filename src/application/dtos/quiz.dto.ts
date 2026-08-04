@@ -3,7 +3,7 @@ import { Quiz, Question } from "../../domain/entities/quiz.entity";
 
 export class QuizDto {
   id: string;
-  sectionId: string;
+  moduleId: string;
   courseId: string;
   title: string;
   description: string;
@@ -19,7 +19,7 @@ export class QuizDto {
   static fromDomain(quiz: Quiz): QuizDto {
     const dto = new QuizDto();
     dto.id = quiz.getId();
-    dto.sectionId = quiz.getSectionId();
+    dto.moduleId = quiz.getModuleId();
     dto.courseId = quiz.getCourseId();
     dto.title = quiz.getTitle();
     dto.description = quiz.getDescription();
@@ -39,7 +39,7 @@ export class QuizDto {
     return {
       id: this.id,
       courseId: this.courseId,
-      sectionId: this.sectionId,
+      moduleId: this.moduleId,
       title: this.title,
       description: this.description,
       timeLimit: this.timeLimit,

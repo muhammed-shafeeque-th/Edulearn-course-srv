@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { CourseOrmEntity } from "./entities/course.orm-entity";
-import { SectionOrmEntity } from "./entities/section.orm-entity";
+import { ModuleOrmEntity } from "./entities/module.orm-entity";
 import { LessonOrmEntity } from "./entities/lesson.orm-entity";
 import { QuizOrmEntity } from "./entities/quiz.orm-entity";
 import { EnrollmentOrmEntity } from "./entities/enrollment.orm-entity";
@@ -24,7 +24,7 @@ export const AppDataSource = new DataSource({
     CourseOrmEntity,
     CategoryOrmEntity,
     UserOrmEntity,
-    SectionOrmEntity,
+    ModuleOrmEntity,
     LessonOrmEntity,
     QuizOrmEntity,
     EnrollmentOrmEntity,
@@ -32,7 +32,10 @@ export const AppDataSource = new DataSource({
     ReviewOrmEntity,
   ],
 
-  migrations: [AddSearchVectorIndex1762848672867, RenamedFieldsToSnakeCase1765791772101],
+  migrations: [
+    AddSearchVectorIndex1762848672867,
+    RenamedFieldsToSnakeCase1765791772101,
+  ],
   synchronize: false, // 🔒 NEVER true with migrations
   logging: ["error"],
 });

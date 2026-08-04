@@ -30,7 +30,7 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
         const user = await this._userRepository.findById(payload.userId);
         if (!user) {
           span.setAttribute("user.found", false);
-          throw new UserNotFoundException(`user ${payload.userId} not found`);
+          throw new UserNotFoundException(payload.userId);
         }
 
         user.update(payload.avatar, payload.firstName + " " + payload.lastName);

@@ -4,80 +4,68 @@ import {
   Injectable,
   NestInterceptor,
 } from "@nestjs/common";
-import { LoggingService } from "../observability/logging/logging.service";
-import { MetricsService } from "../observability/metrics/metrics.service";
-import { finalize, Observable, tap } from "rxjs";
-import { Metadata } from "@grpc/grpc-js";
-import { context, propagation, trace } from "@opentelemetry/api";
+import { Observable } from "rxjs";
+import { tap, finalize } from "rxjs/operators";
+import { context, trace, SpanStatusCode } from "@opentelemetry/api";
+
+import { ILoggerService } from "@/application/adaptors/logger.service";
+import { IMetricService } from "@/application/adaptors/metric.service";
+
 @Injectable()
 export class GrpcInterceptor implements NestInterceptor {
   constructor(
-    private readonly logger: LoggingService,
-    private readonly metrics: MetricsService,
+    private readonly logger: ILoggerService,
+    private readonly metrics: IMetricService,
   ) {}
 
   intercept(
-    ctx: ExecutionContext,
-    next: CallHandler<any>,
-  ): Observable<any> | Promise<Observable<any>> {
-    const call = ctx.switchToRpc();
-    const metadata: Metadata = call.getContext();
-    const method = ctx.getHandler().name;
+    executionContext: ExecutionContext,
+    next: CallHandler,
+  ): Observable<any> {
+    const method = executionContext.getHandler().name;
 
-    function otelMetadataGetter(
-      carrier: Metadata,
-      key: string,
-    ): string | string[] | undefined {
-      const values = carrier.get(key);
-      if (!values || values.length === 0) return undefined;
+    const span = trace.getSpan(context.active());
 
-      const asStrings = values
-        .map((v) => (typeof v === "string" ? v : undefined))
-        .filter((v): v is string => v !== undefined);
-      if (asStrings.length === 0) return undefined;
-      return asStrings.length === 1 ? asStrings[0] : asStrings;
-    }
-    function otelMetadataKeys(carrier: Metadata): string[] {
-      return Object.keys(carrier.getMap());
-    }
+    const stopTimer = this.metrics.measureRequestDuration(method);
 
-    const extractedContext = propagation.extract(context.active(), metadata, {
-      get: otelMetadataGetter,
-      keys: otelMetadataKeys,
-    });
-
-    this.logger.debug(`gRPC request received to method ${method}`, {
-      ctx: GrpcInterceptor.name,
-    });
-    const endRequest = this.metrics.measureRequestDuration(method);
     this.metrics.incrementRequestCounter(method);
-    const start = Date.now();
-    let status = "success";
 
-    return context.with(extractedContext, () =>
-      next.handle().pipe(
-        tap({
-          error: (error) => {
-            status = "error";
-            this.logger.error(
-              `gRPC method ${method} failed: ${error.message}`,
-              {
-                error,
-                ctx: GrpcInterceptor.name,
-              },
-            );
-            this.metrics.incrementErrorCounter(method);
-          },
-        }),
-        finalize(() => {
-          const duration = (Date.now() - start) / 1000;
-          endRequest();
-          this.logger.debug(
-            `gRPC method ${method} completed with status ${status} in ${duration}s`,
-            { ctx: GrpcInterceptor.name },
-          );
-        }),
-      ),
+    this.logger.debug(`gRPC request started`, {
+      method,
+    });
+
+    return next.handle().pipe(
+      tap({
+        next: () => {
+          span?.setStatus({
+            code: SpanStatusCode.OK,
+          });
+        },
+
+        error: (error) => {
+          span?.recordException(error);
+
+          span?.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error.message,
+          });
+
+          this.metrics.incrementErrorCounter(method);
+
+          this.logger.error(`gRPC request failed`, {
+            method,
+            error,
+          });
+        },
+      }),
+
+      finalize(() => {
+        stopTimer();
+
+        this.logger.debug(`gRPC request completed`, {
+          method,
+        });
+      }),
     );
   }
 }

@@ -14,40 +14,37 @@ import {
   CourseMetadata,
   CourseStatus,
 } from "src/domain/entities/course.entity";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
-import { MetricsService } from "src/infrastructure/observability/metrics/metrics.service";
+import { IMetricService } from "src/application/adaptors/metric.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
 import { CourseEntityMapper } from "../mappers/course.entity.mapper";
-import { ICacheService } from "src/application/services/cache-service";
-import { CACHE_KEYS } from "src/infrastructure/redis/cache-keys";
+import { ICacheService } from "src/application/adaptors/cache-service";
+import { CACHE_KEYS } from "@/infrastructure/redis/cache-keys";
+import { BaseRepository } from "./base.repository";
+import { PaginatedResult } from "src/domain/repositories/base.repository";
 
 @Injectable()
-export class CourseTypeOrmRepository implements ICourseRepository {
+export class CourseTypeOrmRepository
+  extends BaseRepository<Course, CourseOrmEntity>
+  implements ICourseRepository
+{
+  protected contextName: string = CourseTypeOrmRepository.name;
   constructor(
     @InjectRepository(CourseOrmEntity)
-    private readonly repo: Repository<CourseOrmEntity>,
-    private readonly redisService: ICacheService,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
-    private readonly metrics: MetricsService,
+    repo: Repository<CourseOrmEntity>,
+    cache: ICacheService,
+    logger: ILoggerService,
+    tracer: ITraceService,
+    metrics: IMetricService,
     private readonly dataSource: DataSource,
-  ) {}
+  ) {
+    super(repo, logger, tracer, metrics, cache);
+  }
 
   async findByIdempotencyKey(idempotencyKey: string): Promise<Course | null> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.findByIdempotencyKey",
+    return await this.execute(
+      "findByIdempotencyKey",
       async (span) => {
-        span.setAttributes({
-          "db.operation": "SELECT",
-          idempotencyKey: idempotencyKey,
-        });
-
-        this.metrics.incrementDBRequestCounter("SELECT");
-        const end = this.metrics.measureDBOperationDuration(
-          "course.findByIdempotencyKey",
-          "SELECT",
-        );
-
         const ormCourse = await this.repo.findOne({
           where: { idempotencyKey },
           relations: {
@@ -59,8 +56,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           },
         });
 
-        end();
-
         if (!ormCourse) {
           this.logger.debug(
             `No course found for idempotencyKey: ${idempotencyKey}`,
@@ -70,36 +65,28 @@ export class CourseTypeOrmRepository implements ICourseRepository {
         }
         return CourseEntityMapper.toDomainCourse(ormCourse);
       },
+      {
+        "db.operation": "SELECT",
+        idempotencyKey: idempotencyKey,
+      },
     );
   }
 
   async save(course: Course): Promise<void> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.save",
+    return await this.execute(
+      "save",
       async (span) => {
-        span.setAttributes({
-          "db.operation": "INSERT",
-          "course.title": course.getTitle(),
-        });
         const ormEntity = CourseEntityMapper.toOrmCourse(course);
-
-        this.metrics.incrementDBRequestCounter("INSERT");
-        const end = this.metrics.measureDBOperationDuration(
-          "course.save",
-          "INSERT",
-        );
 
         try {
           const saved = await this.repo.save(ormEntity);
-          end();
           if (!saved || !saved.id) {
             this.logger.warn(
               `Save operation appears to have failed for course: ${course.getId()}`,
               { ctx: CourseTypeOrmRepository.name },
             );
           }
-        } catch (err) {
-          end();
+        } catch (err: any) {
           this.logger.warn(
             `Exception while saving course: ${course.getId()}, error: ${err?.message}`,
             { ctx: CourseTypeOrmRepository.name, error: err },
@@ -109,10 +96,10 @@ export class CourseTypeOrmRepository implements ICourseRepository {
 
         // Invalidate related cache keys via central keys
         await Promise.allSettled([
-          this.redisService.del(CACHE_KEYS.course.byId(course.getId())),
-          this.redisService.del(CACHE_KEYS.course.bySlug(course.getSlug())),
-          this.redisService.del(CACHE_KEYS.course.byTitle(course.getTitle())),
-          this.redisService.delByPattern(
+          this.cache.del(CACHE_KEYS.course.byId(course.getId())),
+          this.cache.del(CACHE_KEYS.course.bySlug(course.getSlug())),
+          this.cache.del(CACHE_KEYS.course.byTitle(course.getTitle())),
+          this.cache.delByPattern(
             CACHE_KEYS.course.instructorWildcard(course.getInstructorId()),
           ),
         ]);
@@ -120,6 +107,10 @@ export class CourseTypeOrmRepository implements ICourseRepository {
         this.logger.debug(`Invalidated cache for course ${course.getId()}`, {
           ctx: CourseTypeOrmRepository.name,
         });
+      },
+      {
+        "db.operation": "INSERT",
+        "course.title": course.getTitle(),
       },
     );
   }
@@ -135,7 +126,7 @@ export class CourseTypeOrmRepository implements ICourseRepository {
 
   //     await queryRunner.commitTransaction();
   //     return result;
-  //   } catch (err) {
+  //   } catch (err: any) {
   //     await queryRunner.rollbackTransaction();
   //     throw err;
   //   } finally {
@@ -155,32 +146,16 @@ export class CourseTypeOrmRepository implements ICourseRepository {
   }
 
   async update(course: Course): Promise<void> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.update",
+    return await this.execute(
+      "update",
       async (span) => {
         try {
-          span.setAttributes({
-            "db.operation": "UPDATE",
-            "course.id": course.getId(),
-            "course.title": course.getTitle(),
-          });
-
-          this.metrics.incrementDBRequestCounter("UPDATE");
-          const end = this.metrics.measureDBOperationDuration(
-            "course.update",
-            "UPDATE",
-          );
-
-          // Prepare the update payload based only on domain object's current state.
           const updatePayload = CourseEntityMapper.toOrmCourse(course);
 
-          // Attempt the update and check result for success
           const result = await this.repo.update(
             { id: course.getId() },
             updatePayload,
           );
-
-          end();
 
           if (!result || result.affected === undefined) {
             const message = `Update result malformed for course id ${course.getId()}. Potential write failure.`;
@@ -202,11 +177,17 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           span.setAttribute("course.updated", true);
 
           // Invalidate all potentially stale cache entries (by id, slug, title) via centralized keys
+          await this.cacheInvalidate([
+            CACHE_KEYS.course.byId(course.getId()),
+            CACHE_KEYS.course.bySlug(course.getSlug()),
+            CACHE_KEYS.course.byTitle(course.getTitle()),
+          ]);
+
           await Promise.allSettled([
-            this.redisService.del(CACHE_KEYS.course.byId(course.getId())),
-            this.redisService.del(CACHE_KEYS.course.bySlug(course.getSlug())),
-            this.redisService.del(CACHE_KEYS.course.byTitle(course.getTitle())),
-            this.redisService.delByPattern(
+            this.cache.delByPattern(
+              CACHE_KEYS.course.instructorWildcard(course.getInstructorId()),
+            ),
+            this.cache.delByPattern(
               CACHE_KEYS.course.instructorWildcard(course.getInstructorId()),
             ),
           ]);
@@ -223,6 +204,11 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           throw error;
         }
       },
+      {
+        "db.operation": "UPDATE",
+        "course.id": course.getId(),
+        "course.title": course.getTitle(),
+      },
     );
   }
 
@@ -230,8 +216,8 @@ export class CourseTypeOrmRepository implements ICourseRepository {
     id: string,
     options?: CourseRelationOptions,
   ): Promise<Course | null> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.findById",
+    return await this.execute(
+      "findById",
       async (span) => {
         const {
           withLessons = true,
@@ -239,17 +225,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           withModules = true,
         } = options ?? {};
         try {
-          span.setAttributes({
-            "db.course.operation": "SELECT",
-            "course.id": id,
-          });
-          this.metrics.incrementDBRequestCounter("SELECT");
-
-          const end = this.metrics.measureDBOperationDuration(
-            "course.findById",
-            "SELECT",
-          );
-
           // Build query using CourseRelationOptions for flexible eager loading
           let qb = this.repo
             .createQueryBuilder("course")
@@ -285,8 +260,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
 
           const ormEntity = await qb.getOne();
 
-          end();
-
           if (!ormEntity) {
             span.setAttribute("course.found", false);
             this.logger.warn(`Course with id ${id} not found`, {
@@ -300,7 +273,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           this.logger.debug(`Fetched course ${id} from DB`, {
             ctx: CourseTypeOrmRepository.name,
           });
-          // Consider caching here (if not in the domain-mapper already)
 
           return CourseEntityMapper.toDomainCourse(ormEntity);
         } catch (error: any) {
@@ -315,20 +287,19 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           throw error;
         }
       },
+      {
+        "db.course.operation": "SELECT",
+        "course.id": id,
+      },
     );
   }
 
   public async findByIds(ids: string[]): Promise<CourseMetadata[]> {
     if (!ids || ids.length === 0) return [];
     try {
-      return await this.tracer.startActiveSpan(
-        "CourseTypeOrmRepository.findByIds",
+      return await this.execute(
+        "findByIds",
         async (span) => {
-          span.setAttributes({
-            "db.course.operation": "SELECT_MANY",
-            "course.ids.count": ids.length,
-          });
-
           this.logger.debug(
             `Fetching courses from database with ids: [${ids.join(", ")}]`,
             { ctx: CourseTypeOrmRepository.name },
@@ -338,8 +309,7 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           const normalizedIds = [...new Set(ids)].sort();
           const cacheKey = CACHE_KEYS.course.byIds(normalizedIds);
 
-          const cached =
-            await this.redisService.get<CourseMetadata[]>(cacheKey);
+          const cached = await this.cache.get<CourseMetadata[]>(cacheKey);
           if (cached?.length) return cached;
 
           const qb = this.repo
@@ -408,8 +378,12 @@ export class CourseTypeOrmRepository implements ICourseRepository {
             })
             .filter(Boolean) as CourseMetadata[];
 
-          await this.redisService.set(cacheKey, ordered, 300);
+          await this.cache.set(cacheKey, ordered, 300);
           return ordered;
+        },
+        {
+          "db.course.operation": "SELECT_MANY",
+          "course.ids.count": ids.length,
         },
       );
     } catch (error) {
@@ -422,16 +396,11 @@ export class CourseTypeOrmRepository implements ICourseRepository {
   }
 
   async findBySlug(slug: string): Promise<Course | null> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.findBySlug",
+    return await this.execute(
+      "findBySlug",
       async (span) => {
-        span.setAttributes({
-          "db.course.operation": "SELECT",
-          "course.slug": slug,
-        });
         const cacheKey = CACHE_KEYS.course.bySlug(slug);
-        const cachedCourse =
-          await this.redisService.get<CourseOrmEntity>(cacheKey);
+        const cachedCourse = await this.cache.get<CourseOrmEntity>(cacheKey);
 
         if (cachedCourse) {
           span.setAttribute("cache.hit", true);
@@ -442,11 +411,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
         }
         span.setAttribute("cache.hit", false);
 
-        this.metrics.incrementDBRequestCounter("SELECT");
-        const end = this.metrics.measureDBOperationDuration(
-          "course.findBySlug",
-          "SELECT",
-        );
         // Exclude modules, lessons, and quizzes with is_deleted=true by using a query builder
         const ormEntity = await this.repo
           .createQueryBuilder("course")
@@ -465,7 +429,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           .where("course.slug = :slug", { slug })
           .andWhere("course.deletedAt IS NULL")
           .getOne();
-        end();
 
         if (!ormEntity) {
           span.setAttribute("course.found", false);
@@ -473,12 +436,16 @@ export class CourseTypeOrmRepository implements ICourseRepository {
         }
         span.setAttribute("course.found", true);
 
-        await this.redisService.set(cacheKey, ormEntity, 3600); // 1 hour
+        await this.cache.set(cacheKey, ormEntity, 3600); // 1 hour
 
         this.logger.debug(`Cached course ${slug}`, {
           ctx: CourseTypeOrmRepository.name,
         });
         return CourseEntityMapper.toDomainCourse(ormEntity);
+      },
+      {
+        "db.course.operation": "SELECT",
+        "course.slug": slug,
       },
     );
   }
@@ -489,18 +456,10 @@ export class CourseTypeOrmRepository implements ICourseRepository {
     limit: number = 10,
     sortBy: string = "createdAt",
     sortOrder: "ASC" | "DESC" = "ASC",
-  ): Promise<{ courses: CourseMetadata[]; total: number }> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.findByInstructorId",
+  ): Promise<PaginatedResult<CourseMetadata>> {
+    return await this.execute(
+      "findByInstructorId",
       async (span) => {
-        span.setAttributes({
-          "db.course.operation": "SELECT",
-          "course.instructor": instructorId,
-          "course.page": page,
-          "course.sortBy": sortBy,
-          "course.sortOrder": sortOrder,
-        });
-
         const sortColumn = this.getSortColumn(sortBy);
 
         const cacheKey = CACHE_KEYS.course.byInstructor(
@@ -511,10 +470,8 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           sortOrder,
         );
 
-        const cached = await this.redisService.get<{
-          courses: CourseMetadata[];
-          total: number;
-        }>(cacheKey);
+        const cached =
+          await this.cache.get<PaginatedResult<CourseMetadata>>(cacheKey);
 
         if (cached) return cached;
 
@@ -535,7 +492,7 @@ export class CourseTypeOrmRepository implements ICourseRepository {
 
         const ids = idRows.map((r) => r.id);
 
-        if (!ids.length) return { courses: [], total };
+        if (!ids.length) return { data: [], total, page, limit };
 
         const qb = this.repo
           .createQueryBuilder("course")
@@ -602,17 +559,29 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           })
           .filter(Boolean) as CourseMetadata[];
 
-        const result = { courses: ordered, total };
-        await this.redisService.set(cacheKey, result, 120);
+        const result: PaginatedResult<CourseMetadata> = {
+          data: ordered,
+          total,
+          limit,
+          page,
+        };
+        await this.cache.set(cacheKey, result, 120);
 
         return result;
+      },
+      {
+        "db.course.operation": "SELECT",
+        "course.instructor": instructorId,
+        "course.page": page,
+        "course.sortBy": sortBy,
+        "course.sortOrder": sortOrder,
       },
     );
   }
 
   async findAll(
     params: GetCourseParams,
-  ): Promise<{ courses: CourseMetadata[]; total: number }> {
+  ): Promise<PaginatedResult<CourseMetadata>> {
     const {
       page = 1,
       limit = 10,
@@ -627,14 +596,9 @@ export class CourseTypeOrmRepository implements ICourseRepository {
       rating,
     } = params;
 
-    return this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.findAll.optimized",
+    return this.execute(
+      "findAll.optimized",
       async (span) => {
-        span.setAttributes({
-          "db.operation": "SELECT",
-          "db.entity": "Course",
-        });
-
         // Use centralization for cache key generation
         const normalizedParams = {
           page,
@@ -651,10 +615,8 @@ export class CourseTypeOrmRepository implements ICourseRepository {
         };
         const cacheKey = CACHE_KEYS.course.list(normalizedParams);
 
-        const cached = await this.redisService.get<{
-          courses: CourseMetadata[];
-          total: number;
-        }>(cacheKey);
+        const cached =
+          await this.cache.get<PaginatedResult<CourseMetadata>>(cacheKey);
 
         if (cached) {
           span.setAttribute("cache.hit", true);
@@ -738,7 +700,6 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           );
         }
 
-        // total count (no joins = fast)
         this.metrics.incrementDBRequestCounter("SELECT");
         const endCount = this.metrics.measureDBOperationDuration(
           "course.findAll.count",
@@ -764,12 +725,11 @@ export class CourseTypeOrmRepository implements ICourseRepository {
         const ids = idRows.map((r) => r.id);
 
         if (!ids.length) {
-          const empty = { courses: [], total };
-          await this.redisService.set(cacheKey, empty, 60);
+          const empty = { data: [], total, page, limit };
+          await this.cache.set(cacheKey, empty, 60);
           return empty;
         }
 
-        // Phase 2: fetch metadata + counts using group by
         const endData = this.metrics.measureDBOperationDuration(
           "course.findAll.data",
           "SELECT",
@@ -843,11 +803,15 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           })
           .filter(Boolean) as CourseMetadata[];
 
-        const result = { courses: orderedCourses, total };
+        const result = { data: orderedCourses, total, page, limit };
 
-        await this.redisService.set(cacheKey, result, 120);
+        await this.cache.set(cacheKey, result, 120);
 
         return result;
+      },
+      {
+        "db.operation": "SELECT",
+        "db.entity": "Course",
       },
     );
   }
@@ -858,130 +822,114 @@ export class CourseTypeOrmRepository implements ICourseRepository {
     limit: number = 10,
     sortBy: string = "createdAt",
     sortOrder: "ASC" | "DESC" = "ASC",
-  ): Promise<{ courses: Course[]; total: number }> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.findByUserId",
-      async (span) => {
-        span.setAttributes({
-          "db.course.operation": "SELECT",
-          "course.user.id": userId,
-        });
-        const cacheKey = CACHE_KEYS.course.byUser(
-          userId,
-          page,
-          limit,
-          sortBy,
-          sortOrder,
-        );
-        const cachedResult = await this.redisService.get<{
-          courses: CourseOrmEntity[];
-          total: number;
-        }>(cacheKey);
-        if (cachedResult) {
-          span.setAttribute("cache.hit", true);
-          this.logger.debug(`Cache hit for courses by user ${userId}`, {
-            ctx: CourseTypeOrmRepository.name,
-          });
-          return {
-            courses: cachedResult.courses.map((c: any) =>
-              CourseEntityMapper.toDomainCourse(c),
-            ),
-            total: cachedResult.total,
-          };
-        }
-        span.setAttribute("cache.hit", false);
-
-        const end = this.metrics.measureDBOperationDuration(
-          "course.findByUserId",
-          "SELECT",
-        );
-        const queryBuilder = this.repo
-          .createQueryBuilder("course")
-          .innerJoin("course.enrollments", "enrollment")
-          .where("course.deletedAt IS NULL")
-          .andWhere("enrollment.studentId = :userId", { userId })
-          .leftJoinAndSelect("course.modules", "modules")
-          .leftJoinAndSelect("course.instructor", "instructor")
-          .leftJoinAndSelect("modules.lessons", "lessons")
-          .leftJoinAndSelect("modules.quiz", "quiz")
-          .skip((page - 1) * limit)
-          .take(limit)
-          .orderBy(`course.${sortBy}`, sortOrder);
-
-        const [ormEntities, total] = await queryBuilder.getManyAndCount();
-
-        end();
-        this.metrics.incrementDBRequestCounter("SELECT");
-
-        const courses = ormEntities.map(CourseEntityMapper.toDomainCourse);
-        await this.redisService.set(
-          cacheKey,
-          { courses: ormEntities, total },
-          3600,
-        );
-        this.logger.debug(`Cached courses for user ${userId}`, {
+  ): Promise<PaginatedResult<Course>> {
+    return await this.execute("findByUserId", async (span) => {
+      span.setAttributes({
+        "db.course.operation": "SELECT",
+        "course.user.id": userId,
+      });
+      const cacheKey = CACHE_KEYS.course.byUser(
+        userId,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+      );
+      const cachedResult =
+        await this.cache.get<PaginatedResult<Course>>(cacheKey);
+      if (cachedResult) {
+        span.setAttribute("cache.hit", true);
+        this.logger.debug(`Cache hit for courses by user ${userId}`, {
           ctx: CourseTypeOrmRepository.name,
         });
-        span.setAttribute("redis.cache.course.set", true);
-        return { courses, total };
-      },
-    );
+        return {
+          data: cachedResult.data.map((c: any) =>
+            CourseEntityMapper.toDomainCourse(c),
+          ),
+          total: cachedResult.total,
+          limit,
+          page,
+        };
+      }
+      span.setAttribute("cache.hit", false);
+
+      const end = this.metrics.measureDBOperationDuration(
+        "course.findByUserId",
+        "SELECT",
+      );
+      const queryBuilder = this.repo
+        .createQueryBuilder("course")
+        .innerJoin("course.enrollments", "enrollment")
+        .where("course.deletedAt IS NULL")
+        .andWhere("enrollment.studentId = :userId", { userId })
+        .leftJoinAndSelect("course.modules", "modules")
+        .leftJoinAndSelect("course.instructor", "instructor")
+        .leftJoinAndSelect("modules.lessons", "lessons")
+        .leftJoinAndSelect("modules.quiz", "quiz")
+        .skip((page - 1) * limit)
+        .take(limit)
+        .orderBy(`course.${sortBy}`, sortOrder);
+
+      const [ormEntities, total] = await queryBuilder.getManyAndCount();
+
+      end();
+      this.metrics.incrementDBRequestCounter("SELECT");
+
+      const courses = ormEntities.map(CourseEntityMapper.toDomainCourse);
+      await this.cache.set(cacheKey, { courses: ormEntities, total }, 3600);
+      this.logger.debug(`Cached courses for user ${userId}`, {
+        ctx: CourseTypeOrmRepository.name,
+      });
+      span.setAttribute("redis.cache.course.set", true);
+      return { data: courses, total, page, limit };
+    });
   }
 
   async delete(course: Course): Promise<void> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.delete",
-      async (span) => {
-        course.softDelete();
+    return await this.execute("delete", async (span) => {
+      course.softDelete();
 
-        span.setAttributes({
-          "db.operation": "DELETE",
-          "course.id": course.getId(),
-        });
-        const ormEntity = CourseEntityMapper.toOrmCourse(course);
+      span.setAttributes({
+        "db.operation": "DELETE",
+        "course.id": course.getId(),
+      });
+      const ormEntity = CourseEntityMapper.toOrmCourse(course);
 
-        const end = this.metrics.measureDBOperationDuration(
-          "course.save",
-          "DELETE",
-        );
-        try {
-          const saved = await this.repo.save(ormEntity);
-          end();
-          if (!saved || !saved.id) {
-            this.logger.warn(
-              `Delete (soft) operation may have failed for course: ${course.getId()}`,
-              { ctx: CourseTypeOrmRepository.name },
-            );
-          }
-        } catch (err) {
-          end();
+      try {
+        const saved = await this.repo.save(ormEntity);
+        if (!saved || !saved.id) {
           this.logger.warn(
-            `Exception during soft delete for course: ${course.getId()}, error: ${err?.message}`,
-            { ctx: CourseTypeOrmRepository.name, error: err },
+            `Delete (soft) operation may have failed for course: ${course.getId()}`,
+            { ctx: CourseTypeOrmRepository.name },
           );
-          throw err;
         }
-        this.metrics.incrementDBRequestCounter("DELETE");
-        span.setAttribute("course.deleted", true);
-
-        await Promise.all([
-          this.redisService.del(
-            CACHE_KEYS.course.byInstructor(course.getInstructorId()),
-          ),
-          this.redisService.del(CACHE_KEYS.course.byId(course.getId())),
-          this.redisService.del(CACHE_KEYS.course.byTitle(course.getTitle())),
-          this.redisService.del(CACHE_KEYS.course.bySlug(course.getSlug())),
-        ]);
-
-        span.setAttribute(
-          "cache.invalidated.keys",
-          `[${CACHE_KEYS.course.byInstructor(course.getInstructorId())}, ${CACHE_KEYS.course.byId(course.getId())}, ${CACHE_KEYS.course.byTitle(course.getTitle())}]`,
+      } catch (err: any) {
+        this.logger.warn(
+          `Exception during soft delete for course: ${course.getId()}, error: ${err?.message}`,
+          { ctx: CourseTypeOrmRepository.name, error: err },
         );
-        this.logger.debug(`Invalidated cache for course ${course.getId()}`, {
-          ctx: CourseTypeOrmRepository.name,
-        });
-      },
-    );
+        throw err;
+      }
+      this.metrics.incrementDBRequestCounter("DELETE");
+      span.setAttribute("course.deleted", true);
+
+      await Promise.all([
+        this.cache.del(
+          CACHE_KEYS.course.byInstructor(course.getInstructorId()),
+        ),
+        this.cache.del(CACHE_KEYS.course.byId(course.getId())),
+        this.cache.del(CACHE_KEYS.course.byTitle(course.getTitle())),
+        this.cache.del(CACHE_KEYS.course.bySlug(course.getSlug())),
+      ]);
+
+      span.setAttribute(
+        "cache.invalidated.keys",
+        `[${CACHE_KEYS.course.byInstructor(course.getInstructorId())}, ${CACHE_KEYS.course.byId(course.getId())}, ${CACHE_KEYS.course.byTitle(course.getTitle())}]`,
+      );
+      this.logger.debug(`Invalidated cache for course ${course.getId()}`, {
+        ctx: CourseTypeOrmRepository.name,
+      });
+    });
   }
 
   /**
@@ -994,66 +942,61 @@ export class CourseTypeOrmRepository implements ICourseRepository {
     publishedCourses: number;
     unPublishedCourses: number;
   }> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.getCoursesStats",
-      async (span) => {
-        span.setAttributes({
-          "db.operation": "SELECT",
-          "courses.stats": true,
+    return await this.execute("getCoursesStats", async (span) => {
+      span.setAttributes({
+        "db.operation": "SELECT",
+        "courses.stats": true,
+      });
+
+      try {
+        // Count all non-deleted courses (total)
+        const totalCourses = await this.repo.count({
+          where: { deletedAt: null },
         });
 
-        try {
-          this.metrics.incrementDBRequestCounter("SELECT");
+        // Count published courses
+        const publishedCourses = await this.repo.count({
+          where: {
+            deletedAt: null,
+            status: CourseStatus.PUBLISHED,
+          },
+        });
 
-          // Count all non-deleted courses (total)
-          const totalCourses = await this.repo.count({
-            where: { deletedAt: null },
-          });
+        // Count draft courses
+        const draftCourses = await this.repo.count({
+          where: {
+            deletedAt: null,
+            status: CourseStatus.DRAFT,
+          },
+        });
 
-          // Count published courses
-          const publishedCourses = await this.repo.count({
-            where: {
-              deletedAt: null,
-              status: CourseStatus.PUBLISHED,
-            },
-          });
+        // Count unpublished (created but not yet published: e.g. status = 'UNPUBLISHED')
+        const unPublishedCourses = await this.repo.count({
+          where: {
+            deletedAt: null,
+            status: CourseStatus.UNPUBLISHED,
+          },
+        });
 
-          // Count draft courses
-          const draftCourses = await this.repo.count({
-            where: {
-              deletedAt: null,
-              status: CourseStatus.DRAFT,
-            },
-          });
+        span.setAttribute("courses.total", totalCourses);
+        span.setAttribute("courses.published", publishedCourses);
+        span.setAttribute("courses.draft", draftCourses);
+        span.setAttribute("courses.unpublished", unPublishedCourses);
 
-          // Count unpublished (created but not yet published: e.g. status = 'UNPUBLISHED')
-          const unPublishedCourses = await this.repo.count({
-            where: {
-              deletedAt: null,
-              status: CourseStatus.UNPUBLISHED,
-            },
-          });
-
-          span.setAttribute("courses.total", totalCourses);
-          span.setAttribute("courses.published", publishedCourses);
-          span.setAttribute("courses.draft", draftCourses);
-          span.setAttribute("courses.unpublished", unPublishedCourses);
-
-          return {
-            totalCourses,
-            draftCourses,
-            publishedCourses,
-            unPublishedCourses,
-          };
-        } catch (err) {
-          this.logger.error("Failed to fetch course stats", {
-            ctx: CourseTypeOrmRepository.name,
-            error: err,
-          });
-          throw err;
-        }
-      },
-    );
+        return {
+          totalCourses,
+          draftCourses,
+          publishedCourses,
+          unPublishedCourses,
+        };
+      } catch (err: any) {
+        this.logger.error("Failed to fetch course stats", {
+          ctx: CourseTypeOrmRepository.name,
+          error: err,
+        });
+        throw err;
+      }
+    });
   }
 
   /**
@@ -1068,8 +1011,8 @@ export class CourseTypeOrmRepository implements ICourseRepository {
     totalRatings: number;
     breakdown: string;
   }> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.getInstructorCourseRatingStats",
+    return await this.execute(
+      "getInstructorCourseRatingStats",
       async (span) => {
         span.setAttributes({
           "db.operation": "SELECT",
@@ -1111,7 +1054,7 @@ export class CourseTypeOrmRepository implements ICourseRepository {
             totalRatings: course.numberOfRatings ?? 0,
             breakdown,
           };
-        } catch (err) {
+        } catch (err: any) {
           this.logger.error(
             "Failed to fetch instructor's course rating stats",
             {
@@ -1131,69 +1074,65 @@ export class CourseTypeOrmRepository implements ICourseRepository {
   async getInstructorCoursesStats(
     instructorId: string,
   ): Promise<InstructorCoursesStats> {
-    return await this.tracer.startActiveSpan(
-      "CourseTypeOrmRepository.getInstructorCoursesStats",
-      async (span) => {
+    return await this.execute("getInstructorCoursesStats", async (span) => {
+      span.setAttributes({
+        "db.operation": "SELECT",
+        "instructor.id": instructorId,
+      });
+
+      const end = this.metrics.measureDBOperationDuration(
+        "course.getInstructorCoursesStats",
+        "SELECT",
+      );
+
+      try {
+        this.metrics.incrementDBRequestCounter("SELECT");
+
+        const courseStats = await this.repo
+          .createQueryBuilder("course")
+          .where("course.instructorId = :instructorId", { instructorId })
+          .select([
+            "COUNT(course.id) as total",
+            "SUM(CASE WHEN course.status = 'published' THEN 1 ELSE 0 END) as published",
+            "SUM(CASE WHEN course.status = 'draft' THEN 1 ELSE 0 END) as draft",
+            "SUM(COALESCE(course.numberOfRatings, 0)) as total_ratings",
+            "AVG(COALESCE(course.rating, 0)) as average_rating",
+            "SUM(COALESCE(course.duration, 0)) as total_duration",
+          ])
+          .getRawOne();
+
+        end();
+
+        const totalCourses = Number(courseStats?.total || 0);
+        const publishedCourses = Number(courseStats?.published || 0);
+        const draftCourses = Number(courseStats?.draft || 0);
+        const totalRatings = Number(courseStats?.total_ratings || 0);
+        const averageRating = Number(courseStats?.average_rating || 0);
+        const totalHoursTaught = Number(courseStats?.total_duration || 0);
+
         span.setAttributes({
-          "db.operation": "SELECT",
-          "instructor.id": instructorId,
+          "courses.instructor.total": totalCourses,
+          "courses.instructor.published": publishedCourses,
+          "courses.instructor.draft": draftCourses,
         });
 
-        const end = this.metrics.measureDBOperationDuration(
-          "course.getInstructorCoursesStats",
-          "SELECT",
-        );
-
-        try {
-          this.metrics.incrementDBRequestCounter("SELECT");
-
-          // Get course-based stats using property names
-          const courseStats = await this.repo
-            .createQueryBuilder("course")
-            .where("course.instructorId = :instructorId", { instructorId })
-            .select([
-              "COUNT(course.id) as total",
-              "SUM(CASE WHEN course.status = 'published' THEN 1 ELSE 0 END) as published",
-              "SUM(CASE WHEN course.status = 'draft' THEN 1 ELSE 0 END) as draft",
-              "SUM(COALESCE(course.numberOfRatings, 0)) as total_ratings",
-              "AVG(COALESCE(course.rating, 0)) as average_rating",
-              "SUM(COALESCE(course.duration, 0)) as total_duration",
-            ])
-            .getRawOne();
-
-          end();
-
-          const totalCourses = Number(courseStats?.total || 0);
-          const publishedCourses = Number(courseStats?.published || 0);
-          const draftCourses = Number(courseStats?.draft || 0);
-          const totalRatings = Number(courseStats?.total_ratings || 0);
-          const averageRating = Number(courseStats?.average_rating || 0);
-          const totalHoursTaught = Number(courseStats?.total_duration || 0);
-
-          span.setAttributes({
-            "courses.instructor.total": totalCourses,
-            "courses.instructor.published": publishedCourses,
-            "courses.instructor.draft": draftCourses,
-          });
-
-          return {
-            totalCourses,
-            publishedCourses,
-            draftCourses,
-            totalRatings,
-            averageRating,
-            totalHoursTaught,
-          };
-        } catch (err) {
-          end();
-          this.logger.error("Failed to fetch instructor's courses stats", {
-            ctx: CourseTypeOrmRepository.name,
-            error: err,
-          });
-          throw err;
-        }
-      },
-    );
+        return {
+          totalCourses,
+          publishedCourses,
+          draftCourses,
+          totalRatings,
+          averageRating,
+          totalHoursTaught,
+        };
+      } catch (err: any) {
+        end();
+        this.logger.error("Failed to fetch instructor's courses stats", {
+          ctx: CourseTypeOrmRepository.name,
+          error: err,
+        });
+        throw err;
+      }
+    });
   }
 
   async updateLessonCount(courseId: string, count: number): Promise<void> {
@@ -1213,14 +1152,14 @@ export class CourseTypeOrmRepository implements ICourseRepository {
           { ctx: CourseTypeOrmRepository.name },
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       this.logger.warn(
         `Exception during updateLessonCount for course: ${courseId}, error: ${err?.message}`,
         { ctx: CourseTypeOrmRepository.name, error: err },
       );
       throw err;
     }
-    await this.redisService.del(CACHE_KEYS.course.byId(courseId));
+    await this.cache.del(CACHE_KEYS.course.byId(courseId));
   }
 
   /**

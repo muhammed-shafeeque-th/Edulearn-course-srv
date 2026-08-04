@@ -7,41 +7,36 @@ import {
 } from "../../../domain/repositories/category.repository";
 import { Category } from "../../../domain/entities/category.entity";
 import { CategoryOrmEntity } from "../entities/category-orm.entity";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { MetricsService } from "src/infrastructure/observability/metrics/metrics.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { CourseEntityMapper } from "../mappers/course.entity.mapper";
-import { ICacheService } from "src/application/services/cache-service";
-import { CACHE_KEYS } from "src/infrastructure/redis/cache-keys";
+import { ICacheService } from "src/application/adaptors/cache-service";
 import { BaseRepository } from "./base.repository";
+import { IMetricService } from "src/application/adaptors/metric.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
+import { CACHE_KEYS } from "@/infrastructure/redis/cache-keys";
 
 @Injectable()
 export class CategoryTypeOrmRepository
-  extends BaseRepository
+  extends BaseRepository<Category, CategoryOrmEntity>
   implements ICategoryRepository
 {
   protected readonly contextName = CategoryTypeOrmRepository.name;
 
   constructor(
     @InjectRepository(CategoryOrmEntity)
-    private readonly repo: Repository<CategoryOrmEntity>,
-    private readonly redis: ICacheService,
-    logger: LoggingService,
-    metrics: MetricsService,
-    tracer: TracingService,
+    repo: Repository<CategoryOrmEntity>,
+    cache: ICacheService,
+    logger: ILoggerService,
+    metrics: IMetricService,
+    tracer: ITraceService,
   ) {
-    super(logger, tracer, metrics);
+    super(repo, logger, tracer, metrics, cache);
   }
 
   async create(category: Category): Promise<void> {
     return this.execute(
       "create",
       async (span) => {
-        span.setAttributes({
-          "category.id": category.getId(),
-          "category.name": category.getName(),
-        });
-
         const ormEntity = CourseEntityMapper.toOrmCategory(category);
         const saved = await this.repo.save(ormEntity);
 
@@ -54,12 +49,16 @@ export class CategoryTypeOrmRepository
           span.setAttribute("db.category.created", true);
         }
 
-        await this.redis.del(CACHE_KEYS.category.all);
+        await this.cache.del(CACHE_KEYS.category.all);
         this.logger.debug(`Category created: ${category.getName()}`, {
           ctx: this.contextName,
         });
       },
-      { "db.operation": "INSERT" },
+      {
+        "db.operation": "INSERT",
+        "category.id": category.getId(),
+        "category.name": category.getName(),
+      },
     );
   }
 
@@ -81,8 +80,8 @@ export class CategoryTypeOrmRepository
           );
         }
 
-        await this.redis.del(CACHE_KEYS.category.byId(category.getId()));
-        await this.redis.del(CACHE_KEYS.category.all);
+        await this.cache.del(CACHE_KEYS.category.byId(category.getId()));
+        await this.cache.del(CACHE_KEYS.category.all);
         this.logger.debug(`Category updated: ${category.getId()}`, {
           ctx: this.contextName,
         });
@@ -104,8 +103,8 @@ export class CategoryTypeOrmRepository
           );
         }
 
-        await this.redis.del(CACHE_KEYS.category.byId(id));
-        await this.redis.del(CACHE_KEYS.category.all);
+        await this.cache.del(CACHE_KEYS.category.byId(id));
+        await this.cache.del(CACHE_KEYS.category.all);
         this.logger.debug(`Category deleted: ${id}`, { ctx: this.contextName });
       },
       { id, "db.operation": "DELETE" },
@@ -147,7 +146,7 @@ export class CategoryTypeOrmRepository
       "findById",
       async (span) => {
         const cacheKey = CACHE_KEYS.category.byId(id);
-        const cached = await this.redis.get<CategoryOrmEntity>(cacheKey);
+        const cached = await this.cache.get<CategoryOrmEntity>(cacheKey);
 
         if (cached) {
           span.setAttribute("cache.hit", true);
@@ -168,7 +167,7 @@ export class CategoryTypeOrmRepository
           return null;
         }
 
-        await this.redis.set(cacheKey, orm, 3600);
+        await this.cache.set(cacheKey, orm, 3600);
         return CourseEntityMapper.toDomainCategory(orm);
       },
       { id, "db.operation": "SELECT" },
@@ -179,7 +178,7 @@ export class CategoryTypeOrmRepository
       "findById",
       async (span) => {
         const cacheKey = CACHE_KEYS.category.bySlug(slug);
-        const cached = await this.redis.get<CategoryOrmEntity>(cacheKey);
+        const cached = await this.cache.get<CategoryOrmEntity>(cacheKey);
 
         if (cached) {
           span.setAttribute("cache.hit", true);
@@ -200,7 +199,7 @@ export class CategoryTypeOrmRepository
           return null;
         }
 
-        await this.redis.set(cacheKey, orm, 3600);
+        await this.cache.set(cacheKey, orm, 3600);
         return CourseEntityMapper.toDomainCategory(orm);
       },
       { slug, "db.operation": "SELECT" },
@@ -212,7 +211,7 @@ export class CategoryTypeOrmRepository
       "findAll",
       async (span) => {
         const cacheKey = CACHE_KEYS.category.all;
-        const cached = await this.redis.get<CategoryOrmEntity[]>(cacheKey);
+        const cached = await this.cache.get<CategoryOrmEntity[]>(cacheKey);
 
         if (cached) {
           span.setAttribute("cache.hit", true);
@@ -228,7 +227,7 @@ export class CategoryTypeOrmRepository
           .where("parent.id IS NULL")
           .getMany();
 
-        await this.redis.set(cacheKey, entities, 3600);
+        await this.cache.set(cacheKey, entities, 3600);
         return entities.map(CourseEntityMapper.toDomainCategory);
       },
       { "db.operation": "SELECT" },

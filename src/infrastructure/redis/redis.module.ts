@@ -1,19 +1,30 @@
 import { Module } from "@nestjs/common";
-import { CacheModule } from "@nestjs/cache-manager";
+import { RedisClientImpl } from "./redis.service";
+import { EventProcessRepositoryImpl } from "./event-process.repository";
 import { AppConfigService } from "../config/config.service";
-import { redisStore } from "cache-manager-redis-store";
-import { RedisService } from "./redis.service";
+import { ICacheService } from "src/application/adaptors/cache-service";
+import { IEventProcessRepository } from "src/domain/repositories/event-process-repository.interface";
+import { CacheModule } from "@edulearn/nest";
 
 @Module({
   imports: [
-    CacheModule.registerAsync({
-      useFactory: async (configService: AppConfigService) => ({
-        store: await redisStore({ url: configService.redisUrl, ttl: 3600, }),
-      }),
+    CacheModule.forRootAsync({
       inject: [AppConfigService],
+
+      useFactory: (config: AppConfigService) => ({
+        db: config.redisDb,
+        keyPrefix: config.redisKeyPrefix,
+        maxRetriesPerRequest: 5,
+        lazyConnect: true,
+        host: config.redisHost,
+        port: config.redisPort,
+      }),
     }),
   ],
-  providers: [RedisService],
-  exports: [RedisService],
+  providers: [
+    { provide: ICacheService, useClass: RedisClientImpl },
+    { provide: IEventProcessRepository, useClass: EventProcessRepositoryImpl },
+  ],
+  exports: [ICacheService, IEventProcessRepository],
 })
 export class RedisModule {}

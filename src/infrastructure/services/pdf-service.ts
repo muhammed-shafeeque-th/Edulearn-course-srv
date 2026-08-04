@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import  PDFDocument, {} from "pdfkit";
+import PDFDocument from "pdfkit";
 import { Readable } from "stream";
 import { Certificate } from "../../domain/entities/certificate.entity";
-import { ICertificatePDFGenerator } from "src/application/services/pdf-certificate-generator.adapter";
+import { ICertificatePDFGenerator } from "src/application/adaptors/pdf-certificate-generator.adapter";
 
 @Injectable()
-export class CertificatePDFGeneratorImpl implements ICertificatePDFGenerator{
+export class CertificatePDFGeneratorImpl implements ICertificatePDFGenerator {
   /**
    * Generate PDF certificate
    * Returns a readable stream
@@ -42,7 +42,7 @@ export class CertificatePDFGeneratorImpl implements ICertificatePDFGenerator{
    */
   private drawCertificate(
     doc: typeof PDFDocument,
-    certificate: Certificate
+    certificate: Certificate,
   ): void {
     const width = doc.page.width;
     const height = doc.page.height;
@@ -115,10 +115,10 @@ export class CertificatePDFGeneratorImpl implements ICertificatePDFGenerator{
         {
           align: "center",
           width: width,
-        }
+        },
       );
 
-    // Footer - Date section
+    // Footer - Date module
     doc
       .font("Helvetica")
       .fontSize(10)
@@ -137,7 +137,7 @@ export class CertificatePDFGeneratorImpl implements ICertificatePDFGenerator{
       .fillColor("#94a3b8")
       .text(`ID: ${certificate.getCertificateNumber()}`, 80, height - 85);
 
-    // Footer - Signature section
+    // Footer - Signature module
     doc
       .font("Times-Italic")
       .fontSize(24)
@@ -176,7 +176,7 @@ export class CertificatePDFGeneratorImpl implements ICertificatePDFGenerator{
         {
           align: "center",
           width: width,
-        }
+        },
       );
 
     // Watermark

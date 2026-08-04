@@ -1,22 +1,23 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { LoggingService } from "./infrastructure/observability/logging/logging.service";
 import {
   MicroserviceOptions,
   Transport,
   TcpStatus,
 } from "@nestjs/microservices";
 import { ValidationPipe } from "@nestjs/common";
-import { GrpcExceptionFilter } from "./infrastructure/filters/grpc-exeption.filter";
+import { GrpcExceptionFilter } from "./infrastructure/filters/grpc-exception.filter";
 import { GrpcInterceptor } from "./infrastructure/interceptors/grpc-logging.interceptor";
 import { GrpcAuthGuard } from "./infrastructure/guards/grpc-auth.guard";
+import { getProtoPath, PROTO_ROOT_DIR } from "@edulearn/core";
 import { AppConfigService } from "./infrastructure/config/config.service";
-import { MetricsService } from "./infrastructure/observability/metrics/metrics.service";
 import path from "path";
+import { ILoggerService } from "./application/adaptors/logger.service";
+import { IMetricService } from "./application/adaptors/metric.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const logger = app.get(LoggingService);
+  const logger = app.get(ILoggerService);
   const config = app.get(AppConfigService);
 
   // Set Global logger
@@ -27,18 +28,18 @@ async function bootstrap() {
     transport: Transport.GRPC,
     options: {
       package: "course_service",
-      protoPath: [path.join(process.cwd(), "proto", "course_service.proto")],
+      protoPath: [path.join(getProtoPath("course"))],
       loader: {
-        includeDirs: [path.join(process.cwd(), "proto")],
+        includeDirs: [path.join(PROTO_ROOT_DIR, "course")],
       },
       url: `0.0.0.0:${config.grpcPort}`,
       channelOptions: {
-        'grpc.keepalive_time_ms': 10000,
-        'grpc.keepalive_timeout_ms': 5000,
-        'grpc.http2.max_pings_without_data': 0,
-        'grpc.keepalive_permit_without_calls': 1,
-        'grpc.max_receive_message_length': 1024 * 1024 * 50, // 50MB
-        'grpc.max_send_message_length': 1024 * 1024 * 50, // 50MB
+        "grpc.keepalive_time_ms": 10000,
+        "grpc.keepalive_timeout_ms": 5000,
+        "grpc.http2.max_pings_without_data": 0,
+        "grpc.keepalive_permit_without_calls": 1,
+        "grpc.max_receive_message_length": 1024 * 1024 * 50, // 50MB
+        "grpc.max_send_message_length": 1024 * 1024 * 50, // 50MB
       },
     },
   });
@@ -48,11 +49,11 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        clientId: config.kafkaClientId || 'course-service',
+        clientId: config.kafkaClientId || "course-service",
         brokers: config.kafkaBrokers,
       },
       consumer: {
-        groupId: config.kafkaConsumerGroup || 'course-consumer-group',
+        groupId: config.kafkaConsumerGroup || "course-consumer-group",
         sessionTimeout: 30000,
         heartbeatInterval: 3000,
         maxBytesPerPartition: config.kafkaFetchMaxBytes || 1048576,
@@ -74,21 +75,21 @@ async function bootstrap() {
       whitelist: true, // Strip properties not defined in DTOs
       forbidNonWhitelisted: true, // Throw error if non-whitelisted properties are present
       errorHttpStatusCode: 400, // Map validation errors to BAD_REQUEST
-    })
+    }),
   );
 
   app.useGlobalFilters(new GrpcExceptionFilter(logger));
   app.useGlobalInterceptors(
-    new GrpcInterceptor(logger, app.get(MetricsService))
+    new GrpcInterceptor(logger, app.get(IMetricService)),
   );
   // app.useGlobalGuards(new GrpcAuthGuard(logger));
 
   // Start both gRPC and HTTP
   await app.startAllMicroservices();
-  await app.listen(config.apiPort || 3002);
-  logger.info(
-    `Course service started on (http port ${config.apiPort}) (grpc port ${config.grpcPort})`,
-    { ctx: "Bootstrap" }
+  await app.listen(config.httpPort || 3002);
+  logger.debug(
+    `Course service started on (http port ${config.httpPort}) (grpc port ${config.grpcPort})`,
+    { ctx: "Bootstrap" },
   );
 }
 bootstrap();

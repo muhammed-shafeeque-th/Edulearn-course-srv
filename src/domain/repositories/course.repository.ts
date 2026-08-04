@@ -3,6 +3,7 @@ import {
   CourseMetadata,
   CourseStatus,
 } from "../entities/course.entity";
+import { IBaseRepository, PaginatedResult } from "./base.repository";
 
 export type GetCourseParams = {
   page: number;
@@ -42,7 +43,7 @@ export type CourseRelationOptions = {
   withQuiz?: boolean;
 };
 
-export abstract class ICourseRepository {
+export abstract class ICourseRepository extends IBaseRepository<Course> {
   abstract updateLessonCount(courseId: string, count: number): Promise<void>;
   /**
    * Execute a function within a database transaction.
@@ -80,7 +81,7 @@ export abstract class ICourseRepository {
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: CourseMetadata[]; total: number }>;
+  ): Promise<PaginatedResult<CourseMetadata>>;
   abstract update(course: Course): Promise<void>;
   abstract delete(course: Course): Promise<void>;
 
@@ -110,10 +111,10 @@ export abstract class ICourseRepository {
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: Course[]; total: number }>;
+  ): Promise<PaginatedResult<Course>>;
   abstract findAll(
-    params: GetCourseParams,
-  ): Promise<{ courses: CourseMetadata[]; total: number }>;
+    options: GetCourseParams,
+  ): Promise<PaginatedResult<CourseMetadata>>;
 }
 
 export const COURSE_REPOSITORY = "COURSE_REPOSITORY";

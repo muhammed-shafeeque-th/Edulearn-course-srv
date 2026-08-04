@@ -1,14 +1,14 @@
 import { CanActivate, ExecutionContext } from "@nestjs/common";
-import { LoggingService } from "../observability/logging/logging.service";
 import { Observable } from "rxjs";
 import { Metadata, status } from "@grpc/grpc-js";
 import { RpcException } from "@nestjs/microservices";
+import { ILoggerService } from "src/application/adaptors/logger.service";
 
 export class GrpcAuthGuard implements CanActivate {
-  constructor(private readonly logger: LoggingService) {}
+  constructor(private readonly logger: ILoggerService) {}
 
   canActivate(
-    context: ExecutionContext
+    context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const call = context.switchToRpc();
     const metadata: Metadata = call.getContext();
@@ -37,10 +37,12 @@ export class GrpcAuthGuard implements CanActivate {
     const method = context.getHandler().name;
     const requiredRoles = this.getRequiredRoles(method);
 
-    if (!requiredRoles.includes((userHeader as unknown as { role: string }).role)) {
+    if (
+      !requiredRoles.includes((userHeader as unknown as { role: string }).role)
+    ) {
       this.logger.warn(
         `User does not have required permission for method ${method}`,
-        { ctx: GrpcAuthGuard.name }
+        { ctx: GrpcAuthGuard.name },
       );
       throw new RpcException({
         code: status.PERMISSION_DENIED,
@@ -55,7 +57,7 @@ export class GrpcAuthGuard implements CanActivate {
       CreateCourse: ["INSTRUCTOR"],
       UpdateCourse: ["INSTRUCTOR"],
       DeleteCourse: ["INSTRUCTOR"],
-      CreateSection: ["INSTRUCTOR"],
+      CreateModule: ["INSTRUCTOR"],
       CreateLesson: ["INSTRUCTOR"],
       CreateQuiz: ["INSTRUCTOR"],
       CreateEnrollment: ["STUDENT"],
