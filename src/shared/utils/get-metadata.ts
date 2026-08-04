@@ -15,7 +15,7 @@ import { Metadata } from "@grpc/grpc-js";
  */
 export const getMetadataValues = <T extends Record<string, string>>(
   meta: Metadata,
-  def: T
+  def: T,
 ): { [K in keyof T]?: string } => {
   if (!meta || typeof def !== "object") return {};
 
@@ -50,9 +50,7 @@ export const getMetadataValues = <T extends Record<string, string>>(
       Object.keys(meta).length
     ) {
       const keys = Object.keys(meta);
-      const found = keys.find(
-        (k) => k.toLowerCase() === metaKey.toLowerCase()
-      );
+      const found = keys.find((k) => k.toLowerCase() === metaKey.toLowerCase());
       if (found) value = String((meta as any)[found]);
     }
 
