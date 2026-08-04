@@ -33,9 +33,7 @@ export interface EnrollmentProgressResponse {
 }
 
 @Injectable()
-export class GetEnrollmentProgressUseCase
-  implements IGetEnrollmentProgressUseCase
-{
+export class GetEnrollmentProgressUseCase implements IGetEnrollmentProgressUseCase {
   constructor(
     private readonly _enrollmentRepo: IEnrollmentRepository,
     private readonly _progressRepo: IProgressRepository,

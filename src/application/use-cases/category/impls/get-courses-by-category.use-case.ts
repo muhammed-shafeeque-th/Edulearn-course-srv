@@ -8,9 +8,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetCoursesByCategoryUseCase } from "../interfaces/get-courses-by-category.interface";
 
 @Injectable()
-export class GetCoursesByCategoryUseCase
-  implements IGetCoursesByCategoryUseCase
-{
+export class GetCoursesByCategoryUseCase implements IGetCoursesByCategoryUseCase {
   constructor(
     private readonly _categoryRepository: ICategoryRepository,
     private readonly _kafkaProducer: IEventProducer,
@@ -25,7 +23,7 @@ export class GetCoursesByCategoryUseCase
         span.setAttributes({
           "category.id": categoryId,
         });
-         this._logger.log(`Fetching courses by category id ${categoryId}`, {
+        this._logger.log(`Fetching courses by category id ${categoryId}`, {
           ctx: GetCoursesByCategoryUseCase.name,
         });
         const courses =

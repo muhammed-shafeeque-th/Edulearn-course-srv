@@ -1,9 +1,9 @@
 import { TAttributes, TContext, TSpan } from "@edulearn/core";
 
 export enum TSpanStatusCode {
-    UNSET = 0,
-    OK = 1,
-    ERROR = 2
+  UNSET = 0,
+  OK = 1,
+  ERROR = 2,
 }
 
 export abstract class ITraceService {
@@ -71,7 +71,11 @@ export abstract class ITraceService {
 
   abstract recordException(span: TSpan, error: any): void;
 
-  abstract setStatus(span: TSpan, code: TSpanStatusCode, message?: string): void;
+  abstract setStatus(
+    span: TSpan,
+    code: TSpanStatusCode,
+    message?: string,
+  ): void;
 
   abstract setAttribute(span: TSpan, key: string, value: any): void;
 

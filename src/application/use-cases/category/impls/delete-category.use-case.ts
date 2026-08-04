@@ -24,7 +24,7 @@ export class DeleteCategoryUseCase implements IDeleteCategoryUseCase {
           throw new CategoryNotFoundException("Category not found");
 
         await this._categoryRepository.delete(categoryId);
-         this._logger.debug(`Deleted category: ${categoryId}`);
+        this._logger.debug(`Deleted category: ${categoryId}`);
       },
     );
   }

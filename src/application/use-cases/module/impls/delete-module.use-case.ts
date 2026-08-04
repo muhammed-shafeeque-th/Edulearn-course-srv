@@ -25,7 +25,7 @@ export class DeleteModuleUseCase implements IDeleteModuleUseCase {
         span.setAttributes({
           "module.id": dto.moduleId,
         });
-         this._logger.log(`Deleting module ${dto.moduleId}`, {
+        this._logger.log(`Deleting module ${dto.moduleId}`, {
           ctx: DeleteModuleUseCase.name,
         });
         const course = await this._courseRepository.findById(dto.courseId);
@@ -52,7 +52,7 @@ export class DeleteModuleUseCase implements IDeleteModuleUseCase {
         await this._moduleRepository.delete(module);
 
         span.setAttribute("module.deleted", true);
-         this._logger.log(`Module ${dto.moduleId} deleted`, {
+        this._logger.log(`Module ${dto.moduleId} deleted`, {
           ctx: DeleteModuleUseCase.name,
         });
       },

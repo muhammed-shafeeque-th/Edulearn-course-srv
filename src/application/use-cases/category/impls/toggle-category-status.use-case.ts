@@ -8,9 +8,7 @@ import { CategoryNotFoundException } from "src/domain/exceptions/category.except
 import { IToggleCategoryStatusUseCase } from "../interfaces/toggle-category-status.interface";
 
 @Injectable()
-export class ToggleCategoryStatusUseCase
-  implements IToggleCategoryStatusUseCase
-{
+export class ToggleCategoryStatusUseCase implements IToggleCategoryStatusUseCase {
   constructor(
     private readonly _categoryRepository: ICategoryRepository,
     private readonly _kafkaProducer: IEventProducer,
@@ -34,7 +32,7 @@ export class ToggleCategoryStatusUseCase
         }
 
         await this._categoryRepository.update(category);
-         this._logger.debug(`Toggled category status: ${categoryId}`);
+        this._logger.debug(`Toggled category status: ${categoryId}`);
 
         return CategoryDto.fromDomain(category);
       },

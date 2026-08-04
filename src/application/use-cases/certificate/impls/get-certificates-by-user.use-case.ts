@@ -6,9 +6,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetCertificatesByUserUseCase } from "../interfaces/get-certificates-by-user.interface";
 
 @Injectable()
-export class GetCertificatesByUserUseCase
-  implements IGetCertificatesByUserUseCase
-{
+export class GetCertificatesByUserUseCase implements IGetCertificatesByUserUseCase {
   constructor(
     private readonly _certificateRepo: ICertificateRepository,
     private readonly _logger: ILoggerService,

@@ -85,7 +85,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
       `${GetEnrollmentDetailUseCase.name}.execute`,
       async (span) => {
         try {
-           this._logger.log(`Fetching enrollment [${enrollmentId}] detail`, {
+          this._logger.log(`Fetching enrollment [${enrollmentId}] detail`, {
             ctx: GetEnrollmentDetailUseCase.name,
             userId,
           });
@@ -96,7 +96,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
           });
 
           if (!enrollment) {
-             this._logger.warn(
+            this._logger.warn(
               `Enrollment [${enrollmentId}] not found for user [${userId}]`,
               { ctx: GetEnrollmentDetailUseCase.name },
             );
@@ -105,7 +105,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
             );
           }
           if (enrollment.getStudentId() !== userId) {
-             this._logger.warn(
+            this._logger.warn(
               `User [${userId}] not authorized to access enrollment [${enrollmentId}]`,
               { ctx: GetEnrollmentDetailUseCase.name },
             );
@@ -119,7 +119,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
           );
 
           if (!course) {
-             this._logger.warn(
+            this._logger.warn(
               `Course not found for enrollment [${enrollmentId}] (user [${userId}])`,
               { ctx: GetEnrollmentDetailUseCase.name },
             );
@@ -198,7 +198,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
               };
             });
 
-           this._logger.log(`Enrollment [${enrollmentId}] detail fetched`, {
+          this._logger.log(`Enrollment [${enrollmentId}] detail fetched`, {
             ctx: GetEnrollmentDetailUseCase.name,
             userId,
           });
@@ -213,7 +213,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
             modules,
           };
         } catch (error) {
-           this._logger.error(
+          this._logger.error(
             `Failed to get enrollment detail [${enrollmentId}] for user [${userId}]`,
             { err: error, ctx: GetEnrollmentDetailUseCase.name },
           );

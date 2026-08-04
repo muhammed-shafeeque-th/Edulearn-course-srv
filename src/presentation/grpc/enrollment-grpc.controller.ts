@@ -294,9 +294,12 @@ export class EnrollmentGrpcController {
         },
       );
     } catch (error: any) {
-      this._logger.error(`Failed to get enrollments by user: ${error.message}`, {
-        error,
-      });
+      this._logger.error(
+        `Failed to get enrollments by user: ${error.message}`,
+        {
+          error,
+        },
+      );
 
       throw error;
     }

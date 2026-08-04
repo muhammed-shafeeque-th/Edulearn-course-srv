@@ -36,13 +36,13 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
           await this._moduleRepository.findByIdempotencyKey(idempotencyKey);
         if (existingModule) {
           span.setAttribute("idempotency.duplicate", true);
-           this._logger.debug(
+          this._logger.debug(
             `Module creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateModuleUseCase.name}`,
           );
           return ModuleDto.fromDomain(existingModule);
         }
 
-         this._logger.log(`Creating module for course ${dto.courseId}`, {
+        this._logger.log(`Creating module for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
 
@@ -76,7 +76,7 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
 
         span.setAttribute("course.module.created", true);
 
-         this._logger.log(`Module created for course ${dto.courseId}`, {
+        this._logger.log(`Module created for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
         return ModuleDto.fromDomain(module);

@@ -1044,7 +1044,7 @@ export class CourseTypeOrmRepository
 
           // For real breakdown, you'd need to aggregate e.g. via ratings table.
           // Here, return as stringified object if available.
-          let breakdown = "";
+          const breakdown = "";
           // If you add a `ratingBreakdown` property to your entity, adapt this module.
           // breakdown = (course as any).ratingBreakdown ?
           //   JSON.stringify((course as any).ratingBreakdown) : "";

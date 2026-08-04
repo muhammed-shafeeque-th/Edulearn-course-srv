@@ -31,7 +31,7 @@ export class UpdateLessonUseCase implements IUpdateLessonUseCase {
           "lesson.id": dto.lessonId,
           "lesson.title": dto.title,
         });
-         this._logger.log(`Updating lesson ${dto.lessonId}`, {
+        this._logger.log(`Updating lesson ${dto.lessonId}`, {
           ctx: UpdateLessonUseCase.name,
         });
 
@@ -65,7 +65,7 @@ export class UpdateLessonUseCase implements IUpdateLessonUseCase {
         await this._lessonRepository.save(lesson);
         span.setAttribute("db.saved", true);
 
-         this._logger.log(`Lesson ${dto.lessonId} updated`, {
+        this._logger.log(`Lesson ${dto.lessonId} updated`, {
           ctx: UpdateLessonUseCase.name,
         });
         return LessonDto.fromDomain(lesson);

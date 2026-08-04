@@ -24,7 +24,7 @@ export class DownloadCertificateUseCase implements IDownloadCertificateUseCase {
    * @throws ForbiddenException - If user does not own certificate
    */
   async execute(certificateId: string, userId: string): Promise<Readable> {
-     this._logger.debug(
+    this._logger.debug(
       `Attempting to download certificate ${certificateId} for user ${userId}`,
     );
 
@@ -32,13 +32,13 @@ export class DownloadCertificateUseCase implements IDownloadCertificateUseCase {
     const certificate = await this._certificateRepo.findById(certificateId);
 
     if (!certificate) {
-       this._logger.warn(`Certificate with ID ${certificateId} not found`);
+      this._logger.warn(`Certificate with ID ${certificateId} not found`);
       throw new CertificateNotFoundException("Certificate not found");
     }
 
     // Verify ownership
     if (certificate.getUserId() !== userId) {
-       this._logger.warn(
+      this._logger.warn(
         `User ${userId} tried to access certificate ${certificateId} owned by user ${certificate.getUserId()}`,
       );
       throw new UnauthorizedException("Not authorized");
@@ -47,12 +47,12 @@ export class DownloadCertificateUseCase implements IDownloadCertificateUseCase {
     try {
       const pdfStream =
         await this._certificatePdfGenerator.generate(certificate);
-       this._logger.log(
+      this._logger.log(
         `Successfully generated PDF for certificate ${certificateId}`,
       );
       return pdfStream;
     } catch (error: any) {
-       this._logger.error(
+      this._logger.error(
         `Failed to generate PDF for certificate ${certificateId}: ${error.message}`,
         error.stack,
       );

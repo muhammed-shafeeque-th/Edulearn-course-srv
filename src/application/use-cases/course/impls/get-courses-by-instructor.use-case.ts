@@ -7,9 +7,7 @@ import { CourseMetadataDto } from "src/application/dtos/courseMeta.dto";
 import { IGetCoursesByInstructorUseCase } from "../interfaces/get-courses-by-instructor.interface";
 
 @Injectable()
-export class GetCoursesByInstructorUseCase
-  implements IGetCoursesByInstructorUseCase
-{
+export class GetCoursesByInstructorUseCase implements IGetCoursesByInstructorUseCase {
   constructor(
     private readonly _courseRepository: ICourseRepository,
     private readonly _logger: ILoggerService,
@@ -26,7 +24,7 @@ export class GetCoursesByInstructorUseCase
     return await this._tracer.startActiveSpan(
       "GetCoursesByInstructorUseCase.execute",
       async (span) => {
-         this._logger.log(`Fetching courses for instructor ${instructorId}`, {
+        this._logger.log(`Fetching courses for instructor ${instructorId}`, {
           ctx: GetCoursesByInstructorUseCase.name,
         });
 
@@ -44,7 +42,7 @@ export class GetCoursesByInstructorUseCase
 
         span.setAttribute("instructor.course.length", courseDtos.length);
 
-         this._logger.log(
+        this._logger.log(
           `Found ${courseDtos.length} courses for instructor ${instructorId}`,
           { ctx: GetCoursesByInstructorUseCase.name },
         );

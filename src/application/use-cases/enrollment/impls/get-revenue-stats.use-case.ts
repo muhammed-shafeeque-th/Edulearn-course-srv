@@ -29,7 +29,7 @@ export class GetRevenueStatsUseCase implements IGetRevenueStatsUseCase {
       "GetRevenueStatsUseCase.execute",
       async (span) => {
         span.setAttribute("year", data.year);
-         this._logger.log(`Fetching revenue stats for year ${data.year}`, {
+        this._logger.log(`Fetching revenue stats for year ${data.year}`, {
           ctx: GetRevenueStatsUseCase.name,
         });
 
@@ -42,7 +42,7 @@ export class GetRevenueStatsUseCase implements IGetRevenueStatsUseCase {
             data.year,
           );
 
-           this._logger.log(
+          this._logger.log(
             `Successfully fetched revenue stats for year ${data.year}`,
             { ctx: GetRevenueStatsUseCase.name },
           );
@@ -50,7 +50,7 @@ export class GetRevenueStatsUseCase implements IGetRevenueStatsUseCase {
           return stats;
         } catch (error) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Error fetching revenue stats: ${error instanceof Error ? error.message : error}`,
             { ctx: GetRevenueStatsUseCase.name, error },
           );

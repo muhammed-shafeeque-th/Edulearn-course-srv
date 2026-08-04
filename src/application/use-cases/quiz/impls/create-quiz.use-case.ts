@@ -37,7 +37,7 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
             await this._quizRepository.findByIdempotencyKey(idempotencyKey);
           if (existingQuiz) {
             span.setAttribute("idempotency.duplicate", true);
-             this._logger.debug(
+            this._logger.debug(
               `Quiz creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateQuizUseCase.name}`,
             );
             return QuizDto.fromDomain(existingQuiz);
@@ -48,13 +48,13 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
           );
           if (existingModuleQuiz) {
             span.setAttribute("module.quiz.duplicate", true);
-             this._logger.debug(
+            this._logger.debug(
               `Quiz creation deduplicated by moduleId: ${dto.moduleId} in ${CreateQuizUseCase.name}`,
             );
             return QuizDto.fromDomain(existingModuleQuiz);
           }
 
-           this._logger.log(`Creating quiz for course ${dto.courseId}`, {
+          this._logger.log(`Creating quiz for course ${dto.courseId}`, {
             ctx: CreateQuizUseCase.name,
           });
 
@@ -62,7 +62,7 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
           const course = await this._courseRepository.findById(dto.courseId);
           if (!course) {
             span.setAttribute("course.found", false);
-             this._logger.warn(
+            this._logger.warn(
               `Course not found: ${dto.courseId} in ${CreateQuizUseCase.name}`,
             );
             throw new CourseNotFoundException(
@@ -73,7 +73,7 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
 
           // Authorization check
           if (course.getInstructorId() !== dto.userId) {
-             this._logger.warn(
+            this._logger.warn(
               `Unauthorized attempt by user ${dto.userId} to create quiz for course ${dto.courseId}`,
               { ctx: CreateQuizUseCase.name },
             );
@@ -115,12 +115,12 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
           await this._quizRepository.save(quiz);
           span.setAttribute("quiz.saved", true);
 
-           this._logger.log(`Quiz created for course ${dto.courseId}`, {
+          this._logger.log(`Quiz created for course ${dto.courseId}`, {
             ctx: CreateQuizUseCase.name,
           });
           return QuizDto.fromDomain(quiz);
         } catch (error: any) {
-           this._logger.error(
+          this._logger.error(
             `Error creating quiz: ${error.message}`,
 
             { stack: error.stack, ctx: CreateQuizUseCase.name },

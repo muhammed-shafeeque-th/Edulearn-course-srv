@@ -20,13 +20,13 @@ export class GetModulesByCourseUseCase implements IGetModulesByCourseUseCase {
         span.setAttributes({
           "course.id": courseId,
         });
-         this._logger.log(`Fetching modules by courseID ${courseId}`, {
+        this._logger.log(`Fetching modules by courseID ${courseId}`, {
           ctx: GetModulesByCourseUseCase.name,
         });
 
         const modules = await this._moduleRepository.findByCourseId(courseId);
 
-         this._logger.log(`Modules ${modules.length} fetched`, {
+        this._logger.log(`Modules ${modules.length} fetched`, {
           ctx: GetModulesByCourseUseCase.name,
         });
         return modules.map(ModuleDto.fromDomain);

@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ICacheService } from "@/application/adaptors/cache-service";
-import { HealthCheckResult,  BaseHealthCheck, HealthRegistry } from "@edulearn/nest";
+import {
+  HealthCheckResult,
+  BaseHealthCheck,
+  HealthRegistry,
+} from "@edulearn/nest";
 
 @Injectable()
-export class RedisHealthCheck
-  extends BaseHealthCheck
-{
+export class RedisHealthCheck extends BaseHealthCheck {
   readonly name = "redis";
 
   constructor(

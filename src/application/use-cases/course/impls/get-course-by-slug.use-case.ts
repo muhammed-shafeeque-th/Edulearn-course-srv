@@ -19,13 +19,13 @@ export class GetCourseBySlugUseCase implements IGetCourseBySlugUseCase {
       "GetCourseBySlugUseCase.execute",
       async (span) => {
         try {
-           this._logger.debug(
+          this._logger.debug(
             `Fetching course with slug: ${slug} in ${GetCourseBySlugUseCase.name}`,
           );
 
           const course = await this._courseRepository.findBySlug(slug);
           if (!course) {
-             this._logger.debug(`Course not found in DB with slug: ${slug}`);
+            this._logger.debug(`Course not found in DB with slug: ${slug}`);
             throw new CourseNotFoundException(
               `Course with slug ${slug} is not found`,
             );
@@ -36,7 +36,7 @@ export class GetCourseBySlugUseCase implements IGetCourseBySlugUseCase {
           return courseDto;
         } catch (error: any) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Failed to fetch data for course slug: ${slug} \n${error.message}`,
             {
               error,

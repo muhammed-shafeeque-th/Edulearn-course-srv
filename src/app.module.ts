@@ -16,11 +16,10 @@ import { AppHealthModule } from "./infrastructure/health/health.module";
     AppTracerModule,
     AppMetricsModule,
 
-
     GrpcPresentationModule,
     KafkaPresentationModule,
 
-    AppHealthModule
+    AppHealthModule,
   ],
 })
 export class AppModule {}

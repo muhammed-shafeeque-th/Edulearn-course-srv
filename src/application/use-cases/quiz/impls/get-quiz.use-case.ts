@@ -21,7 +21,7 @@ export class GetQuizUseCase implements IGetQuizUseCase {
         span.setAttributes({
           "quiz.id": quizId,
         });
-         this._logger.log(`Fetching quiz ${quizId}`, {
+        this._logger.log(`Fetching quiz ${quizId}`, {
           ctx: GetQuizUseCase.name,
         });
 
@@ -32,7 +32,9 @@ export class GetQuizUseCase implements IGetQuizUseCase {
         }
         span.setAttribute("quiz.found", true);
 
-         this._logger.log(`Quiz ${quizId} fetched`, { ctx: GetQuizUseCase.name });
+        this._logger.log(`Quiz ${quizId} fetched`, {
+          ctx: GetQuizUseCase.name,
+        });
         return QuizDto.fromDomain(quiz);
       },
     );

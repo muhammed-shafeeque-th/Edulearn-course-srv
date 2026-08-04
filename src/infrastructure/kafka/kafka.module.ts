@@ -28,11 +28,13 @@ import { KafkaHealthService } from "./kafka-heath.service";
           },
         }),
         inject: [AppConfigService],
-
       },
     ]),
   ],
-  providers: [{ provide: IEventProducer, useClass: KafkaProducerImpl }, KafkaHealthService],
+  providers: [
+    { provide: IEventProducer, useClass: KafkaProducerImpl },
+    KafkaHealthService,
+  ],
   exports: [KafkaHealthService, IEventProducer, ClientsModule],
 })
 export class KafkaModule {}

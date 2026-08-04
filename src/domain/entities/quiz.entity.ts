@@ -32,10 +32,7 @@ export class Question {
   private readonly question: string;
   private readonly options?: QuestionOption[];
   private readonly correctAnswer?:
-    | number
-    | string
-    | boolean
-    | Array<number | string>;
+    number | string | boolean | Array<number | string>;
   private readonly explanation?: string;
 
   constructor(props: QuestionProps) {
@@ -114,11 +111,7 @@ export class Question {
     return this.options ? this.options.map((o) => ({ ...o })) : undefined;
   }
   getCorrectAnswer():
-    | number
-    | string
-    | boolean
-    | Array<number | string>
-    | undefined {
+    number | string | boolean | Array<number | string> | undefined {
     return this.correctAnswer;
   }
   getExplanation(): string | undefined {

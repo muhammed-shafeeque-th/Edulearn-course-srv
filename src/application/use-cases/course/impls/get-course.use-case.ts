@@ -19,14 +19,14 @@ export class GetCourseUseCase implements IGetCourseUseCase {
       "GetCourseUseCase.execute",
       async (span) => {
         try {
-           this._logger.debug(
+          this._logger.debug(
             `Fetching course with ID: ${id} in ${GetCourseUseCase.name}`,
           );
 
-           this._logger.debug(`Query DB for course ${id}`);
+          this._logger.debug(`Query DB for course ${id}`);
           const course = await this._courseRepository.findById(id);
           if (!course) {
-             this._logger.debug(`Course not found in DB with Id: ${id}`);
+            this._logger.debug(`Course not found in DB with Id: ${id}`);
             throw new CourseNotFoundException(`Course with ID ${id} not found`);
           }
 
@@ -34,7 +34,7 @@ export class GetCourseUseCase implements IGetCourseUseCase {
           return courseDto;
         } catch (error: any) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Failed to fetch data for course ID: ${id} ${error.message}`,
             {
               error,

@@ -25,7 +25,7 @@ export class ListCoursesUseCase implements IListCoursesUseCase {
     return await this._tracer.startActiveSpan(
       "ListCoursesUseCase.execute",
       async (span) => {
-         this._logger.log(`Fetching all available courses `, {
+        this._logger.log(`Fetching all available courses `, {
           ctx: ListCoursesUseCase.name,
         });
         const queryFilters = this.mapQueryFilters(params);
@@ -36,7 +36,7 @@ export class ListCoursesUseCase implements IListCoursesUseCase {
 
         span.setAttribute("course.length", courseDtos.length);
 
-         this._logger.log(`Fetch all available courses`, {
+        this._logger.log(`Fetch all available courses`, {
           ctx: ListCoursesUseCase.name,
         });
         return { courses: courseDtos, total };
@@ -86,11 +86,11 @@ export class ListCoursesUseCase implements IListCoursesUseCase {
     }
 
     // Ensure pagination values
-    let page =
+    const page =
       typeof pagination?.page === "number" && pagination.page > 0
         ? pagination.page
         : 1;
-    let pageSize =
+    const pageSize =
       typeof pagination?.pageSize === "number" && pagination.pageSize > 0
         ? pagination.pageSize
         : 10;

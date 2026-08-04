@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { DataSource } from "typeorm";
-import { BaseHealthCheck, HealthCheckResult, HealthRegistry } from "@edulearn/nest";
+import {
+  BaseHealthCheck,
+  HealthCheckResult,
+  HealthRegistry,
+} from "@edulearn/nest";
 
 @Injectable()
 export class DBHealthCheck extends BaseHealthCheck {

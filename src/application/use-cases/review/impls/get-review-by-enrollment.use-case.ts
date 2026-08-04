@@ -11,9 +11,7 @@ import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { IGetReviewByEnrollmentUseCase } from "../interfaces/get-review-by-enrollment.interface";
 
 @Injectable()
-export class GetReviewByEnrollmentUseCase
-  implements IGetReviewByEnrollmentUseCase
-{
+export class GetReviewByEnrollmentUseCase implements IGetReviewByEnrollmentUseCase {
   constructor(
     private readonly _reviewRepository: IReviewRepository,
     private readonly _enrollmentRepository: IEnrollmentRepository,
@@ -29,13 +27,13 @@ export class GetReviewByEnrollmentUseCase
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
-         this._logger.log(`Fetching enrollment ${enrollmentId}`, {
+        this._logger.log(`Fetching enrollment ${enrollmentId}`, {
           ctx: GetReviewByEnrollmentUseCase.name,
         });
         const enrollment =
           await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-           this._logger.warn(
+          this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: GetReviewByEnrollmentUseCase.name },
           );
@@ -45,7 +43,7 @@ export class GetReviewByEnrollmentUseCase
         }
 
         if (enrollment.getStudentId() !== userId) {
-           this._logger.error(
+          this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}`,
             { ctx: GetReviewByEnrollmentUseCase.name },
           );
@@ -60,7 +58,7 @@ export class GetReviewByEnrollmentUseCase
             `Not found review by enrollment id ${enrollmentId}`,
           );
         }
-         this._logger.log(`found review by enrollment id ${enrollmentId} `, {
+        this._logger.log(`found review by enrollment id ${enrollmentId} `, {
           ctx: GetReviewByEnrollmentUseCase.name,
         });
 

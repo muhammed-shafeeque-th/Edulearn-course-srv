@@ -9,9 +9,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetInstructorCoursesEnrollmentSummeryUseCase } from "../interfaces/get-courses-enrollment-summery.interface";
 
 @Injectable()
-export class GetInstructorCoursesEnrollmentSummeryUseCase
-  implements IGetInstructorCoursesEnrollmentSummeryUseCase
-{
+export class GetInstructorCoursesEnrollmentSummeryUseCase implements IGetInstructorCoursesEnrollmentSummeryUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _logger: ILoggerService,
@@ -28,7 +26,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase
           "instructor.id": data.instructorId,
         });
 
-         this._logger.log(
+        this._logger.log(
           `Fetching courses enrollment summary for instructor ${data.instructorId}`,
           { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );
@@ -43,7 +41,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase
 
         if (!summary) {
           span.setAttribute("summary.found", false);
-           this._logger.warn(
+          this._logger.warn(
             `No enrollment summary found for instructor ${data.instructorId}`,
             { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
           );
@@ -56,7 +54,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase
         span.setAttribute("summary.avgCompletion", summary.avgCompletion);
         span.setAttribute("summary.activeStudents", summary.activeStudents);
 
-         this._logger.log(
+        this._logger.log(
           `Successfully fetched enrollment summary for instructor ${data.instructorId}`,
           { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );

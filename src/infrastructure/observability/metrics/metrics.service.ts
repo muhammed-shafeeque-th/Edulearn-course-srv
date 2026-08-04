@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import {  CounterMetric, GaugeMetric, HistogramMetric } from "@edulearn/core";
-import { MetricsService  } from "@edulearn/nest";
+import { CounterMetric, GaugeMetric, HistogramMetric } from "@edulearn/core";
+import { MetricsService } from "@edulearn/nest";
 import { IMetricService } from "src/application/adaptors/metric.service";
 
 @Injectable()

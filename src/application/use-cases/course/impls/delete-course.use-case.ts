@@ -26,7 +26,7 @@ export class DeleteCourseUseCase implements IDeleteCourseUseCase {
       async (span) => {
         const { courseId, userId, isAdmin } = cmd;
 
-         this._logger.debug("Attempting to delete course", {
+        this._logger.debug("Attempting to delete course", {
           ctx: DeleteCourseUseCase.name,
           courseId,
           userId,
@@ -35,7 +35,7 @@ export class DeleteCourseUseCase implements IDeleteCourseUseCase {
         // Input validation - courseId is required.
         if (!courseId) {
           const msg = "courseId is required for deleting a course";
-           this._logger.error(msg, { ctx: DeleteCourseUseCase.name });
+          this._logger.error(msg, { ctx: DeleteCourseUseCase.name });
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", msg);
           throw new CourseNotFoundException("courseId is missing");
@@ -45,7 +45,7 @@ export class DeleteCourseUseCase implements IDeleteCourseUseCase {
         const course = await this._courseRepository.findById(courseId);
         if (!course) {
           const msg = `Course ${courseId} not found.`;
-           this._logger.warn(msg, { ctx: DeleteCourseUseCase.name, courseId });
+          this._logger.warn(msg, { ctx: DeleteCourseUseCase.name, courseId });
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", msg);
           throw new CourseNotFoundException(courseId);
@@ -54,7 +54,7 @@ export class DeleteCourseUseCase implements IDeleteCourseUseCase {
         // Authorization: only admins or owner instructor can delete.
         if (!isAdmin && course.getInstructorId() !== userId) {
           const msg = `User ${userId ?? "unknown"} unauthorized to delete course ${courseId}.`;
-           this._logger.warn(msg, {
+          this._logger.warn(msg, {
             ctx: DeleteCourseUseCase.name,
             courseId,
             userId,
@@ -99,14 +99,17 @@ export class DeleteCourseUseCase implements IDeleteCourseUseCase {
             },
           );
 
-           this._logger.debug("Course deleted successfully.", {
+          this._logger.debug("Course deleted successfully.", {
             ctx: DeleteCourseUseCase.name,
             courseId,
             userId,
           });
         } catch (error: any) {
           const errorMsg = `Error while deleting course: ${error.message}`;
-           this._logger.error(errorMsg, { error, ctx: DeleteCourseUseCase.name });
+          this._logger.error(errorMsg, {
+            error,
+            ctx: DeleteCourseUseCase.name,
+          });
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", errorMsg);
           throw error;

@@ -30,7 +30,7 @@ export class CreateCourseUseCase implements ICreateCourseUseCase {
     return await this._tracer.startActiveSpan(
       "CreateCourseUseCase.execute",
       async (span) => {
-         this._logger.debug(
+        this._logger.debug(
           `Creating course: ${payload.title} in ${CreateCourseUseCase.name}`,
         );
 
@@ -39,7 +39,7 @@ export class CreateCourseUseCase implements ICreateCourseUseCase {
           await this._courseRepository.findByIdempotencyKey(idempotencyKey);
         if (existingCourse) {
           span.setAttribute("idempotency.duplicate", true);
-           this._logger.debug(
+          this._logger.debug(
             `Course creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateCourseUseCase.name}`,
           );
           return CourseDto.fromDomain(existingCourse);
@@ -108,7 +108,7 @@ export class CreateCourseUseCase implements ICreateCourseUseCase {
           },
         );
 
-         this._logger.debug(
+        this._logger.debug(
           `Course created with ID: ${course.getId()} in ${CreateCourseUseCase.name}`,
         );
         return CourseDto.fromDomain(course);

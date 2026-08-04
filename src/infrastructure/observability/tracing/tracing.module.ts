@@ -8,7 +8,6 @@ import { TracerModule } from "@edulearn/nest";
 @Module({
   imports: [
     TracerModule.forRootAsync({
-
       inject: [AppConfigService],
 
       useFactory: (config: AppConfigService) => ({

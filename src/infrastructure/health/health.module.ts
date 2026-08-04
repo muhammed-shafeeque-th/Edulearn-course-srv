@@ -10,18 +10,18 @@ import { DatabaseEntityModule } from "../database/database-entity.module";
 
 @Module({
   imports: [
-    RedisModule, KafkaModule, DatabaseEntityModule,
+    RedisModule,
+    KafkaModule,
+    DatabaseEntityModule,
     HealthModule.forRootAsync({
       useFactory: (config: AppConfigService) => ({
         serviceName: config.serviceName,
         version: config.serviceVersion,
-
-        
       }),
       inject: [AppConfigService],
-      imports: [RedisModule, KafkaModule, DatabaseEntityModule]
+      imports: [RedisModule, KafkaModule, DatabaseEntityModule],
     }),
   ],
-  providers: [RedisHealthCheck, DBHealthCheck, KafkaHealthCheck]
+  providers: [RedisHealthCheck, DBHealthCheck, KafkaHealthCheck],
 })
 export class AppHealthModule {}

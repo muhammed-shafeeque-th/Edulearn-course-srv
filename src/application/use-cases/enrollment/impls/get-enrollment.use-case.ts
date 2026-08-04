@@ -22,7 +22,7 @@ export class GetEnrollmentUseCase implements IGetEnrollmentUseCase {
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
-         this._logger.log(`Fetching enrollment ${enrollmentId}`, {
+        this._logger.log(`Fetching enrollment ${enrollmentId}`, {
           ctx: GetEnrollmentUseCase.name,
         });
 
@@ -43,7 +43,7 @@ export class GetEnrollmentUseCase implements IGetEnrollmentUseCase {
           );
         }
 
-         this._logger.log(`Enrollment ${enrollmentId} fetched`, {
+        this._logger.log(`Enrollment ${enrollmentId} fetched`, {
           ctx: GetEnrollmentUseCase.name,
         });
         return EnrollmentDto.fromDomain(enrollment);

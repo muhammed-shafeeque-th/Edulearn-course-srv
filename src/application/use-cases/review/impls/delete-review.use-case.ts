@@ -29,14 +29,14 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           "review.id": reviewId,
         });
 
-         this._logger.log(`Deleting review ${reviewId}`, {
+        this._logger.log(`Deleting review ${reviewId}`, {
           ctx: DeleteReviewUseCase.name,
         });
 
         const enrollment =
           await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-           this._logger.warn(
+          this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: DeleteReviewUseCase.name },
           );
@@ -52,7 +52,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-         this._logger.log(
+        this._logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: DeleteReviewUseCase.name },
         );
@@ -60,7 +60,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
         // Check if course exists
         const course = await this._courseRepository.findById(courseId);
         if (!course) {
-           this._logger.warn(
+          this._logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
             { ctx: DeleteReviewUseCase.name },
           );
@@ -74,7 +74,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           enrollment.getStudentId() !== userId ||
           enrollment.getCourseId() !== courseId
         ) {
-           this._logger.error(
+          this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
             { ctx: DeleteReviewUseCase.name },
           );
@@ -83,7 +83,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           );
         }
 
-         this._logger.log(`Updating review ${reviewId}`, {
+        this._logger.log(`Updating review ${reviewId}`, {
           ctx: DeleteReviewUseCase.name,
         });
 
@@ -103,7 +103,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
         ]);
         span.setAttribute("review.deleted", true);
 
-         this._logger.log(`Review ${reviewId} deleted`, {
+        this._logger.log(`Review ${reviewId} deleted`, {
           ctx: DeleteReviewUseCase.name,
         });
       },

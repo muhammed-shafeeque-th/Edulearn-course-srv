@@ -22,7 +22,7 @@ export class GetProgressUseCase implements IGetProgressUseCase {
           "progress.id": progressId,
         });
 
-         this._logger.log(`Fetching progress ${progressId}`, {
+        this._logger.log(`Fetching progress ${progressId}`, {
           ctx: GetProgressUseCase.name,
         });
 
@@ -34,7 +34,7 @@ export class GetProgressUseCase implements IGetProgressUseCase {
           );
         }
 
-         this._logger.log(`Progress ${progressId} fetched`, {
+        this._logger.log(`Progress ${progressId} fetched`, {
           ctx: GetProgressUseCase.name,
         });
         return ProgressDto.fromDomain(progress);

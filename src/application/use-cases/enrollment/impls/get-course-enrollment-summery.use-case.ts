@@ -9,9 +9,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetInstructorCourseEnrollmentSummeryUseCase } from "../interfaces/get-course-enrollment-summery.interface";
 
 @Injectable()
-export class GetInstructorCourseEnrollmentSummeryUseCase
-  implements IGetInstructorCourseEnrollmentSummeryUseCase
-{
+export class GetInstructorCourseEnrollmentSummeryUseCase implements IGetInstructorCourseEnrollmentSummeryUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _logger: ILoggerService,
@@ -29,7 +27,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase
           span.setAttribute("instructor.id", data.instructorId);
           span.setAttribute("course.id", data.courseId);
 
-           this._logger.log(
+          this._logger.log(
             `Fetching course enrollment summary for instructor ${data.instructorId}, course ${data.courseId}`,
             { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
           );
@@ -42,7 +40,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase
 
           if (!summary) {
             span.setAttribute("summary.found", false);
-             this._logger.warn(
+            this._logger.warn(
               `No enrollment summary found for instructor ${data.instructorId} on course ${data.courseId}`,
               { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
             );
@@ -54,7 +52,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase
           span.setAttribute("summary.completionRate", summary.completionRate);
           span.setAttribute("summary.avgProgress", summary.avgProgress);
 
-           this._logger.log(
+          this._logger.log(
             `Successfully fetched enrollment summary for instructor ${data.instructorId}, course ${data.courseId}`,
             { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
           );
@@ -62,7 +60,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase
           return summary;
         } catch (error) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Error fetching enrollment summary: ${error instanceof Error ? error.message : error}`,
             { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name, error },
           );

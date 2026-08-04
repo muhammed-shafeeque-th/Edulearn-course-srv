@@ -21,7 +21,7 @@ export class DeleteProgressUseCase implements IDeleteProgressUseCase {
           "progress.id": progressId,
         });
 
-         this._logger.log(`Deleting progress ${progressId}`, {
+        this._logger.log(`Deleting progress ${progressId}`, {
           ctx: DeleteProgressUseCase.name,
         });
 
@@ -35,7 +35,7 @@ export class DeleteProgressUseCase implements IDeleteProgressUseCase {
         span.setAttribute("progress.found", true);
 
         await this._progressRepository.delete(progress);
-         this._logger.log(`Progress ${progressId} deleted`, {
+        this._logger.log(`Progress ${progressId} deleted`, {
           ctx: DeleteProgressUseCase.name,
         });
       },

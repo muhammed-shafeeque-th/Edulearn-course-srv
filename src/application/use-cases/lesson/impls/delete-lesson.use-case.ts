@@ -28,7 +28,7 @@ export class DeleteLessonUseCase implements IDeleteLessonUseCase {
         span.setAttributes({
           "lesson.id": dto.lessonId,
         });
-         this._logger.log(`Deleting lesson ${dto.lessonId}`, {
+        this._logger.log(`Deleting lesson ${dto.lessonId}`, {
           ctx: DeleteLessonUseCase.name,
         });
 
@@ -60,7 +60,7 @@ export class DeleteLessonUseCase implements IDeleteLessonUseCase {
         // );
 
         span.setAttribute("lesson.deleted", true);
-         this._logger.log(`Lesson ${dto.lessonId} deleted`, {
+        this._logger.log(`Lesson ${dto.lessonId} deleted`, {
           ctx: DeleteLessonUseCase.name,
         });
       },
