@@ -1,1 +1,1 @@
-export const KAFKA_CLIENT = Symbol.for('course-kafka-client');
+export const KAFKA_CLIENT = Symbol.for("course-kafka-client");
