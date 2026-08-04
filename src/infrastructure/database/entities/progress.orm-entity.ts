@@ -70,7 +70,7 @@ export class ProgressOrmEntity {
   @ManyToOne(
     () => EnrollmentOrmEntity,
     (enrollment) => enrollment.progressEntries,
-    { onDelete: "CASCADE", eager: false }
+    { onDelete: "CASCADE", eager: false },
   )
   @JoinColumn({ name: "enrollment_id", referencedColumnName: "id" })
   enrollment: EnrollmentOrmEntity;

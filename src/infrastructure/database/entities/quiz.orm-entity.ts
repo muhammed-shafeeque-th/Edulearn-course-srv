@@ -9,7 +9,7 @@ import {
   OneToMany,
   OneToOne,
 } from "typeorm";
-import { SectionOrmEntity } from "./section.orm-entity";
+import { ModuleOrmEntity } from "./module.orm-entity";
 import { QuestionProps } from "src/domain/entities/quiz.entity";
 import { ProgressOrmEntity } from "./progress.orm-entity";
 
@@ -28,14 +28,14 @@ export class QuizOrmEntity {
   @OneToMany(() => ProgressOrmEntity, (progress) => progress.quiz)
   progressEntries: ProgressOrmEntity[];
 
-  @OneToOne(() => SectionOrmEntity, (section) => section.quiz, {
+  @OneToOne(() => ModuleOrmEntity, (module) => module.quiz, {
     onDelete: "CASCADE",
   })
-  @JoinColumn({ name: "section_id" })
-  section: SectionOrmEntity;
+  @JoinColumn({ name: "module_id" })
+  module: ModuleOrmEntity;
 
-  @Column("uuid", { name: "section_id" })
-  sectionId: string;
+  @Column("uuid", { name: "module_id" })
+  moduleId: string;
 
   @Column({ name: "title", nullable: true })
   title: string;
