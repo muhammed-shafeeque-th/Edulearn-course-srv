@@ -1,50 +1,40 @@
 import { Controller, UseFilters } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
 
-import { CreateModuleUseCase } from "src/application/use-cases/module/create-module.use-case";
-import { ModuleDto } from "src/application/dtos/module.dto";
-import { GetModuleUseCase } from "src/application/use-cases/module/get-module.use-case";
-import { UpdateModuleUseCase } from "src/application/use-cases/module/update-module.use-case";
-import { DeleteModuleUseCase } from "src/application/use-cases/module/delete-module.use-case";
+import { ICreateModuleUseCase } from "src/application/use-cases/module/interfaces/create-module.interface";
+import { IGetModuleUseCase } from "src/application/use-cases/module/interfaces/get-module.interface";
+import { IUpdateModuleUseCase } from "src/application/use-cases/module/interfaces/update-module.interface";
+import { IDeleteModuleUseCase } from "src/application/use-cases/module/interfaces/delete-module.interface";
 import { CreateModuleRequestDto } from "./dtos/module/create-module.dto";
 import { GetModuleRequestDto } from "./dtos/module/get-module.dto";
-import { GetModulesByCourseUseCase } from "src/application/use-cases/module/get-modules-by-course.use-case";
+import { IGetModulesByCourseUseCase } from "src/application/use-cases/module/interfaces/get-modules-by-course.interface";
 import {
-  ContentMetaData,
-  LessonData,
-} from "src/infrastructure/grpc/generated/course/types/lesson";
-import { QuizData } from "src/infrastructure/grpc/generated/course/types/quiz";
-import { QuizDto } from "src/application/dtos/quiz.dto";
-import {
-  DeleteModuleRequest,
   DeleteModuleResponse,
   GetModulesByCourseRequest,
-  ModuleData,
   ModuleResponse,
   ModulesResponse,
   UpdateModuleRequest,
 } from "src/infrastructure/grpc/generated/course/types/module";
-import { LessonDto } from "src/application/dtos/lesson.dto";
 import { DomainException } from "src/domain/exceptions/domain.exception";
-import { LoggingService } from "src/infrastructure/observability/logging/logging.service";
-import { TracingService } from "src/infrastructure/observability/tracing/trace.service";
 import { Error } from "src/infrastructure/grpc/generated/course/common";
 import { getMetadataValues } from "src/shared/utils/get-metadata";
 import { Metadata } from "@grpc/grpc-js";
 import { DeleteModuleDto } from "./dtos/module/delete-module.dto";
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+import { ITraceService } from "src/application/adaptors/trace.service";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
 export class ModuleGrpcController {
   constructor(
-    private readonly createModuleUseCase: CreateModuleUseCase,
-    private readonly getModuleUseCase: GetModuleUseCase,
-    private readonly getModulesByCourseUseCase: GetModulesByCourseUseCase,
-    private readonly updateModuleUseCase: UpdateModuleUseCase,
-    private readonly deleteModuleUseCase: DeleteModuleUseCase,
-    private readonly logger: LoggingService,
-    private readonly tracer: TracingService,
+    private readonly _createModuleUseCase: ICreateModuleUseCase,
+    private readonly _getModuleUseCase: IGetModuleUseCase,
+    private readonly _getModulesByCourseUseCase: IGetModulesByCourseUseCase,
+    private readonly _updateModuleUseCase: IUpdateModuleUseCase,
+    private readonly _deleteModuleUseCase: IDeleteModuleUseCase,
+    private readonly _logger: ILoggerService,
+    private readonly _tracer: ITraceService,
   ) {}
 
   private createErrorResponse(error: DomainException): Error {
@@ -64,11 +54,11 @@ export class ModuleGrpcController {
     metadata: Metadata,
   ): Promise<ModuleResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ModuleGrpcController.CreateModule",
         async (span) => {
           span.setAttribute("course.id", data.courseId);
-          this.logger.log(
+          this._logger.log(
             `gRPC: Creating module for courseID ${data.courseId}`,
             { ctx: ModuleGrpcController.name },
           );
@@ -76,7 +66,7 @@ export class ModuleGrpcController {
             idempotencyKey: "idempotency-key",
           });
 
-          const moduleDto = await this.createModuleUseCase.execute(
+          const moduleDto = await this._createModuleUseCase.execute(
             data,
             idempotencyKey,
           );
@@ -85,8 +75,8 @@ export class ModuleGrpcController {
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to create module: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to create module: ${error.message}`, {
         error,
       });
 
@@ -99,25 +89,25 @@ export class ModuleGrpcController {
     metadata: Metadata,
   ): Promise<ModuleResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ModuleGrpcController.GetModule",
         async (span) => {
           span.setAttribute("course.id", data.courseId);
           span.setAttribute("module.id", data.moduleId);
-          this.logger.log(
+          this._logger.log(
             `gRPC: Fetching module for courseID ${data.courseId}`,
             { ctx: ModuleGrpcController.name },
           );
 
-          const moduleDto = await this.getModuleUseCase.execute(data.moduleId);
+          const moduleDto = await this._getModuleUseCase.execute(data.moduleId);
 
           return {
             module: moduleDto.toGrpcResponse(),
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to get module: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to get module: ${error.message}`, {
         error,
       });
 
@@ -130,23 +120,23 @@ export class ModuleGrpcController {
     metadata: Metadata,
   ): Promise<ModuleResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ModuleGrpcController.UpdateModule",
         async (span) => {
           span.setAttribute("course.module.id", data.moduleId);
-          this.logger.log(`gRPC: Updating module  ${data.moduleId}`, {
+          this._logger.log(`gRPC: Updating module  ${data.moduleId}`, {
             ctx: ModuleGrpcController.name,
           });
 
-          const moduleDto = await this.updateModuleUseCase.execute(data);
+          const moduleDto = await this._updateModuleUseCase.execute(data);
 
           return {
             module: moduleDto.toGrpcResponse(),
           };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to update module: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to update module: ${error.message}`, {
         error,
       });
 
@@ -160,21 +150,21 @@ export class ModuleGrpcController {
     metadata: Metadata,
   ): Promise<DeleteModuleResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ModuleGrpcController.DeleteModule",
         async (span) => {
           span.setAttribute("module.id", data.moduleId);
-          this.logger.log(`gRPC: Deleting module  ${data.moduleId}`, {
+          this._logger.log(`gRPC: Deleting module  ${data.moduleId}`, {
             ctx: ModuleGrpcController.name,
           });
 
-          await this.deleteModuleUseCase.execute(data);
+          await this._deleteModuleUseCase.execute(data);
 
           return { success: { deleted: true } };
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to delete module: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to delete module: ${error.message}`, {
         error,
       });
 
@@ -187,15 +177,15 @@ export class ModuleGrpcController {
     metadata: Metadata,
   ): Promise<ModulesResponse> {
     try {
-      return await this.tracer.startActiveSpan(
+      return await this._tracer.startActiveSpan(
         "ModuleGrpcController.GetModulesByCourse",
         async (span) => {
           span.setAttribute("course.id", data.courseId);
-          this.logger.log(`gRPC: Fetching modules `, {
+          this._logger.log(`gRPC: Fetching modules `, {
             ctx: ModuleGrpcController.name,
           });
 
-          const modules = await this.getModulesByCourseUseCase.execute(
+          const modules = await this._getModulesByCourseUseCase.execute(
             data.courseId,
           );
 
@@ -206,8 +196,8 @@ export class ModuleGrpcController {
           } as ModulesResponse;
         },
       );
-    } catch (error) {
-      this.logger.error(`Failed to get modules by course: ${error.message}`, {
+    } catch (error: any) {
+      this._logger.error(`Failed to get modules by course: ${error.message}`, {
         error,
       });
 

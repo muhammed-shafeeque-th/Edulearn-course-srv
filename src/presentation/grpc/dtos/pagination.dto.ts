@@ -7,7 +7,7 @@ export enum SortOrder {
   DESC = "DESC",
 }
 
-export class PaginationDto implements Pagination{
+export class PaginationDto implements Pagination {
   @IsOptional()
   @Type(() => Number)
   @IsInt({ message: "Page must be an integer" })
