@@ -14,7 +14,7 @@ import { TracerModule } from "@edulearn/nest";
       useFactory: (config: AppConfigService) => ({
         environment: config.nodeEnv,
         version: config.serviceVersion,
-        // collectorUrl: config.
+        collectorUrl: config.collectorUrl,
         serviceName: config.serviceName,
       }),
     }),
