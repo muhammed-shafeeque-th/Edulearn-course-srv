@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import { LessonDto } from "src/application/dtos/lesson.dto";
 import {
   ContentMetadata,
@@ -24,7 +23,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
   constructor(
     private readonly _moduleRepository: IModuleRepository,
     private readonly _courseRepository: ICourseRepository,
-    private readonly _eventEmitter: EventEmitter2,
+    // private readonly _eventEmitter: EventEmitter2,
     private readonly _lessonRepository: ILessonRepository,
     private readonly _logger: ILoggerService,
     private readonly _tracer: ITraceService,
@@ -96,10 +95,10 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
         span.setAttribute("lesson.saved", true);
 
         // Emit application event AFTER persistence succeeds
-        this._eventEmitter.emit(
-          LessonCreatedEvent.name,
-          new LessonCreatedEvent(dto.courseId),
-        );
+        // this._eventEmitter.emit(
+        //   LessonCreatedEvent.name,
+        //   new LessonCreatedEvent(dto.courseId),
+        // );
 
          this._logger.log(`Lesson created for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
