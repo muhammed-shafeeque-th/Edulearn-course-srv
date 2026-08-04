@@ -101,9 +101,12 @@ export class LessonGrpcController {
         "LessonGrpcController.GetLesson",
         async (span) => {
           span.setAttribute("lesson.id", data.lessonId);
-          this._logger.log(`gRPC: Fetching lesson for module ${data.lessonId}`, {
-            ctx: LessonGrpcController.name,
-          });
+          this._logger.log(
+            `gRPC: Fetching lesson for module ${data.lessonId}`,
+            {
+              ctx: LessonGrpcController.name,
+            },
+          );
 
           const lessonDto = await this._getLessonUseCase.execute(data.lessonId);
           return { lesson: lessonDto.toGrpcResponse() };

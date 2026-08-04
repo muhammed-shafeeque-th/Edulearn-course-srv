@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { DatabaseRepositoryModule } from "src/infrastructure/database/database-repository.module";
-import { GrpcInfrastructureModule } from "src/infrastructure/grpc/grpc.module";
+// import { GrpcInfrastructureModule } from "src/infrastructure/grpc/grpc.module";
 import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 import { RedisModule } from "@/infrastructure/redis/redis.module";
 // import { UpdateEnrollmentUseCase } from "../impls/progress/update-enrollment.use-case";
@@ -38,7 +38,7 @@ import { IGetInstructorCourseEnrollmentSummeryUseCase } from "./interfaces/get-c
     DatabaseRepositoryModule,
     RedisModule,
     KafkaModule,
-    GrpcInfrastructureModule,
+    // GrpcInfrastructureModule,
   ],
   providers: [
     {

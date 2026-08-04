@@ -10,9 +10,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetMonthlyCoursesEnrollmentStatsUseCase } from "../interfaces/get-monthly-course-enrollment-summery.interface";
 
 @Injectable()
-export class GetMonthlyCoursesEnrollmentStatsUseCase
-  implements IGetMonthlyCoursesEnrollmentStatsUseCase
-{
+export class GetMonthlyCoursesEnrollmentStatsUseCase implements IGetMonthlyCoursesEnrollmentStatsUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _logger: ILoggerService,
@@ -27,7 +25,7 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase
       async (span) => {
         span.setAttribute("year", data.year);
 
-         this._logger.log(
+        this._logger.log(
           `Fetching monthly courses enrollment stats for year ${data.year}`,
           { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
         );
@@ -41,7 +39,7 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase
 
           if (!trend || trend.length === 0) {
             span.setAttribute("trend.found", false);
-             this._logger.warn(
+            this._logger.warn(
               `No monthly courses enrollment trend found for year ${data.year}`,
               { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
             );
@@ -51,7 +49,7 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase
           span.setAttribute("trend.found", true);
           span.setAttribute("trend.length", trend.length);
 
-           this._logger.log(
+          this._logger.log(
             `Successfully fetched ${trend.length} monthly courses enrollment trend for year ${data.year}`,
             { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
           );
@@ -65,7 +63,7 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase
           };
         } catch (error) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Error fetching monthly courses enrollment stats: ${
               error instanceof Error ? error.message : error
             }`,

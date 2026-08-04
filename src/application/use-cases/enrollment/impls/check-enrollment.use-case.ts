@@ -21,7 +21,7 @@ export class CheckEnrollmentUseCase {
         span.setAttributes({
           "course.id": enrollmentId,
         });
-         this._logger.log(`Fetching enrollments by id ${enrollmentId}`, {
+        this._logger.log(`Fetching enrollments by id ${enrollmentId}`, {
           ctx: CheckEnrollmentUseCase.name,
         });
 
@@ -30,7 +30,7 @@ export class CheckEnrollmentUseCase {
           userId,
         );
 
-         this._logger.log(`Enrollments by id ${enrollmentId} fetched`, {
+        this._logger.log(`Enrollments by id ${enrollmentId} fetched`, {
           ctx: CheckEnrollmentUseCase.name,
         });
         return { enrolled: !!enrollment };

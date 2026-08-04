@@ -18,9 +18,7 @@ export interface UpdateLessonProgressResponse {
 }
 
 @Injectable()
-export class UpdateLessonProgressUseCase
-  implements IUpdateLessonProgressUseCase
-{
+export class UpdateLessonProgressUseCase implements IUpdateLessonProgressUseCase {
   constructor(
     private readonly _enrollmentRepo: IEnrollmentRepository,
     private readonly _progressRepo: IProgressRepository,
@@ -50,7 +48,7 @@ export class UpdateLessonProgressUseCase
     }
 
     if (enrollment.getStatus() !== EnrollmentStatus.ACTIVE) {
-       this._logger.warn("Cannot update progress for non-active enrollment");
+      this._logger.warn("Cannot update progress for non-active enrollment");
       return {
         completed: true,
         progressPercent: 100,
@@ -60,10 +58,11 @@ export class UpdateLessonProgressUseCase
     }
 
     // Better error handling for progress entry
-    const progressEntry = await this._progressRepo.findByEnrollmentIdAndLessonId(
-      input.enrollmentId,
-      input.lessonId,
-    );
+    const progressEntry =
+      await this._progressRepo.findByEnrollmentIdAndLessonId(
+        input.enrollmentId,
+        input.lessonId,
+      );
 
     if (!progressEntry) {
       throw new ProgressNotFoundException(

@@ -11,9 +11,7 @@ import { IEnrollmentRepository } from "src/domain/repositories/enrollment.reposi
 import { IGetInstructorCoursesStatsUseCase } from "../interfaces/get-instructor-courses-stats.interface";
 
 @Injectable()
-export class GetInstructorCoursesStatsUseCase
-  implements IGetInstructorCoursesStatsUseCase
-{
+export class GetInstructorCoursesStatsUseCase implements IGetInstructorCoursesStatsUseCase {
   constructor(
     private readonly _courseRepository: ICourseRepository,
     private readonly _enrollmentRepository: IEnrollmentRepository,
@@ -33,7 +31,7 @@ export class GetInstructorCoursesStatsUseCase
       "GetInstructorCoursesStatsUseCase.execute",
       async (span) => {
         const { instructorId } = dto;
-         this._logger.log(
+        this._logger.log(
           `Fetching course stats for instructor ${instructorId}`,
           { ctx: GetInstructorCoursesStatsUseCase.name },
         );
@@ -70,7 +68,7 @@ export class GetInstructorCoursesStatsUseCase
 
           const averageRating = instructorCourseStats?.averageRating ?? 0;
 
-           this._logger.log(
+          this._logger.log(
             `Fetched instructor course stats: total=${totalCourses}, published=${publishedCourses}, draft=${draftCourses}`,
             { ctx: GetInstructorCoursesStatsUseCase.name },
           );
@@ -98,7 +96,7 @@ export class GetInstructorCoursesStatsUseCase
           };
           return result;
         } catch (error: any) {
-           this._logger.error(
+          this._logger.error(
             `Failed to fetch instructor's courses stats for ${instructorId}`,
             {
               ctx: GetInstructorCoursesStatsUseCase.name,

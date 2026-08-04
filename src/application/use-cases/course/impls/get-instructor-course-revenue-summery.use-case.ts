@@ -11,9 +11,7 @@ import { IEnrollmentRepository } from "src/domain/repositories/enrollment.reposi
 import { IGetInstructorCourseRevenueSummeryUseCase } from "../interfaces/get-instructor-course-revenue-summery.interface";
 
 @Injectable()
-export class GetInstructorCourseRevenueSummeryUseCase
-  implements IGetInstructorCourseRevenueSummeryUseCase
-{
+export class GetInstructorCourseRevenueSummeryUseCase implements IGetInstructorCourseRevenueSummeryUseCase {
   constructor(
     private readonly _courseRepository: ICourseRepository,
     private readonly _enrollmentRepository: IEnrollmentRepository,
@@ -28,7 +26,7 @@ export class GetInstructorCourseRevenueSummeryUseCase
       "GetInstructorCourseRevenueSummeryUseCase.execute",
       async (span) => {
         try {
-           this._logger.debug(
+          this._logger.debug(
             `[GetInstructorCourseRevenueSummeryUseCase] Fetching revenue summary for courseId: ${dto.courseId}, instructorId: ${dto.instructorId}`,
           );
 
@@ -39,7 +37,7 @@ export class GetInstructorCourseRevenueSummeryUseCase
             );
 
           if (!stats) {
-             this._logger.warn(
+            this._logger.warn(
               `[GetInstructorCourseRevenueSummeryUseCase] No revenue summary found for courseId: ${dto.courseId}, instructorId: ${dto.instructorId}`,
             );
             throw new CourseNotFoundException(
@@ -58,7 +56,7 @@ export class GetInstructorCourseRevenueSummeryUseCase
           return response;
         } catch (error: any) {
           span?.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `[GetInstructorCourseRevenueSummeryUseCase] Failed to fetch revenue summary for courseId: ${dto.courseId}, instructorId: ${dto.instructorId}. Reason: ${error?.message}`,
             { error },
           );

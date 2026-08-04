@@ -33,7 +33,7 @@ export class GenerateCertificateUseCase implements IGenerateCertificateUseCase {
       },
     );
 
-    let course = enrollment.getCourse();
+    const course = enrollment.getCourse();
 
     if (!enrollment) {
       throw new EnrollmentNotFoundException("Enrollment not found");

@@ -7,9 +7,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ICheckCourseEnrollmentUseCase } from "../interfaces/check-course-enrollment.interface";
 
 @Injectable()
-export class CheckCourseEnrollmentUseCase
-  implements ICheckCourseEnrollmentUseCase
-{
+export class CheckCourseEnrollmentUseCase implements ICheckCourseEnrollmentUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _courseRepository: ICourseRepository,
@@ -27,7 +25,7 @@ export class CheckCourseEnrollmentUseCase
         try {
           span.setAttribute("course.id", courseId);
 
-           this._logger.log(
+          this._logger.log(
             `Checking enrollment for user ${userId} in course ${courseId}`,
             { ctx: CheckCourseEnrollmentUseCase.name },
           );
@@ -36,7 +34,7 @@ export class CheckCourseEnrollmentUseCase
           const course = await this._courseRepository.findById(courseId);
 
           if (!course) {
-             this._logger.warn(`Course not found: ${courseId}`, {
+            this._logger.warn(`Course not found: ${courseId}`, {
               ctx: CheckCourseEnrollmentUseCase.name,
             });
             throw new CourseNotFoundException(
@@ -50,14 +48,14 @@ export class CheckCourseEnrollmentUseCase
               courseId,
             );
 
-           this._logger.log(
+          this._logger.log(
             `Enrollment check for user ${userId} in course ${courseId} completed`,
             { ctx: CheckCourseEnrollmentUseCase.name },
           );
 
           return { enrolled: Boolean(enrollment) };
         } catch (error: any) {
-           this._logger.error(
+          this._logger.error(
             `Error checking enrollment for user ${userId} in course ${courseId}: ${error?.message || error}`,
             {
               ctx: CheckCourseEnrollmentUseCase.name,

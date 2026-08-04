@@ -28,7 +28,9 @@ export class UserConsumer {
       await this._tracer.startActiveSpan(
         "UserConsumer.handleUserUpdate",
         async (span) => {
-          this._logger.debug("Received data : " + JSON.stringify(data, null, 2));
+          this._logger.debug(
+            "Received data : " + JSON.stringify(data, null, 2),
+          );
 
           this._logger.debug("Handling `handleUserUpdate` event handler ", {
             ctx: UserConsumer.name,
@@ -47,9 +49,12 @@ export class UserConsumer {
         },
       );
     } catch (error) {
-      this._logger.error("Error processing kafka event on  `handleUserUpdate`", {
-        error,
-      });
+      this._logger.error(
+        "Error processing kafka event on  `handleUserUpdate`",
+        {
+          error,
+        },
+      );
       // return { error: this.createErrorResponse(error) };
     }
   }

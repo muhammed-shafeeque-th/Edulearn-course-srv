@@ -28,7 +28,7 @@ export class GetEnrollmentTrendUseCase implements IGetEnrollmentTrendUseCase {
       "GetEnrollmentTrendUseCase.execute",
       async (span) => {
         span.setAttribute("year", data.year);
-         this._logger.log(
+        this._logger.log(
           `Fetching course enrollment trend for year ${data.year}`,
           { ctx: GetEnrollmentTrendUseCase.name },
         );
@@ -40,7 +40,7 @@ export class GetEnrollmentTrendUseCase implements IGetEnrollmentTrendUseCase {
 
           if (!trend) {
             span.setAttribute("trend.found", false);
-             this._logger.warn(
+            this._logger.warn(
               `No enrollment trend found for year ${data.year}`,
               { ctx: GetEnrollmentTrendUseCase.name },
             );
@@ -49,7 +49,7 @@ export class GetEnrollmentTrendUseCase implements IGetEnrollmentTrendUseCase {
 
           span.setAttribute("trend.found", true);
 
-           this._logger.log(
+          this._logger.log(
             `Successfully fetched enrollment trend for year ${data.year}`,
             { ctx: GetEnrollmentTrendUseCase.name },
           );
@@ -57,7 +57,7 @@ export class GetEnrollmentTrendUseCase implements IGetEnrollmentTrendUseCase {
           return trend;
         } catch (error) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Error fetching enrollment trend: ${error instanceof Error ? error.message : error}`,
             { ctx: GetEnrollmentTrendUseCase.name, error },
           );

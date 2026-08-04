@@ -6,7 +6,7 @@ import { LessonModule } from "src/application/use-cases/lesson/lesson.module";
 import { QuizModule } from "src/application/use-cases/quiz/quiz.module";
 import { ProgressModule } from "src/application/use-cases/progress/progress.module";
 import { ReviewModule } from "src/application/use-cases/review/review.module";
-import { GrpcInfrastructureModule } from "src/infrastructure/grpc/grpc.module";
+// import { GrpcInfrastructureModule } from "src/infrastructure/grpc/grpc.module";
 import { EnrollmentModule } from "src/application/use-cases/enrollment/enrollment.module";
 import { KafkaModule } from "src/infrastructure/kafka/kafka.module";
 import { ModuleGrpcController } from "./module-grpc.controller";

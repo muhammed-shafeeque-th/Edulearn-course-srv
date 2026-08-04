@@ -40,7 +40,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
         const enrollment =
           await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-           this._logger.warn(
+          this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -56,7 +56,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-         this._logger.log(
+        this._logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: AddReviewUseCase.name },
         );
@@ -64,7 +64,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
         // Check if course exists
         const course = await this._courseRepository.findById(courseId);
         if (!course) {
-           this._logger.warn(
+          this._logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -78,7 +78,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
           enrollment.getStudentId() !== userId ||
           enrollment.getCourseId() !== courseId
         ) {
-           this._logger.error(
+          this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -91,7 +91,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
           courseId,
         );
         if (existingReview) {
-           this._logger.warn(
+          this._logger.warn(
             `User ${userId} has already reviewed course ${courseId}`,
             { ctx: AddReviewUseCase.name },
           );
@@ -121,7 +121,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
         // Update course rating before saving
         course.rateCourse(rating);
 
-        await this._reviewRepository.save(review),
+        (await this._reviewRepository.save(review),
           await this._courseRepository.save(course),
           // await Promise.all([
           // ]);
@@ -155,13 +155,13 @@ export class AddReviewUseCase implements IAddReviewUseCase {
               },
             )
             .catch((err) => {
-               this._logger.error(
+              this._logger.error(
                 `Failed to send COURSE_REVIEWED event to Kafka: ${err.message}`,
                 { error: err, ctx: AddReviewUseCase.name },
               );
-            });
+            }));
 
-         this._logger.log(
+        this._logger.log(
           `Review added for course ${courseId} by user ${userId}`,
           { ctx: AddReviewUseCase.name },
         );

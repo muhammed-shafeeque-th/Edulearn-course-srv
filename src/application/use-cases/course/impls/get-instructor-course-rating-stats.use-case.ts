@@ -11,9 +11,7 @@ import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { IGetInstructorCourseRatingStatsUseCase } from "../interfaces/get-instructor-course-rating-stats.interface";
 
 @Injectable()
-export class GetInstructorCourseRatingStatsUseCase
-  implements IGetInstructorCourseRatingStatsUseCase
-{
+export class GetInstructorCourseRatingStatsUseCase implements IGetInstructorCourseRatingStatsUseCase {
   constructor(
     private readonly _courseRepository: ICourseRepository,
     private readonly _reviewRepository: IReviewRepository,
@@ -28,7 +26,7 @@ export class GetInstructorCourseRatingStatsUseCase
       "GetInstructorCourseRatingStatsUseCase.execute",
       async (span) => {
         try {
-           this._logger.debug(
+          this._logger.debug(
             `[GetInstructorCourseRatingStatsUseCase] Fetching rating stats for courseId: ${dto.courseId}, instructorId: ${dto.instructorId}`,
           );
 
@@ -41,7 +39,7 @@ export class GetInstructorCourseRatingStatsUseCase
           ]);
 
           if (!stats) {
-             this._logger.warn(
+            this._logger.warn(
               `[GetInstructorCourseRatingStatsUseCase] No rating stats found for courseId: ${dto.courseId}, instructorId: ${dto.instructorId}`,
             );
             throw new CourseNotFoundException(
@@ -65,7 +63,7 @@ export class GetInstructorCourseRatingStatsUseCase
           return response;
         } catch (error: any) {
           span?.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `[GetInstructorCourseRatingStatsUseCase] Failed to fetch rating stats for courseId: ${dto.courseId}, instructorId: ${dto.instructorId}. Reason: ${error?.message}`,
             { error },
           );

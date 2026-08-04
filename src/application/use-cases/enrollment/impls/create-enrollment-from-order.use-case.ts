@@ -18,9 +18,7 @@ import { OrderCompletedEvent } from "src/domain/events/order-events";
 import { ICreateEnrollmentFromOrderUseCase } from "../interfaces/create-enrollment-from-order.interface";
 
 @Injectable()
-export class CreateEnrollmentFromOrderUseCase
-  implements ICreateEnrollmentFromOrderUseCase
-{
+export class CreateEnrollmentFromOrderUseCase implements ICreateEnrollmentFromOrderUseCase {
   constructor(
     private readonly _enrollmentRepo: IEnrollmentRepository,
     private readonly _courseRepo: ICourseRepository,
@@ -36,7 +34,7 @@ export class CreateEnrollmentFromOrderUseCase
       !Array.isArray(payload.items) ||
       payload.items.length === 0
     ) {
-       this._logger.warn("Order payload is empty or malformed.", {
+      this._logger.warn("Order payload is empty or malformed.", {
         orderId: payload?.orderId,
       });
       return;
@@ -51,7 +49,7 @@ export class CreateEnrollmentFromOrderUseCase
           { includeCourse: false, includeProgressSummary: false },
         );
         if (existing) {
-           this._logger.warn(
+          this._logger.warn(
             `User [${payload.userId}] already enrolled into course [${item.courseId}], skipping.`,
           );
           continue;
@@ -59,7 +57,7 @@ export class CreateEnrollmentFromOrderUseCase
 
         const course = await this._courseRepo.findById(item.courseId);
         if (!course) {
-           this._logger.warn(
+          this._logger.warn(
             `Course [${item.courseId}] not found, skipping enrollment.`,
           );
           continue;
@@ -118,7 +116,7 @@ export class CreateEnrollmentFromOrderUseCase
         );
 
         await this._enrollmentRepo.upsert(enrollment);
-         this._logger.log(
+        this._logger.log(
           `Enrollment [${enrollmentId}] created for user [${payload.userId}] in course [${item.courseId}].`,
         );
 
@@ -132,7 +130,7 @@ export class CreateEnrollmentFromOrderUseCase
           payload.amount,
         );
       } catch (error: any) {
-         this._logger.error(
+        this._logger.error(
           `Failed to create enrollment for user [${payload.userId}] and course [${item.courseId}]: ${error?.message}`,
           error?.stack,
         );
@@ -169,7 +167,7 @@ export class CreateEnrollmentFromOrderUseCase
         },
       );
     } catch (error: any) {
-       this._logger.error(
+      this._logger.error(
         "Failed to publish EnrollmentCreatedEvent to Kafka",
         error?.stack,
       );
@@ -201,7 +199,7 @@ export class CreateEnrollmentFromOrderUseCase
         },
       );
     } catch (error) {
-       this._logger.error("Error while publishing InAppNotification event", {
+      this._logger.error("Error while publishing InAppNotification event", {
         error,
       });
     }

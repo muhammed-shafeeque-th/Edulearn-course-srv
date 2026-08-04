@@ -21,7 +21,7 @@ export class GetReviewUseCase implements IGetReviewUseCase {
         span.setAttributes({
           "review.id": reviewId,
         });
-         this._logger.log(`Fetching review ${reviewId}`, {
+        this._logger.log(`Fetching review ${reviewId}`, {
           ctx: GetReviewUseCase.name,
         });
 
@@ -34,7 +34,7 @@ export class GetReviewUseCase implements IGetReviewUseCase {
         span.setAttribute("review.found", true);
         const reviewDto = ReviewDto.fromDomain(review);
 
-         this._logger.log(`Found review ${reviewId} `, {
+        this._logger.log(`Found review ${reviewId} `, {
           ctx: GetReviewUseCase.name,
         });
         return reviewDto;

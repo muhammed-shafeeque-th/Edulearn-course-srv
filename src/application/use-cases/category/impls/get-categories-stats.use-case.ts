@@ -24,13 +24,13 @@ export class GetCategoriesStatsUseCase implements IGetCategoriesStatsUseCase {
     return await this._tracer.startActiveSpan(
       "GetCategoriesStatsUseCase.execute",
       async () => {
-         this._logger.debug(
+        this._logger.debug(
           `[GetCategoriesStatsUseCase] Fetching categories stats`,
         );
 
-        let stats = await this._categoryRepository.getStats(dto.top);
+        const stats = await this._categoryRepository.getStats(dto.top);
         if (!stats) {
-           this._logger.warn(`[GetCategoriesStatsUseCase] No categories stats`);
+          this._logger.warn(`[GetCategoriesStatsUseCase] No categories stats`);
         }
 
         return { stats: stats ?? [] };

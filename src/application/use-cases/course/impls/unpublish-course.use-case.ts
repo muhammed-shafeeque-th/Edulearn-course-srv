@@ -27,7 +27,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
       async (span) => {
         const { courseId, isAdmin, userId } = cmd;
 
-         this._logger.debug("Attempting to unpublish course", {
+        this._logger.debug("Attempting to unpublish course", {
           ctx: UnPublishCourseUseCase.name,
           courseId,
           userId,
@@ -36,7 +36,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
         // Early validation
         if (!courseId) {
           const msg = "courseId is required for unpublishing a course";
-           this._logger.error(msg, { ctx: UnPublishCourseUseCase.name });
+          this._logger.error(msg, { ctx: UnPublishCourseUseCase.name });
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", msg);
           throw new CourseNotFoundException("courseId is missing");
@@ -46,7 +46,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
 
         if (!course) {
           const warnMsg = `Course ${courseId} not found.`;
-           this._logger.warn(warnMsg, {
+          this._logger.warn(warnMsg, {
             ctx: UnPublishCourseUseCase.name,
             courseId,
           });
@@ -58,7 +58,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
         // Authorization: Allow admins OR instructors of course
         if (!isAdmin && course.getInstructorId() !== userId) {
           const warnMsg = `User ${userId ?? "unknown"} unauthorized to unpublish course ${courseId}.`;
-           this._logger.warn(warnMsg, {
+          this._logger.warn(warnMsg, {
             ctx: UnPublishCourseUseCase.name,
             courseId,
             userId,
@@ -103,7 +103,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
             },
           );
 
-           this._logger.debug("Course unpublished successfully.", {
+          this._logger.debug("Course unpublished successfully.", {
             ctx: UnPublishCourseUseCase.name,
             courseId,
             userId,
@@ -112,7 +112,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
 
           return CourseDto.fromDomain(course);
         } catch (error) {
-           this._logger.error("Failed to unpublish course", {
+          this._logger.error("Failed to unpublish course", {
             ctx: UnPublishCourseUseCase.name,
             error,
             courseId,

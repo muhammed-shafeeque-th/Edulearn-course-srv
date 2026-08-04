@@ -9,9 +9,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetInstructorCourseEnrollmentTrendUseCase } from "../interfaces/get-course-enrollment-trend.interface";
 
 @Injectable()
-export class GetInstructorCourseEnrollmentTrendUseCase
-  implements IGetInstructorCourseEnrollmentTrendUseCase
-{
+export class GetInstructorCourseEnrollmentTrendUseCase implements IGetInstructorCourseEnrollmentTrendUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _logger: ILoggerService,
@@ -26,7 +24,7 @@ export class GetInstructorCourseEnrollmentTrendUseCase
       async (span) => {
         span.setAttribute("instructor.id", data.instructorId);
         span.setAttribute("course.id", data.courseId);
-         this._logger.log(
+        this._logger.log(
           `Fetching course enrollment trend for instructor ${data.instructorId}, course ${data.courseId}`,
           { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
         );
@@ -42,7 +40,7 @@ export class GetInstructorCourseEnrollmentTrendUseCase
 
           if (!trend) {
             span.setAttribute("trend.found", false);
-             this._logger.warn(
+            this._logger.warn(
               `No enrollment trend found for instructor ${data.instructorId} on course ${data.courseId}`,
               { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
             );
@@ -55,7 +53,7 @@ export class GetInstructorCourseEnrollmentTrendUseCase
             Array.isArray(trend.trend) ? trend.trend.length : 0,
           );
 
-           this._logger.log(
+          this._logger.log(
             `Successfully fetched enrollment trend for instructor ${data.instructorId}, course ${data.courseId}`,
             { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
           );
@@ -63,7 +61,7 @@ export class GetInstructorCourseEnrollmentTrendUseCase
           return trend;
         } catch (error) {
           span.setAttribute("error", true);
-           this._logger.error(
+          this._logger.error(
             `Error fetching enrollment trend: ${error instanceof Error ? error.message : error}`,
             { ctx: GetInstructorCourseEnrollmentTrendUseCase.name, error },
           );

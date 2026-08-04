@@ -20,7 +20,7 @@ export class DeleteEnrollmentUseCase {
           "enrollment.id": enrollmentId,
         });
 
-         this._logger.log(`Deleting enrollment ${enrollmentId}`, {
+        this._logger.log(`Deleting enrollment ${enrollmentId}`, {
           ctx: DeleteEnrollmentUseCase.name,
         });
 
@@ -34,7 +34,7 @@ export class DeleteEnrollmentUseCase {
 
         await this._enrollmentRepository.remove(enrollment);
 
-         this._logger.log(`Enrollment ${enrollmentId} deleted`, {
+        this._logger.log(`Enrollment ${enrollmentId} deleted`, {
           ctx: DeleteEnrollmentUseCase.name,
         });
       },

@@ -21,7 +21,7 @@ export class GetCoursesStatsUseCase implements IGetCoursesStatsUseCase {
     return await this._tracer.startActiveSpan(
       "GetCoursesStatsUseCase.execute",
       async (span) => {
-         this._logger.log("Fetching overall courses statistics", {
+        this._logger.log("Fetching overall courses statistics", {
           ctx: GetCoursesStatsUseCase.name,
         });
 
@@ -30,14 +30,14 @@ export class GetCoursesStatsUseCase implements IGetCoursesStatsUseCase {
 
           span.setAttribute("courses.total", stats.totalCourses);
 
-           this._logger.log(
+          this._logger.log(
             `Fetched courses statistics: totalCourses=${stats.totalCourses}`,
             { ctx: GetCoursesStatsUseCase.name },
           );
 
           return stats;
         } catch (error) {
-           this._logger.error("Failed to fetch courses statistics", {
+          this._logger.error("Failed to fetch courses statistics", {
             ctx: GetCoursesStatsUseCase.name,
             error,
           });

@@ -7,9 +7,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetProgressesByEnrollmentUseCase } from "../interfaces/get-progress-by-enrollment.interface";
 
 @Injectable()
-export class GetProgressesByEnrollmentUseCase
-  implements IGetProgressesByEnrollmentUseCase
-{
+export class GetProgressesByEnrollmentUseCase implements IGetProgressesByEnrollmentUseCase {
   constructor(
     private readonly _progressRepository: IProgressRepository,
     private readonly _logger: ILoggerService,
@@ -24,14 +22,14 @@ export class GetProgressesByEnrollmentUseCase
           "enrollment.id": enrollmentId,
         });
 
-         this._logger.log(`Fetching progress by enrollment ${enrollmentId}`, {
+        this._logger.log(`Fetching progress by enrollment ${enrollmentId}`, {
           ctx: GetProgressesByEnrollmentUseCase.name,
         });
 
         const progresses =
           await this._progressRepository.findByEnrollmentId(enrollmentId);
 
-         this._logger.log(`Progresses of enrolment ${enrollmentId} fetched`, {
+        this._logger.log(`Progresses of enrolment ${enrollmentId} fetched`, {
           ctx: GetProgressesByEnrollmentUseCase.name,
         });
         return progresses.map(ProgressDto.fromDomain);

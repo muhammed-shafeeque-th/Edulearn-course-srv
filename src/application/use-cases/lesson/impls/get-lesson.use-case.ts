@@ -21,7 +21,7 @@ export class GetLessonUseCase implements IGetLessonUseCase {
         span.setAttributes({
           "lesson.id": lessonId,
         });
-         this._logger.log(`Fetching lesson ${lessonId}`, {
+        this._logger.log(`Fetching lesson ${lessonId}`, {
           ctx: GetLessonUseCase.name,
         });
 
@@ -32,7 +32,7 @@ export class GetLessonUseCase implements IGetLessonUseCase {
         }
         span.setAttribute("lesson.found", true);
 
-         this._logger.log(`Lesson ${lessonId} fetched`, {
+        this._logger.log(`Lesson ${lessonId} fetched`, {
           ctx: GetLessonUseCase.name,
         });
         return LessonDto.fromDomain(lesson);

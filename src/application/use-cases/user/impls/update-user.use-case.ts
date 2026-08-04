@@ -23,7 +23,7 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
         span.setAttributes({
           "user.id": payload.userId,
         });
-         this._logger.log(`Updating user ${payload.userId}`, {
+        this._logger.log(`Updating user ${payload.userId}`, {
           ctx: UpdateUserUseCase.name,
         });
 
@@ -38,7 +38,7 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
         await this._userRepository.save(user);
         span.setAttribute("user.updated", true);
 
-         this._logger.log(`Review ${payload.userId} updated`, {
+        this._logger.log(`Review ${payload.userId} updated`, {
           ctx: UpdateUserUseCase.name,
         });
       },

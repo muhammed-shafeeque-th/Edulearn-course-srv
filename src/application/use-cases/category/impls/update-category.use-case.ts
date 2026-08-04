@@ -60,7 +60,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
         );
 
         await this._categoryRepository.update(category);
-         this._logger.debug(`Updated category: ${dto.id}`);
+        this._logger.debug(`Updated category: ${dto.id}`);
 
         return CategoryDto.fromDomain(category);
       },

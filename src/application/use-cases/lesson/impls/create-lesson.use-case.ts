@@ -46,13 +46,13 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
           await this._lessonRepository.findByIdempotencyKey(idempotencyKey);
         if (existingLesson) {
           span.setAttribute("idempotency.duplicate", true);
-           this._logger.debug(
+          this._logger.debug(
             `Lesson creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateLessonUseCase.name}`,
           );
           return LessonDto.fromDomain(existingLesson);
         }
 
-         this._logger.log(`Creating lesson for module ${dto.moduleId}`, {
+        this._logger.log(`Creating lesson for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         const course = await this._courseRepository.findById(dto.courseId);
@@ -100,7 +100,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
         //   new LessonCreatedEvent(dto.courseId),
         // );
 
-         this._logger.log(`Lesson created for module ${dto.moduleId}`, {
+        this._logger.log(`Lesson created for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         return LessonDto.fromDomain(lesson);

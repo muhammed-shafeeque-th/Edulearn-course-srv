@@ -33,7 +33,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
         const enrollment =
           await this._enrollmentRepository.findById(enrollmentId);
         if (!enrollment) {
-           this._logger.warn(
+          this._logger.warn(
             `Enrollment with ID ${enrollmentId} not found for user ${userId}`,
             { ctx: UpdateReviewUseCase.name },
           );
@@ -49,7 +49,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-         this._logger.log(
+        this._logger.log(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: UpdateReviewUseCase.name },
         );
@@ -59,7 +59,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
           withModules: false,
         });
         if (!course) {
-           this._logger.warn(
+          this._logger.warn(
             `Course with ID ${courseId} not found for enrollment ${enrollmentId}`,
             { ctx: UpdateReviewUseCase.name },
           );
@@ -73,14 +73,14 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
           enrollment.getStudentId() !== userId ||
           enrollment.getCourseId() !== courseId
         ) {
-           this._logger.error(
+          this._logger.error(
             `Enrollment info mismatch for enrollmentId=${enrollmentId}, userId=${userId}, courseId=${courseId}`,
             { ctx: UpdateReviewUseCase.name },
           );
           throw new UnauthorizedException(`Enrollment-user-course mismatch`);
         }
 
-         this._logger.log(`Updating review ${reviewId}`, {
+        this._logger.log(`Updating review ${reviewId}`, {
           ctx: UpdateReviewUseCase.name,
         });
 
@@ -103,7 +103,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
         // ]);
         span.setAttribute("review.updated", true);
 
-         this._logger.log(`Review ${reviewId} updated`, {
+        this._logger.log(`Review ${reviewId} updated`, {
           ctx: UpdateReviewUseCase.name,
         });
         return ReviewDto.fromDomain(review);

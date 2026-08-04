@@ -20,7 +20,7 @@ export class GetLessonsByModuleUseCase implements IGetLessonsByModuleUseCase {
         span.setAttributes({
           "module.id": moduleId,
         });
-         this._logger.log(`Fetching lessons with moduleId ${moduleId}`, {
+        this._logger.log(`Fetching lessons with moduleId ${moduleId}`, {
           ctx: GetLessonsByModuleUseCase.name,
         });
 
@@ -28,7 +28,7 @@ export class GetLessonsByModuleUseCase implements IGetLessonsByModuleUseCase {
 
         span.setAttribute("module.lesson.count", lessons.length);
 
-         this._logger.log(`Lessons ${lessons.length} fetched`, {
+        this._logger.log(`Lessons ${lessons.length} fetched`, {
           ctx: GetLessonsByModuleUseCase.name,
         });
         return lessons.map(LessonDto.fromDomain);

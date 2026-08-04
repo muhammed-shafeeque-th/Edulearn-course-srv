@@ -6,9 +6,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetEnrollmentsByUserUseCase } from "../interfaces/get-enrollment-by-user.interface";
 
 @Injectable()
-export class GetEnrollmentsByUserUseCase
-  implements IGetEnrollmentsByUserUseCase
-{
+export class GetEnrollmentsByUserUseCase implements IGetEnrollmentsByUserUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _logger: ILoggerService,
@@ -22,7 +20,7 @@ export class GetEnrollmentsByUserUseCase
         span.setAttributes({
           "user.id": userId,
         });
-         this._logger.log(`Fetching enrollments by user ${userId}`, {
+        this._logger.log(`Fetching enrollments by user ${userId}`, {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
 
@@ -32,7 +30,7 @@ export class GetEnrollmentsByUserUseCase
             includeProgressSummary: true,
           });
 
-         this._logger.log(`Enrollments of user ${userId} fetched`, {
+        this._logger.log(`Enrollments of user ${userId} fetched`, {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
         return enrollments.map(EnrollmentDto.fromDomain);

@@ -6,9 +6,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetEnrollmentsByCourseUseCase } from "../interfaces/get-enrollment-by-course.interface";
 
 @Injectable()
-export class GetEnrollmentsByCourseUseCase
-  implements IGetEnrollmentsByCourseUseCase
-{
+export class GetEnrollmentsByCourseUseCase implements IGetEnrollmentsByCourseUseCase {
   constructor(
     private readonly _enrollmentRepository: IEnrollmentRepository,
     private readonly _logger: ILoggerService,
@@ -22,7 +20,7 @@ export class GetEnrollmentsByCourseUseCase
         span.setAttributes({
           "course.id": courseId,
         });
-         this._logger.log(`Fetching enrollments by course ${courseId}`, {
+        this._logger.log(`Fetching enrollments by course ${courseId}`, {
           ctx: GetEnrollmentsByCourseUseCase.name,
         });
 
@@ -31,7 +29,7 @@ export class GetEnrollmentsByCourseUseCase
 
         span.setAttribute("course.enrollment.count", enrollments.length);
 
-         this._logger.log(`Enrollments by course ${courseId} fetched`, {
+        this._logger.log(`Enrollments by course ${courseId} fetched`, {
           ctx: GetEnrollmentsByCourseUseCase.name,
         });
         return enrollments.map(EnrollmentDto.fromDomain);

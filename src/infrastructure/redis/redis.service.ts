@@ -7,7 +7,6 @@ import { ILoggerService } from "@/application/adaptors/logger.service";
 
 @Injectable()
 export class RedisClientImpl implements ICacheService {
-
   constructor(
     private readonly _cache: CacheService,
     private readonly _logger: ILoggerService,
@@ -39,7 +38,7 @@ export class RedisClientImpl implements ICacheService {
   }
 
   async exists(key: string): Promise<boolean> {
-    return this._cache.exists(key)
+    return this._cache.exists(key);
   }
 
   async lock(key: string, ttl: number): Promise<boolean> {
@@ -48,7 +47,9 @@ export class RedisClientImpl implements ICacheService {
       async (span) => {
         span.setAttribute("cache.key", key);
         try {
-          const result = await this._cache.getClient().set(key, "locked", "PX", ttl, "NX");
+          const result = await this._cache
+            .getClient()
+            .set(key, "locked", "PX", ttl, "NX");
           const acquired = result === "OK";
           this._logger.debug(
             `Lock ${acquired ? "acquired" : "failed"} for key ${key}`,

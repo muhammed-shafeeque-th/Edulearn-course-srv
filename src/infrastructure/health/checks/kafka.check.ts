@@ -1,18 +1,23 @@
 import { Injectable } from "@nestjs/common";
-import { BaseHealthCheck, HealthCheckResult, HealthRegistry, IHealthCheck } from "@edulearn/nest";
+import {
+  BaseHealthCheck,
+  HealthCheckResult,
+  HealthRegistry,
+  IHealthCheck,
+} from "@edulearn/nest";
 
 import { KafkaHealthService } from "@/infrastructure/kafka/kafka-heath.service";
 
 @Injectable()
-  export class KafkaHealthCheck extends BaseHealthCheck {
-    name: string = "kafka";
-  
-    constructor(
-      registry: HealthRegistry,
-      private readonly kafkaHealthService: KafkaHealthService,
-    ) {
-      super(registry);
-    }
+export class KafkaHealthCheck extends BaseHealthCheck {
+  name: string = "kafka";
+
+  constructor(
+    registry: HealthRegistry,
+    private readonly kafkaHealthService: KafkaHealthService,
+  ) {
+    super(registry);
+  }
 
   async check(): Promise<HealthCheckResult> {
     try {

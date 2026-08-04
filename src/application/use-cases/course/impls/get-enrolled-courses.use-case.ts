@@ -23,7 +23,7 @@ export class GetEnrolledCoursesUseCase implements IGetEnrolledCoursesUseCase {
     return await this._tracer.startActiveSpan(
       "GetEnrolledCoursesUseCase.execute",
       async (span) => {
-         this._logger.log(`Fetching enrolled courses for user ${userId}`, {
+        this._logger.log(`Fetching enrolled courses for user ${userId}`, {
           ctx: GetEnrolledCoursesUseCase.name,
         });
 
@@ -39,7 +39,7 @@ export class GetEnrolledCoursesUseCase implements IGetEnrolledCoursesUseCase {
           );
         const courseDtos = courses.map(CourseDto.fromDomain);
 
-         this._logger.log(
+        this._logger.log(
           `Found ${courseDtos.length} enrolled courses for user ${userId}`,
           { ctx: GetEnrolledCoursesUseCase.name },
         );

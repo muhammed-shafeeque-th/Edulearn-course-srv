@@ -1,0 +1,108 @@
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { Client, ClientGrpc, Transport } from "@nestjs/microservices";
+import { UserServiceClient } from "../generated/user";
+import { join } from "path";
+import { getProtoPath } from "@edulearn/core";
+import { AppConfigService } from "src/infrastructure/config/config.service";
+import { ILoggerService } from "src/application/adaptors/logger.service";
+
+async function withRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  delayMs: number = 1000,
+  logger?: ILoggerService,
+): Promise<T> {
+  let lastError: Error;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      lastError = error as Error;
+      logger?.warn(
+        `gRPC call failed (attempt ${attempt}/${maxRetries}): ${error.message}`,
+        {
+          attempt,
+          maxRetries,
+          error: error.message,
+        },
+      );
+
+      if (attempt < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs * attempt));
+      }
+    }
+  }
+
+  throw lastError!;
+}
+
+@Injectable()
+export class UserClient implements OnModuleDestroy, OnModuleInit {
+  @Client({
+    transport: Transport.GRPC,
+    options: {
+      package: "user",
+      protoPath: getProtoPath("user"),
+      url: "0.0.0.0:50051",
+      channelOptions: {
+        "grpc.keepalive_time_ms": 10000,
+        "grpc.keepalive_timeout_ms": 5000,
+        "grpc.http2.max_pings_without_data": 0,
+        "grpc.keepalive_permit_without_calls": 1,
+      },
+    },
+  })
+  private client: ClientGrpc;
+  private userService: UserServiceClient;
+
+  constructor(
+    private readonly configService: AppConfigService,
+    private readonly logger: ILoggerService,
+  ) {}
+
+  onModuleInit() {
+    this.userService = this.client.getService<UserServiceClient>("UserService");
+    this.logger.info("User gRPC client initialized");
+  }
+
+  onModuleDestroy() {
+    this.userService.close();
+    this.logger.info("User gRPC client destroyed");
+  }
+
+  async getUser(
+    userId: string,
+  ): Promise<{ id: string; name: string; email: string }> {
+    return withRetry(
+      async () => {
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(
+              new Error(`Timeout fetching user ${userId} after 30 seconds`),
+            );
+          }, 30000);
+
+          this.userService.getUser({ userId }, (error, response) => {
+            clearTimeout(timeout);
+            if (error) {
+              this.logger.error(
+                `Failed to fetch user ${userId}: ${error.message}`,
+                {
+                  error,
+                },
+              );
+              reject(error);
+            } else {
+              this.logger.debug(`Fetched user ${userId} via gRPC`);
+              resolve(response);
+            }
+          });
+        });
+      },
+      3,
+      1000,
+      this.logger,
+    );
+  }
+}

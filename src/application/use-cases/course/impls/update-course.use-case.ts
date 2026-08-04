@@ -30,7 +30,7 @@ export class UpdateCourseUseCase implements IUpdateCourseUseCase {
     return await this._tracer.startActiveSpan(
       "UpdateCourseUseCase.execute",
       async (span) => {
-         this._logger.debug(`Updating course ${dto.courseId}`, {
+        this._logger.debug(`Updating course ${dto.courseId}`, {
           ctx: UpdateCourseUseCase.name,
         });
         span.setAttributes({
@@ -89,7 +89,7 @@ export class UpdateCourseUseCase implements IUpdateCourseUseCase {
 
         span.setAttribute("course.updated", true);
 
-         this._logger.log(`Course ${dto.courseId} updated`, {
+        this._logger.log(`Course ${dto.courseId} updated`, {
           ctx: UpdateCourseUseCase.name,
         });
         return CourseDto.fromDomain(course);

@@ -27,7 +27,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
       async (span) => {
         const { courseId, userId, isAdmin } = cmd;
 
-         this._logger.debug("Attempting to publish course", {
+        this._logger.debug("Attempting to publish course", {
           ctx: PublishCourseUseCase.name,
           courseId,
           userId,
@@ -36,7 +36,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
         // Validation: courseId must exist
         if (!courseId) {
           const msg = "courseId is required for publishing a course";
-           this._logger.error(msg, { ctx: PublishCourseUseCase.name });
+          this._logger.error(msg, { ctx: PublishCourseUseCase.name });
           span?.setAttribute("error", true);
           span?.setAttribute("error.message", msg);
           throw new CourseNotFoundException("courseId is missing");
@@ -47,7 +47,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
 
         if (!course) {
           const warnMsg = `Course ${courseId} not found.`;
-           this._logger.warn(warnMsg, {
+          this._logger.warn(warnMsg, {
             ctx: PublishCourseUseCase.name,
             courseId,
           });
@@ -59,7 +59,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
         // Authorization: Allow if isAdmin or instructor of the course
         if (!isAdmin && course.getInstructorId() !== userId) {
           const warnMsg = `User ${userId ?? "unknown"} unauthorized to publish course ${courseId}.`;
-           this._logger.warn(warnMsg, {
+          this._logger.warn(warnMsg, {
             ctx: PublishCourseUseCase.name,
             courseId,
             userId,
@@ -104,7 +104,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
             },
           );
 
-           this._logger.debug("Course published successfully.", {
+          this._logger.debug("Course published successfully.", {
             ctx: PublishCourseUseCase.name,
             courseId,
             userId,
@@ -117,7 +117,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
             "error.message",
             error?.message ?? "Unknown error",
           );
-           this._logger.error(
+          this._logger.error(
             `Failed to publish course ${courseId}: ${error?.message}`,
             {
               ctx: PublishCourseUseCase.name,

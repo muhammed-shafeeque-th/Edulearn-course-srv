@@ -33,7 +33,7 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
             "quiz.passingScore": dto.passingScore,
             "quiz.questionsCount": dto.questions.length,
           });
-           this._logger.log(`Updating quiz ${dto.quizId}`, {
+          this._logger.log(`Updating quiz ${dto.quizId}`, {
             ctx: UpdateQuizUseCase.name,
           });
 
@@ -41,7 +41,7 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
           const course = await this._courseRepository.findById(dto.courseId);
           if (!course) {
             span.setAttribute("course.found", false);
-             this._logger.warn(`Course with ID ${dto.courseId} not found`, {
+            this._logger.warn(`Course with ID ${dto.courseId} not found`, {
               ctx: UpdateQuizUseCase.name,
             });
             throw new CourseNotFoundException(
@@ -52,7 +52,7 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
 
           // Authorization check
           if (course.getInstructorId() !== dto.userId) {
-             this._logger.warn(
+            this._logger.warn(
               `Unauthorized attempt by user ${dto.userId} to update quiz ${dto.quizId}`,
               { ctx: UpdateQuizUseCase.name },
             );
@@ -65,7 +65,7 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
           const quiz = await this._quizRepository.findById(dto.quizId);
           if (!quiz) {
             span.setAttribute("quiz.found", false);
-             this._logger.warn(`Quiz ${dto.quizId} not found for update`, {
+            this._logger.warn(`Quiz ${dto.quizId} not found for update`, {
               ctx: UpdateQuizUseCase.name,
             });
             throw new QuizNotFoundException(`Quiz ${dto.quizId} not found`);
@@ -100,12 +100,12 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
           await this._quizRepository.save(quiz);
           span.setAttribute("quiz.updated", true);
 
-           this._logger.log(`Quiz ${dto.quizId} updated`, {
+          this._logger.log(`Quiz ${dto.quizId} updated`, {
             ctx: UpdateQuizUseCase.name,
           });
           return QuizDto.fromDomain(quiz);
         } catch (error: any) {
-           this._logger.error(`Error updating quiz: ${error.message}`, {
+          this._logger.error(`Error updating quiz: ${error.message}`, {
             stack: error.stack,
             ctx: UpdateQuizUseCase.name,
           });

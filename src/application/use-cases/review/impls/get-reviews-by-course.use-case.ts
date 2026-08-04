@@ -27,7 +27,7 @@ export class GetReviewsByCourseUseCase implements IGetReviewsByCourseUseCase {
         span.setAttributes({
           "course.id": courseId,
         });
-         this._logger.log(`Fetching reviews for course ${courseId}`, {
+        this._logger.log(`Fetching reviews for course ${courseId}`, {
           ctx: GetReviewsByCourseUseCase.name,
         });
 
@@ -42,7 +42,7 @@ export class GetReviewsByCourseUseCase implements IGetReviewsByCourseUseCase {
         span.setAttribute("reviews.count", reviews.length);
         const reviewDtos = reviews.map(ReviewDto.fromDomain);
 
-         this._logger.log(
+        this._logger.log(
           `Found ${reviewDtos.length} reviews for course ${courseId}`,
           { ctx: GetReviewsByCourseUseCase.name },
         );

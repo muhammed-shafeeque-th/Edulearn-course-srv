@@ -120,9 +120,7 @@ export class AppConfigService {
     return this.configService.get<number>("KAFKA_FETCH_MAX_BYTES", 5242880);
   }
 
-
   // Observability config
-
 
   get tracingSamplingRatio(): number {
     return this.configService.get<number>("TRACING_SAMPLING_RATIO", 0.1);
@@ -133,7 +131,6 @@ export class AppConfigService {
   }
 
   get collectorUrl(): string {
-    return this.configService.get<string>('OTLP_ENDPOINT', 'info');
+    return this.configService.get<string>("OTLP_ENDPOINT", "info");
   }
-
 }

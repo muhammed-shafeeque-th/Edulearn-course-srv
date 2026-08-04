@@ -26,7 +26,7 @@ export class UpdateModuleUseCase implements IUpdateModuleUseCase {
         span.setAttributes({
           "module.id": dto.moduleId,
         });
-         this._logger.log(`Updating module ${dto.moduleId}`, {
+        this._logger.log(`Updating module ${dto.moduleId}`, {
           ctx: UpdateModuleUseCase.name,
         });
         const course = await this._courseRepository.findById(dto.courseId);
@@ -54,7 +54,7 @@ export class UpdateModuleUseCase implements IUpdateModuleUseCase {
         await this._moduleRepository.update(module);
         span.setAttribute("module.updated", true);
 
-         this._logger.log(`Module ${dto.moduleId} updated`, {
+        this._logger.log(`Module ${dto.moduleId} updated`, {
           ctx: UpdateModuleUseCase.name,
         });
         return ModuleDto.fromDomain(module);
