@@ -1,4 +1,7 @@
-import { ContentMetaData, LessonData } from "src/infrastructure/grpc/generated/course/types/lesson";
+import {
+  ContentMetaData,
+  LessonData,
+} from "src/infrastructure/grpc/generated/course/types/lesson";
 import {
   ContentMetadata,
   ContentType,
@@ -7,7 +10,7 @@ import {
 
 export class LessonDto {
   id: string;
-  sectionId: string;
+  moduleId: string;
   title: string;
   description?: string;
   contentType?: ContentType;
@@ -24,7 +27,7 @@ export class LessonDto {
   static fromDomain(lesson: Lesson): LessonDto {
     const dto = new LessonDto();
     dto.id = lesson.getId();
-    dto.sectionId = lesson.getSectionId();
+    dto.moduleId = lesson.getModuleId();
     dto.title = lesson.getTitle();
     dto.description = lesson.getDescription();
     dto.contentType = lesson.getContentType();
@@ -46,7 +49,7 @@ export class LessonDto {
   toGrpcResponse(): LessonData {
     return {
       id: this.id,
-      sectionId: this.sectionId,
+      moduleId: this.moduleId,
       title: this.title,
       contentUrl: this.contentUrl,
       description: this.description ?? "",
