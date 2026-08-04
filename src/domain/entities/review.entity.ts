@@ -1,4 +1,4 @@
-import { ReviewException } from "../exceptions/domain.exceptions";
+import { ReviewException } from "../exceptions/review.exceptions";
 import { User } from "./user.entity";
 
 export class Review {

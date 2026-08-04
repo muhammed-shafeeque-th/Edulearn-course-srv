@@ -1,4 +1,4 @@
-import { QuizDomainException } from "../exceptions/domain.exceptions";
+import { QuizDomainException } from "../exceptions/quiz.exceptions";
 
 export enum QuestionType {
   MULTIPLE_CHOICE = "multiple-choice",
@@ -146,7 +146,7 @@ export class Question {
 
 export interface QuizProps {
   id: string;
-  sectionId: string;
+  moduleId: string;
   courseId: string;
   idempotencyKey?: string;
   title?: string;
@@ -163,7 +163,7 @@ export interface QuizProps {
 
 export class Quiz {
   private readonly id: string;
-  private readonly sectionId: string;
+  private readonly moduleId: string;
   private readonly courseId: string;
   private readonly idempotencyKey?: string;
 
@@ -182,15 +182,15 @@ export class Quiz {
   constructor(props: QuizProps) {
     if (!props.id?.trim())
       throw new QuizDomainException("Quiz ID is required.");
-    if (!props.sectionId?.trim())
-      throw new QuizDomainException("Section ID is required.");
+    if (!props.moduleId?.trim())
+      throw new QuizDomainException("Module ID is required.");
     if (!props.courseId?.trim())
       throw new QuizDomainException("Course ID is required.");
     if (!Array.isArray(props.questions) || props.questions.length === 0) {
       throw new QuizDomainException("Quiz must have at least one question.");
     }
     this.id = props.id.trim();
-    this.sectionId = props.sectionId.trim();
+    this.moduleId = props.moduleId.trim();
     this.courseId = props.courseId.trim();
     this.idempotencyKey = props.idempotencyKey;
     this.title = props.title?.trim();
@@ -213,8 +213,8 @@ export class Quiz {
   getId(): string {
     return this.id;
   }
-  getSectionId(): string {
-    return this.sectionId;
+  getModuleId(): string {
+    return this.moduleId;
   }
   getCourseId(): string {
     return this.courseId;
@@ -258,7 +258,7 @@ export class Quiz {
       Omit<
         QuizProps,
         | "id"
-        | "sectionId"
+        | "moduleId"
         | "courseId"
         | "questions"
         | "createdAt"
@@ -389,7 +389,7 @@ export class Quiz {
   toPrimitive() {
     return {
       id: this.id,
-      sectionId: this.sectionId,
+      moduleId: this.moduleId,
       courseId: this.courseId,
       idempotencyKey: this.idempotencyKey,
       title: this.title,

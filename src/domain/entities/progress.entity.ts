@@ -1,4 +1,4 @@
-import { ProgressDomainException } from "../exceptions/domain.exceptions";
+import { ProgressDomainException } from "../exceptions/progress.exceptions";
 
 export enum UnitType {
   LESSON = "lesson",
@@ -16,7 +16,7 @@ export interface ProgressPrimitive {
   attempts: number;
   watchTime: number;
   duration: number;
-  completedAt?: string; 
+  completedAt?: string;
   passed?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -57,7 +57,7 @@ export class Progress {
     passed?: boolean,
     createdAt?: Date,
     updatedAt?: Date,
-    deletedAt?: Date
+    deletedAt?: Date,
   ) {
     this.id = id;
     this.enrollmentId = enrollmentId;
@@ -76,7 +76,6 @@ export class Progress {
     this.deletedAt = deletedAt ? new Date(deletedAt) : undefined;
   }
 
-  
   getId(): string {
     return this.id;
   }
@@ -138,8 +137,6 @@ export class Progress {
     return this.unitType === UnitType.QUIZ;
   }
 
-  
-
   markLessonCompleted(): void {
     if (!this.isLesson()) return;
     if (this.completed) return;
@@ -156,11 +153,10 @@ export class Progress {
   markQuizCompleted(
     score: number,
     passed: boolean,
-    requirePassingScore: boolean
+    requirePassingScore: boolean,
   ): void {
     if (!this.isQuiz()) return;
 
-    
     if (this.completed && this.passed === passed) return;
 
     this.score = score;
@@ -176,14 +172,15 @@ export class Progress {
     this._touch();
   }
 
-
   updateWatchProgress(
     currentTimeSeconds: number,
     durationSeconds: number,
-    treatAsAbsolute = true
+    treatAsAbsolute = true,
   ): void {
     if (!this.isLesson()) {
-      throw new ProgressDomainException("updateWatchProgress called on non-lesson progress");
+      throw new ProgressDomainException(
+        "updateWatchProgress called on non-lesson progress",
+      );
     }
 
     this.previousCompleted = this.completed;
@@ -193,7 +190,7 @@ export class Progress {
     } else {
       this.watchTime = Math.max(
         0,
-        this.watchTime + Math.floor(currentTimeSeconds)
+        this.watchTime + Math.floor(currentTimeSeconds),
       );
     }
     if (durationSeconds && durationSeconds > 0) {
@@ -202,7 +199,6 @@ export class Progress {
 
     const percent = this.getProgressPercent();
 
-    
     const COMPLETION_PERCENT = 80;
 
     if (!this.completed && percent >= COMPLETION_PERCENT) {
@@ -217,16 +213,17 @@ export class Progress {
     this.updatedAt = new Date();
   }
 
-  
   registerQuizAttempt(rawScore: number, passed: boolean): void {
     if (!this.isQuiz()) {
-      throw new ProgressDomainException("registerQuizAttempt called on non-quiz progress");
+      throw new ProgressDomainException(
+        "registerQuizAttempt called on non-quiz progress",
+      );
     }
 
     this.previousCompleted = this.completed;
 
     this.attempts = (this.attempts ?? 0) + 1;
-    this.score = Math.max(this.score ?? 0, rawScore); 
+    this.score = Math.max(this.score ?? 0, rawScore);
     if (passed && !this.completed) {
       this.completed = true;
       this.completedAt = new Date();
@@ -234,12 +231,11 @@ export class Progress {
     this._touch();
   }
 
- 
   getProgressPercent(maxQuizScore?: number): number {
     if (this.isLesson()) {
       if (!this.duration || this.duration <= 0) return 0;
       const percent = (this.watchTime / this.duration) * 100;
-      return Math.min(100, Math.round(percent * 100) / 100); 
+      return Math.min(100, Math.round(percent * 100) / 100);
     } else {
       if (maxQuizScore && maxQuizScore > 0 && this.score !== undefined) {
         const percent = (this.score / maxQuizScore) * 100;
@@ -249,12 +245,10 @@ export class Progress {
     }
   }
 
-
   wasPreviouslyCompleted(): boolean {
     return !!this.previousCompleted;
   }
 
- 
   isCompleted(): boolean {
     return !!this.completed;
   }
@@ -265,7 +259,6 @@ export class Progress {
     this._touch();
   }
 
- 
   toPrimitive(): ProgressPrimitive {
     return {
       id: this.id,
@@ -286,7 +279,6 @@ export class Progress {
     };
   }
 
-
   static fromPrimitive(primitive: ProgressPrimitive): Progress {
     return new Progress(
       primitive.id,
@@ -303,7 +295,7 @@ export class Progress {
       primitive.passed,
       primitive.createdAt ? new Date(primitive.createdAt) : undefined,
       primitive.updatedAt ? new Date(primitive.updatedAt) : undefined,
-      primitive.deletedAt ? new Date(primitive.deletedAt) : undefined
+      primitive.deletedAt ? new Date(primitive.deletedAt) : undefined,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { UserDomainException } from "../exceptions/domain.exceptions";
+import { CertificateDomainException } from "../exceptions/certificate.exceptions";
 
 export class Certificate {
   private completedAt: Date;
@@ -14,14 +14,14 @@ export class Certificate {
     private studentName: string,
     completedAt: Date,
     private readonly certificateNumber: string,
-     issueDate: Date,
-     createdAt?: Date,
+    issueDate: Date,
+    createdAt?: Date,
     updatedAt?: Date,
   ) {
-    this.completedAt = completedAt ? new Date(completedAt) : new Date()
-    this.issueDate = issueDate ? new Date(issueDate) : new Date()
-    this.createdAt = createdAt ? new Date(createdAt) : new Date()
-    this.updatedAt = updatedAt ? new Date(updatedAt) : new Date()
+    this.completedAt = completedAt ? new Date(completedAt) : new Date();
+    this.issueDate = issueDate ? new Date(issueDate) : new Date();
+    this.createdAt = createdAt ? new Date(createdAt) : new Date();
+    this.updatedAt = updatedAt ? new Date(updatedAt) : new Date();
   }
 
   // Getters
@@ -72,13 +72,13 @@ export class Certificate {
   // Business logic
   updateStudentName(newName: string): void {
     if (!newName || newName.trim().length < 2) {
-      throw new UserDomainException(
+      throw new CertificateDomainException(
         "Student name must be at least 2 characters",
       );
     }
 
     if (newName.length > 100) {
-      throw new UserDomainException(
+      throw new CertificateDomainException(
         "Student name must be less than 100 characters",
       );
     }
