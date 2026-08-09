@@ -29,7 +29,6 @@ export class GetInstructorCourseEnrollmentTrendUseCase implements IGetInstructor
           { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
         );
 
-        try {
           const trend =
             await this._enrollmentRepository.getInstructorCourseEnrollmentTrend(
               data.instructorId,
@@ -59,14 +58,6 @@ export class GetInstructorCourseEnrollmentTrendUseCase implements IGetInstructor
           );
 
           return trend;
-        } catch (error) {
-          span.setAttribute("error", true);
-          this._logger.error(
-            `Error fetching enrollment trend: ${error instanceof Error ? error.message : error}`,
-            { ctx: GetInstructorCourseEnrollmentTrendUseCase.name, error },
-          );
-          throw error;
-        }
       },
     );
   }

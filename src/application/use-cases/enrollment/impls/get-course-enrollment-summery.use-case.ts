@@ -22,7 +22,6 @@ export class GetInstructorCourseEnrollmentSummeryUseCase implements IGetInstruct
     return this._tracer.startActiveSpan(
       "GetInstructorCourseEnrollmentSummeryUseCase.execute",
       async (span) => {
-        try {
           // Set relevant trace attributes
           span.setAttribute("instructor.id", data.instructorId);
           span.setAttribute("course.id", data.courseId);
@@ -58,14 +57,6 @@ export class GetInstructorCourseEnrollmentSummeryUseCase implements IGetInstruct
           );
 
           return summary;
-        } catch (error) {
-          span.setAttribute("error", true);
-          this._logger.error(
-            `Error fetching enrollment summary: ${error instanceof Error ? error.message : error}`,
-            { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name, error },
-          );
-          throw error;
-        }
       },
     );
   }

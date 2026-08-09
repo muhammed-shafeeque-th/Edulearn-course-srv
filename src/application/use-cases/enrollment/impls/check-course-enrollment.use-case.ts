@@ -22,7 +22,6 @@ export class CheckCourseEnrollmentUseCase implements ICheckCourseEnrollmentUseCa
     return this._tracer.startActiveSpan(
       "CheckCourseEnrollmentUseCase.execute",
       async (span) => {
-        try {
           span.setAttribute("course.id", courseId);
 
           this._logger.log(
@@ -54,16 +53,7 @@ export class CheckCourseEnrollmentUseCase implements ICheckCourseEnrollmentUseCa
           );
 
           return { enrolled: Boolean(enrollment) };
-        } catch (error: any) {
-          this._logger.error(
-            `Error checking enrollment for user ${userId} in course ${courseId}: ${error?.message || error}`,
-            {
-              ctx: CheckCourseEnrollmentUseCase.name,
-              error,
-            },
-          );
-          throw error;
-        }
+        
       },
     );
   }

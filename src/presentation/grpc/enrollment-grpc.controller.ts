@@ -56,6 +56,7 @@ import { IGetEnrollmentTrendUseCase } from "src/application/use-cases/enrollment
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { EnrollmentMapper } from "../mappers/enrollment.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -96,119 +97,83 @@ export class EnrollmentGrpcController {
     data: GetEnrollmentRequest,
     metadata: Metadata,
   ): Promise<GetEnrollmentDetailsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetEnrollmentDetails",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetEnrollmentDetails",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
 
-          const enrollmentDetails =
-            await this._getEnrollmentDetailsUseCase.execute(
-              data.enrollmentId,
-              data.userId,
-            );
-          return {
-            enrollment: enrollmentDetails,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get enrollment details: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const enrollmentDetails =
+          await this._getEnrollmentDetailsUseCase.execute(
+            data.enrollmentId,
+            data.userId,
+          );
+        return {
+          enrollment: enrollmentDetails,
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "GetEnrollment")
   async getEnrollment(
     data: GetEnrollmentRequest,
     metadata: Metadata,
   ): Promise<GetEnrollmentResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetEnrollment",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetEnrollment",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
 
-          const enrollmentDto = await this._getEnrollmentUseCase.execute(
-            data.enrollmentId,
-            data.userId,
-          );
-          return {
-            enrollment: enrollmentDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get enrollment: ${error.message}` +
-          JSON.stringify(error, null, 2),
-        {
-          error,
-        },
-      );
-
-      throw error;
-    }
+        const enrollmentDto = await this._getEnrollmentUseCase.execute(
+          data.enrollmentId,
+          data.userId,
+        );
+        return {
+          enrollment: EnrollmentMapper.toGrpcResponse(enrollmentDto),
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "CheckEnrollment")
   async checkEnrollment(
     data: CheckEnrollmentRequest,
     metadata: Metadata,
   ): Promise<CheckEnrollmentResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.CheckEnrollment",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
-          span.setAttribute("user.id", data.userId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.CheckEnrollment",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
+        span.setAttribute("user.id", data.userId);
 
-          const { enrolled } = await this._checkEnrollmentUseCase.execute(
-            data.enrollmentId,
-            data.userId,
-          );
-          return {
-            enrolled,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get enrollment: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const { enrolled } = await this._checkEnrollmentUseCase.execute(
+          data.enrollmentId,
+          data.userId,
+        );
+        return {
+          enrolled,
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "CheckCourseEnrollment")
   async checkCourseEnrollment(
     data: CheckCourseEnrollmentRequest,
     metadata: Metadata,
   ): Promise<CheckEnrollmentResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.CheckCourseEnrollment",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          span.setAttribute("user.id", data.userId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.CheckCourseEnrollment",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        span.setAttribute("user.id", data.userId);
 
-          const { enrolled } = await this._checkCourseEnrollmentUseCase.execute(
-            data.courseId,
-            data.userId,
-          );
-          return {
-            enrolled,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get enrollment: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const { enrolled } = await this._checkCourseEnrollmentUseCase.execute(
+          data.courseId,
+          data.userId,
+        );
+        return {
+          enrolled,
+        };
+      },
+    );
   }
 
   // @GrpcMethod("EnrollmentService", "UpdateEnrollment")
@@ -216,7 +181,6 @@ export class EnrollmentGrpcController {
   //   data: UpdateEnrollmentRequest,
   //   metadata: Metadata
   // ): Promise<EnrollmentResponse> {
-  //   try {
   //     return await this._tracer.startActiveSpan(
   //       "EnrollmentGrpcController.UpdateEnrollment",
   //       async (span) => {
@@ -250,23 +214,15 @@ export class EnrollmentGrpcController {
     data: DeleteEnrollmentRequest,
     metadata: Metadata,
   ): Promise<DeleteEnrollmentResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.DeleteEnrollment",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.DeleteEnrollment",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
 
-          await this._deleteEnrollmentUseCase.execute(data.enrollmentId);
-          return { success: { deleted: true } };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete enrollment: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        await this._deleteEnrollmentUseCase.execute(data.enrollmentId);
+        return { success: { deleted: true } };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetEnrollmentsByUser")
@@ -274,35 +230,24 @@ export class EnrollmentGrpcController {
     data: GetEnrollmentsByUserRequest,
     metadata: Metadata,
   ): Promise<EnrollmentsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetEnrollmentsByUser",
-        async (span) => {
-          span.setAttribute("user.id", data.userId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetEnrollmentsByUser",
+      async (span) => {
+        span.setAttribute("user.id", data.userId);
 
-          const enrollments = await this._getEnrollmentsByUserUseCase.execute(
-            data.userId,
-          );
-          return {
-            enrollments: {
-              enrollments: enrollments?.map((enrollment) =>
-                enrollment.toGrpcResponse(),
-              ),
-              total: 1,
-            },
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get enrollments by user: ${error.message}`,
-        {
-          error,
-        },
-      );
-
-      throw error;
-    }
+        const enrollments = await this._getEnrollmentsByUserUseCase.execute(
+          data.userId,
+        );
+        return {
+          enrollments: {
+            enrollments: enrollments?.map((enrollment) =>
+              EnrollmentMapper.toGrpcResponse(enrollment),
+            ),
+            total: 1,
+          },
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetEnrollmentsByCourse")
@@ -310,101 +255,75 @@ export class EnrollmentGrpcController {
     data: GetEnrollmentsByCourseRequest,
     metadata: Metadata,
   ): Promise<EnrollmentsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetEnrollmentsByCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetEnrollmentsByCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
 
-          const enrollments = await this._getEnrollmentsByCourseUseCase.execute(
-            data.courseId,
-          );
-          return {
-            enrollments: {
-              enrollments: enrollments?.map((enrollment) =>
-                enrollment.toGrpcResponse(),
-              ),
-              total: 1,
-            },
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get enrollments by course: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        const enrollments = await this._getEnrollmentsByCourseUseCase.execute(
+          data.courseId,
+        );
+        return {
+          enrollments: {
+            enrollments: enrollments?.map((enrollment) =>
+              EnrollmentMapper.toGrpcResponse(enrollment),
+            ),
+            total: 1,
+          },
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "GetInstructorCoursesEnrollmentSummery")
   async getInstructorCoursesEnrollmentSummery(
     data: GetInstructorCoursesEnrollmentSummeryRequest,
     _metadata: Metadata,
   ): Promise<GetInstructorCoursesEnrollmentSummeryResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetInstructorCoursesEnrollmentSummery",
-        async (span) => {
-          // Best practice: log and trace using existing data shape, avoid hardcoded/wrong field access
-          span.setAttribute("instructor.id", data.instructorId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetInstructorCoursesEnrollmentSummery",
+      async (span) => {
+        // Best practice: log and trace using existing data shape, avoid hardcoded/wrong field access
+        span.setAttribute("instructor.id", data.instructorId);
 
-          this._logger.log(
-            `gRPC: Fetching enrollments summary for instructor ${data.instructorId}`,
-            { ctx: EnrollmentGrpcController.name },
+        this._logger.log(
+          `gRPC: Fetching enrollments summary for instructor ${data.instructorId}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
+
+        const summary =
+          await this._getInstructorCoursesEnrollmentSummeryUseCase.execute(
+            data,
           );
 
-          const summary =
-            await this._getInstructorCoursesEnrollmentSummeryUseCase.execute(
-              data,
-            );
-
-          return {
-            success: summary,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get instructor courses enrollment summary: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return {
+          success: summary,
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "GetRevenueStats")
   async getRevenueStats(
     data: GetRevenueStatsRequest,
     _metadata: Metadata,
   ): Promise<GetRevenueStatsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetRevenueStats",
-        async (span) => {
-          // Best practice: log and trace using existing data shape, avoid hardcoded/wrong field access
-          span.setAttribute("year.id", data.year);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetRevenueStats",
+      async (span) => {
+        // Best practice: log and trace using existing data shape, avoid hardcoded/wrong field access
+        span.setAttribute("year.id", data.year);
 
-          this._logger.log(
-            `gRPC: Fetching revenue stats  for year ${data.year}`,
-            { ctx: EnrollmentGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching revenue stats  for year ${data.year}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
 
-          const summary = await this._getRevenueStatsUseCase.execute(data);
+        const summary = await this._getRevenueStatsUseCase.execute(data);
 
-          return {
-            success: summary,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get revenue stats : ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          success: summary,
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetInstructorCourseEnrollmentSummery")
@@ -412,34 +331,23 @@ export class EnrollmentGrpcController {
     data: GetInstructorCourseEnrollmentSummeryRequest,
     _metadata: Metadata,
   ): Promise<GetInstructorCourseEnrollmentSummeryResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetInstructorCourseEnrollmentSummery",
-        async (span) => {
-          span.setAttribute("instructor.id", data.instructorId);
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetInstructorCourseEnrollmentSummery",
+      async (span) => {
+        span.setAttribute("instructor.id", data.instructorId);
+        span.setAttribute("course.id", data.courseId);
 
-          this._logger.log(
-            `gRPC: Fetching enrollment summary for course ${data.courseId}, instructor ${data.instructorId}`,
-            { ctx: EnrollmentGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching enrollment summary for course ${data.courseId}, instructor ${data.instructorId}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
 
-          const summary =
-            await this._getInstructorCourseEnrollmentSummeryUseCase.execute(
-              data,
-            );
+        const summary =
+          await this._getInstructorCourseEnrollmentSummeryUseCase.execute(data);
 
-          return { success: summary };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get instructor course enrollment summary: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return { success: summary };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetInstructorCourseEnrollmentTrend")
@@ -447,61 +355,44 @@ export class EnrollmentGrpcController {
     data: GetInstructorCourseEnrollmentTrendRequest,
     _metadata: Metadata,
   ): Promise<GetInstructorCourseEnrollmentTrendResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetInstructorCourseEnrollmentTrend",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetInstructorCourseEnrollmentTrend",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
 
-          this._logger.log(
-            `gRPC: Fetching enrollment trend for course ${data.courseId}`,
-            { ctx: EnrollmentGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching enrollment trend for course ${data.courseId}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
 
-          const trend =
-            await this._getInstructorCourseEnrollmentTrendUseCase.execute(data);
+        const trend =
+          await this._getInstructorCourseEnrollmentTrendUseCase.execute(data);
 
-          return { success: trend };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get instructor course enrollment trend: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return { success: trend };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "GetEnrollmentTrend")
   async getEnrollmentTrend(
     data: GetEnrollmentTrendRequest,
     _metadata: Metadata,
   ): Promise<GetEnrollmentTrendResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetEnrollmentTrend",
-        async (span) => {
-          span.setAttribute("year", data.year);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetEnrollmentTrend",
+      async (span) => {
+        span.setAttribute("year", data.year);
 
-          this._logger.log(
-            `gRPC: Fetching enrollment trend for year ${data.year}`,
-            { ctx: EnrollmentGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching enrollment trend for year ${data.year}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
 
-          const trend = await this._getEnrollmentTrendUseCase.execute(data);
-          console.log("Enrollment Trend", JSON.stringify(trend, null, 2));
+        const trend = await this._getEnrollmentTrendUseCase.execute(data);
+        console.log("Enrollment Trend", JSON.stringify(trend, null, 2));
 
-          return { success: trend };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get enrollment trend: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return { success: trend };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetMonthlyCoursesEnrollmentStats")
@@ -509,31 +400,22 @@ export class EnrollmentGrpcController {
     data: GetMonthlyCoursesEnrollmentStatsRequest,
     _metadata: Metadata,
   ): Promise<GetMonthlyCoursesEnrollmentStatsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetMonthlyCoursesEnrollmentStats",
-        async (span) => {
-          span.setAttribute("year", data.year);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetMonthlyCoursesEnrollmentStats",
+      async (span) => {
+        span.setAttribute("year", data.year);
 
-          this._logger.log(
-            `gRPC: Fetching monthly courses enrollment stats for year ${data.year}`,
-            { ctx: EnrollmentGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching monthly courses enrollment stats for year ${data.year}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
 
-          const stats =
-            await this._getMonthlyCoursesEnrollmentStatsUseCase.execute(data);
+        const stats =
+          await this._getMonthlyCoursesEnrollmentStatsUseCase.execute(data);
 
-          return { success: stats };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get monthly courses enrollment stats: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return { success: stats };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetInstructorCourseRevenueSummery")
@@ -541,31 +423,22 @@ export class EnrollmentGrpcController {
     data: GetInstructorCourseRevenueSummeryRequest,
     _metadata: Metadata,
   ): Promise<GetInstructorCourseRevenueSummeryResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetInstructorCourseRevenueSummery",
-        async (span) => {
-          span.setAttribute("instructor.id", data.instructorId);
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetInstructorCourseRevenueSummery",
+      async (span) => {
+        span.setAttribute("instructor.id", data.instructorId);
+        span.setAttribute("course.id", data.courseId);
 
-          this._logger.log(
-            `gRPC: Fetching revenue summary for course ${data.courseId}, instructor ${data.instructorId}`,
-            { ctx: EnrollmentGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching revenue summary for course ${data.courseId}, instructor ${data.instructorId}`,
+          { ctx: EnrollmentGrpcController.name },
+        );
 
-          const summary =
-            await this._getInstructorCourseRevenueSummeryUseCase.execute(data);
+        const summary =
+          await this._getInstructorCourseRevenueSummeryUseCase.execute(data);
 
-          return { success: summary };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get instructor course revenue summary: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return { success: summary };
+      },
+    );
   }
 }
