@@ -8,7 +8,6 @@ import {
   KafkaContext,
   Payload,
 } from "@nestjs/microservices";
-import { KafkaMessage } from "src/infrastructure/__kafka/custom/kafka.types";
 import { OrderHandler } from "../handlers/order.handler";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
