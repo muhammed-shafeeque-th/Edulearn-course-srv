@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { QuizDto } from "src/application/dtos/quiz.dto";
+import { Quiz } from "@/domain/entities/quiz.entity";
 import { IQuizRepository } from "src/domain/repositories/quiz.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
@@ -13,7 +13,7 @@ export class GetQuizzesByCourseUseCase implements IGetQuizzesByCourseUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(courseId: string): Promise<QuizDto[]> {
+  async execute(courseId: string): Promise<Quiz[]> {
     return await this._tracer.startActiveSpan(
       "GetQuizzesByCourseUseCase.execute",
       async (span) => {
@@ -31,7 +31,7 @@ export class GetQuizzesByCourseUseCase implements IGetQuizzesByCourseUseCase {
         this._logger.log(`Quiz fetched for courseId ${courseId} `, {
           ctx: GetQuizzesByCourseUseCase.name,
         });
-        return quizzes.map(QuizDto.fromDomain);
+        return quizzes;
       },
     );
   }
