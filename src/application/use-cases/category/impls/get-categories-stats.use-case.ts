@@ -4,7 +4,6 @@ import { ICategoryRepository } from "src/domain/repositories/category.repository
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
-import { CategoryDto } from "src/application/dtos/category.dto";
 import {
   CategoriesStats,
   GetCategoriesStatsRequest,

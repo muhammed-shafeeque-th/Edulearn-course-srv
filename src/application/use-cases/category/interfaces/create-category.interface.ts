@@ -1,4 +1,4 @@
-import { CategoryDto } from "src/application/dtos/category.dto";
+import { Category } from "@/domain/entities/category.entity";
 
 interface CreateCategoryInput {
   name: string;
@@ -13,5 +13,5 @@ export abstract class ICreateCategoryUseCase {
   abstract execute(
     dto: CreateCategoryInput,
     idempotencyKey: string,
-  ): Promise<CategoryDto>;
+  ): Promise<Category>;
 }

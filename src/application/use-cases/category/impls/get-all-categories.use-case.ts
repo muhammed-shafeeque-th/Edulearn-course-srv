@@ -4,7 +4,6 @@ import { ICategoryRepository } from "src/domain/repositories/category.repository
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
-import { CategoryDto } from "src/application/dtos/category.dto";
 import { IGetAllCategoriesUseCase } from "../interfaces/get-all-categories.interface";
 @Injectable()
 export class GetAllCategoriesUseCase implements IGetAllCategoriesUseCase {
@@ -18,7 +17,7 @@ export class GetAllCategoriesUseCase implements IGetAllCategoriesUseCase {
   async execute(dto: {
     includeDeleted?: boolean;
     activeOnly?: boolean;
-  }): Promise<CategoryDto[]> {
+  }): Promise<Category[]> {
     return await this._tracer.startActiveSpan(
       "GetAllCategoriesUseCase.execute",
       async () => {
@@ -32,7 +31,7 @@ export class GetAllCategoriesUseCase implements IGetAllCategoriesUseCase {
           categories = categories.filter((c) => c.getIsActive());
         }
 
-        return categories.map(CategoryDto.fromDomain);
+        return categories;
       },
     );
   }

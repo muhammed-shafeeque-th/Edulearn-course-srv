@@ -4,7 +4,6 @@ import { ICategoryRepository } from "src/domain/repositories/category.repository
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
-import { CategoryDto } from "src/application/dtos/category.dto";
 import { IGetSubcategoriesUseCase } from "../interfaces/get-subcategories.interface";
 
 @Injectable()
@@ -16,14 +15,14 @@ export class GetSubcategoriesUseCase implements IGetSubcategoriesUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(parentId: string): Promise<CategoryDto[]> {
+  async execute(parentId: string): Promise<Category[]> {
     return await this._tracer.startActiveSpan(
       "GetSubcategoriesUseCase.execute",
       async () => {
         const subcategories =
           await this._categoryRepository.findSubcategories(parentId);
 
-        return subcategories.map(CategoryDto.fromDomain);
+        return subcategories;
       },
     );
   }
