@@ -30,6 +30,7 @@ import { IGetEnrollmentProgressUseCase } from "src/application/use-cases/progres
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { ProgressMapper } from "../mappers/progress.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -62,28 +63,20 @@ export class ProgressGrpcController {
     data: CreateProgressRequest,
     metadata: Metadata,
   ): Promise<ProgressResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ProgressGrpcController.CreateProgress",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
+    return await this._tracer.startActiveSpan(
+      "ProgressGrpcController.CreateProgress",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
 
-          const progressDto = await this._createProgressUseCase.execute(
-            data.enrollmentId,
-            data.lessonId,
-          );
-          return {
-            progress: progressDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to create progress: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const progressDto = await this._createProgressUseCase.execute(
+          data.enrollmentId,
+          data.lessonId,
+        );
+        return {
+          progress: ProgressMapper.toGrpcResponse(progressDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetProgress")
@@ -91,27 +84,19 @@ export class ProgressGrpcController {
     data: GetProgressRequest,
     metadata: Metadata,
   ): Promise<ProgressResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ProgressGrpcController.GetProgress",
-        async (span) => {
-          span.setAttribute("progress.id", data.progressId);
+    return await this._tracer.startActiveSpan(
+      "ProgressGrpcController.GetProgress",
+      async (span) => {
+        span.setAttribute("progress.id", data.progressId);
 
-          const progressDto = await this._getProgressUseCase.execute(
-            data.progressId,
-          );
-          return {
-            progress: progressDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get progress: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const progressDto = await this._getProgressUseCase.execute(
+          data.progressId,
+        );
+        return {
+          progress: ProgressMapper.toGrpcResponse(progressDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "UpdateLessonProgress")
@@ -119,60 +104,44 @@ export class ProgressGrpcController {
     data: UpdateLessonProgressRequest,
     metadata: Metadata,
   ): Promise<UpdateLessonProgressResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ProgressGrpcController.UpdateLessonProgress",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
-          span.setAttribute("lesson.id", data.lessonId);
+    return await this._tracer.startActiveSpan(
+      "ProgressGrpcController.UpdateLessonProgress",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
+        span.setAttribute("lesson.id", data.lessonId);
 
-          const progressResponse =
-            await this._updateLessonProgressUseCase.execute({
-              currentTime: data.currentTime,
-              duration: data.duration,
-              enrollmentId: data.enrollmentId,
-              event: data.event as any,
-              lessonId: data.lessonId,
-            });
-          return {
-            progress: progressResponse,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to update lesson progress: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const progressResponse =
+          await this._updateLessonProgressUseCase.execute({
+            currentTime: data.currentTime,
+            duration: data.duration,
+            enrollmentId: data.enrollmentId,
+            event: data.event as any,
+            lessonId: data.lessonId,
+          });
+        return {
+          progress: progressResponse,
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "SubmitQuizProgress")
   async submitQuizProgress(
     data: SubmitQuizAttemptRequest,
     metadata: Metadata,
   ): Promise<SubmitQuizAttemptResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ProgressGrpcController.SubmitQuizProgress",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
-          span.setAttribute("quiz.id", data.quizId);
+    return await this._tracer.startActiveSpan(
+      "ProgressGrpcController.SubmitQuizProgress",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
+        span.setAttribute("quiz.id", data.quizId);
 
-          const progressResponse =
-            await this._submitQuizAttemptUseCase.execute(data);
-          return {
-            progress: progressResponse,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to submit quiz attempt: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const progressResponse =
+          await this._submitQuizAttemptUseCase.execute(data);
+        return {
+          progress: progressResponse,
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "DeleteProgress")
@@ -180,23 +149,15 @@ export class ProgressGrpcController {
     data: DeleteProgressRequest,
     metadata: Metadata,
   ): Promise<DeleteProgressResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ProgressGrpcController.DeleteProgress",
-        async (span) => {
-          span.setAttribute("progress.id", data.progressId);
+    return await this._tracer.startActiveSpan(
+      "ProgressGrpcController.DeleteProgress",
+      async (span) => {
+        span.setAttribute("progress.id", data.progressId);
 
-          await this._deleteProgressUseCase.execute(data.progressId);
-          return { success: { deleted: true } };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete progress: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        await this._deleteProgressUseCase.execute(data.progressId);
+        return { success: { deleted: true } };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetProgressByEnrollment")
@@ -204,27 +165,18 @@ export class ProgressGrpcController {
     data: GetProgressByEnrollmentRequest,
     metadata: Metadata,
   ): Promise<EnrollmentProgressResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ProgressGrpcController.GetProgressByEnrollment",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
-          span.setAttribute("user.id", data.userId);
+    return await this._tracer.startActiveSpan(
+      "ProgressGrpcController.GetProgressByEnrollment",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
+        span.setAttribute("user.id", data.userId);
 
-          const progressResponse =
-            await this._getEnrollmentProgressesUseCase.execute(data);
-          return {
-            progress: progressResponse,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get progress by enrollment: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        const progressResponse =
+          await this._getEnrollmentProgressesUseCase.execute(data);
+        return {
+          progress: progressResponse,
+        };
+      },
+    );
   }
 }

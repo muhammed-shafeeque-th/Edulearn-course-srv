@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ProgressDto } from "src/application/dtos/progress.dto";
+import { Progress } from "src/domain/entities/progress.entity";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
@@ -26,7 +26,7 @@ export class UpdateProgressUseCase implements IUpdateProgressUseCase {
     enrollmentId: string,
     lessonId: string,
     completed: boolean,
-  ): Promise<ProgressDto> {
+  ): Promise<Progress> {
     return await this._tracer.startActiveSpan(
       "UpdateProgressUseCase.execute",
       async (span) => {
@@ -87,7 +87,7 @@ export class UpdateProgressUseCase implements IUpdateProgressUseCase {
         this._logger.log(`Progress updated for enrollment ${enrollmentId}`, {
           ctx: UpdateProgressUseCase.name,
         });
-        return ProgressDto.fromDomain(progress);
+        return progress;
       },
     );
   }

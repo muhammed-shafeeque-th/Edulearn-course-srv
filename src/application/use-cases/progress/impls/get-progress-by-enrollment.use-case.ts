@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { statSync } from "fs";
-import { ProgressDto } from "src/application/dtos/progress.dto";
+import { Progress } from "src/domain/entities/progress.entity";
 import { IProgressRepository } from "src/domain/repositories/progress.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
@@ -14,7 +14,7 @@ export class GetProgressesByEnrollmentUseCase implements IGetProgressesByEnrollm
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(enrollmentId: string): Promise<ProgressDto[]> {
+  async execute(enrollmentId: string): Promise<Progress[]> {
     return await this._tracer.startActiveSpan(
       "GetProgressesByEnrollmentUseCase.execute",
       async (span) => {
@@ -32,7 +32,7 @@ export class GetProgressesByEnrollmentUseCase implements IGetProgressesByEnrollm
         this._logger.log(`Progresses of enrolment ${enrollmentId} fetched`, {
           ctx: GetProgressesByEnrollmentUseCase.name,
         });
-        return progresses.map(ProgressDto.fromDomain);
+        return progresses;
       },
     );
   }
