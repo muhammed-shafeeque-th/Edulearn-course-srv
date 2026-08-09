@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ICourseRepository } from "../../../../domain/repositories/course.repository";
-import { CourseDto } from "../../../dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetEnrolledCoursesUseCase } from "../interfaces/get-enrolled-courses.interface";
@@ -19,7 +19,7 @@ export class GetEnrolledCoursesUseCase implements IGetEnrolledCoursesUseCase {
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: CourseDto[]; total: number }> {
+  ): Promise<{ courses: Course[]; total: number }> {
     return await this._tracer.startActiveSpan(
       "GetEnrolledCoursesUseCase.execute",
       async (span) => {
@@ -37,13 +37,12 @@ export class GetEnrolledCoursesUseCase implements IGetEnrolledCoursesUseCase {
             sortBy,
             sortOrder,
           );
-        const courseDtos = courses.map(CourseDto.fromDomain);
 
         this._logger.log(
-          `Found ${courseDtos.length} enrolled courses for user ${userId}`,
+          `Found ${courses.length} enrolled courses for user ${userId}`,
           { ctx: GetEnrolledCoursesUseCase.name },
         );
-        return { courses: courseDtos, total };
+        return { courses: courses, total };
       },
     );
   }

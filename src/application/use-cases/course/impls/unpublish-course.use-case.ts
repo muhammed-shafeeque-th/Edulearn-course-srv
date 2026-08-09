@@ -6,7 +6,7 @@ import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { v4 as uuidV4 } from "uuid";
-import { CourseDto } from "src/application/dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { UnPublishCourseRequest } from "src/infrastructure/grpc/generated/course/types/course";
 import { CourseUnPublishedEvent } from "src/domain/events/course-lifecycle.events";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
@@ -21,7 +21,7 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(cmd: UnPublishCourseRequest): Promise<CourseDto> {
+  async execute(cmd: UnPublishCourseRequest): Promise<Course> {
     return this._tracer.startActiveSpan(
       `${UnPublishCourseUseCase.name}.execute`,
       async (span) => {
@@ -70,57 +70,46 @@ export class UnPublishCourseUseCase implements IUnPublishCourseUseCase {
           );
         }
 
-        try {
-          span?.setAttribute("course.id", courseId);
+        span?.setAttribute("course.id", courseId);
 
-          // Unpublish the course via domain method
-          course.unpublishCourse();
+        // Unpublish the course via domain method
+        course.unpublishCourse();
 
-          // Persist the changes
-          await this._courseRepository.update(course);
+        // Persist the changes
+        await this._courseRepository.update(course);
 
-          span?.setAttribute("course.unpublished", true);
+        span?.setAttribute("course.unpublished", true);
 
-          // Emit CourseUnPublished event with all relevant fields
-          await this._eventProducer.produce<CourseUnPublishedEvent>(
-            KafkaTopics.CourseUnpublished,
-            {
-              key: course.getId(),
-              value: {
-                eventType: "CourseUnPublishedEvent",
-                eventId: uuidV4(),
-                timestamp: Date.now(),
-                source: "course-service",
-                payload: {
-                  courseId: course.getId(),
-                  instructorId: course.getInstructorId(),
-                  slug: course.getSlug(),
-                  status: course.getStatus(),
-                  title: course.getTitle(),
-                  updatedAt: course.getUpdatedAt()?.toISOString?.() || "",
-                },
+        // Emit CourseUnPublished event with all relevant fields
+        await this._eventProducer.produce<CourseUnPublishedEvent>(
+          KafkaTopics.CourseUnpublished,
+          {
+            key: course.getId(),
+            value: {
+              eventType: "CourseUnPublishedEvent",
+              eventId: uuidV4(),
+              timestamp: Date.now(),
+              source: "course-service",
+              payload: {
+                courseId: course.getId(),
+                instructorId: course.getInstructorId(),
+                slug: course.getSlug(),
+                status: course.getStatus(),
+                title: course.getTitle(),
+                updatedAt: course.getUpdatedAt()?.toISOString?.() || "",
               },
             },
-          );
+          },
+        );
 
-          this._logger.debug("Course unpublished successfully.", {
-            ctx: UnPublishCourseUseCase.name,
-            courseId,
-            userId,
-            isAdmin,
-          });
+        this._logger.debug("Course unpublished successfully.", {
+          ctx: UnPublishCourseUseCase.name,
+          courseId,
+          userId,
+          isAdmin,
+        });
 
-          return CourseDto.fromDomain(course);
-        } catch (error) {
-          this._logger.error("Failed to unpublish course", {
-            ctx: UnPublishCourseUseCase.name,
-            error,
-            courseId,
-            userId,
-            isAdmin,
-          });
-          throw error;
-        }
+        return course;
       },
     );
   }

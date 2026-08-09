@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { LessonDto } from "src/application/dtos/lesson.dto";
 import {
   ContentMetadata,
   ContentType,
@@ -32,7 +31,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
   async execute(
     dto: CreateLessonDto,
     idempotencyKey: string,
-  ): Promise<LessonDto> {
+  ): Promise<Lesson> {
     return await this._tracer.startActiveSpan(
       "CreateLessonUseCase.execute",
       async (span) => {
@@ -49,7 +48,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
           this._logger.debug(
             `Lesson creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateLessonUseCase.name}`,
           );
-          return LessonDto.fromDomain(existingLesson);
+          return existingLesson;
         }
 
         this._logger.log(`Creating lesson for module ${dto.moduleId}`, {
@@ -103,7 +102,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
         this._logger.log(`Lesson created for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
-        return LessonDto.fromDomain(lesson);
+        return lesson
       },
     );
   }

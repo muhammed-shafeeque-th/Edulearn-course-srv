@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewDto } from "src/application/dtos/review.dto";
+import { Review } from "src/domain/entities/review.entity";
 import { ReviewNotFoundException } from "src/domain/exceptions/review.exceptions";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
@@ -14,7 +14,7 @@ export class GetReviewUseCase implements IGetReviewUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(reviewId: string): Promise<ReviewDto> {
+  async execute(reviewId: string): Promise<Review> {
     return await this._tracer.startActiveSpan(
       "GetReviewsUseCase.execute",
       async (span) => {
@@ -32,7 +32,7 @@ export class GetReviewUseCase implements IGetReviewUseCase {
         }
 
         span.setAttribute("review.found", true);
-        const reviewDto = ReviewDto.fromDomain(review);
+        const reviewDto = review;
 
         this._logger.log(`Found review ${reviewId} `, {
           ctx: GetReviewUseCase.name,

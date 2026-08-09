@@ -6,7 +6,7 @@ import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions
 import { KafkaTopics } from "src/shared/events/event.topics";
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { v4 as uuidV4 } from "uuid";
-import { CourseDto } from "src/application/dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { PublishCourseRequest } from "src/infrastructure/grpc/generated/course/types/course";
 import { CoursePublishedEvent } from "src/domain/events/course-lifecycle.events";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
@@ -21,7 +21,7 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(cmd: PublishCourseRequest): Promise<CourseDto> {
+  async execute(cmd: PublishCourseRequest): Promise<Course> {
     return this._tracer.startActiveSpan(
       `${PublishCourseUseCase.name}.execute`,
       async (span) => {
@@ -71,63 +71,45 @@ export class PublishCourseUseCase implements IPublishCourseUseCase {
           );
         }
 
-        try {
-          span?.setAttribute("course.id", courseId);
+        span?.setAttribute("course.id", courseId);
 
-          // Publish the course via domain method
-          course.publishCourse();
+        // Publish the course via domain method
+        course.publishCourse();
 
-          // Save
-          await this._courseRepository.update(course);
+        // Save
+        await this._courseRepository.update(course);
 
-          span?.setAttribute("course.published", true);
+        span?.setAttribute("course.published", true);
 
-          // Emit event after publishing
-          await this._eventProducer.produce<CoursePublishedEvent>(
-            KafkaTopics.CoursePublished,
-            {
-              key: course.getId(),
-              value: {
-                eventType: "CoursePublishedEvent",
-                eventId: uuidV4(),
-                timestamp: Date.now(),
-                source: "course-service",
-                payload: {
-                  instructorId: course.getInstructorId(),
-                  courseId: course.getId(),
-                  slug: course.getSlug(),
-                  status: course.getStatus(),
-                  title: course.getTitle(),
-                  updatedAt: course.getUpdatedAt()?.toISOString?.() || "",
-                },
+        // Emit event after publishing
+        await this._eventProducer.produce<CoursePublishedEvent>(
+          KafkaTopics.CoursePublished,
+          {
+            key: course.getId(),
+            value: {
+              eventType: "CoursePublishedEvent",
+              eventId: uuidV4(),
+              timestamp: Date.now(),
+              source: "course-service",
+              payload: {
+                instructorId: course.getInstructorId(),
+                courseId: course.getId(),
+                slug: course.getSlug(),
+                status: course.getStatus(),
+                title: course.getTitle(),
+                updatedAt: course.getUpdatedAt()?.toISOString?.() || "",
               },
             },
-          );
+          },
+        );
 
-          this._logger.debug("Course published successfully.", {
-            ctx: PublishCourseUseCase.name,
-            courseId,
-            userId,
-          });
+        this._logger.debug("Course published successfully.", {
+          ctx: PublishCourseUseCase.name,
+          courseId,
+          userId,
+        });
 
-          return CourseDto.fromDomain(course);
-        } catch (error: any) {
-          span?.setAttribute("error", true);
-          span?.setAttribute(
-            "error.message",
-            error?.message ?? "Unknown error",
-          );
-          this._logger.error(
-            `Failed to publish course ${courseId}: ${error?.message}`,
-            {
-              ctx: PublishCourseUseCase.name,
-              error,
-              courseId,
-              userId,
-            },
-          );
-          throw error;
-        }
+        return course;
       },
     );
   }

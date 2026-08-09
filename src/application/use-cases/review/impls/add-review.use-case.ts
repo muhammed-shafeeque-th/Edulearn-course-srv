@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewDto } from "src/application/dtos/review.dto";
 import { Review } from "src/domain/entities/review.entity";
 import { User } from "src/domain/entities/user.entity";
 import { CourseReviewSubmittedEvent } from "src/domain/events/review.events";
@@ -31,7 +30,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: SubmitCourseReviewRequest): Promise<ReviewDto> {
+  async execute(dto: SubmitCourseReviewRequest): Promise<Review> {
     return this._tracer.startActiveSpan(
       "AddReviewUseCase.execute",
       async (span) => {
@@ -165,7 +164,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
           `Review added for course ${courseId} by user ${userId}`,
           { ctx: AddReviewUseCase.name },
         );
-        return ReviewDto.fromDomain(review);
+        return review;
       },
     );
   }

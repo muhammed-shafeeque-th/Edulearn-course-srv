@@ -3,7 +3,7 @@ import { ICategoryRepository } from "src/domain/repositories/category.repository
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
-import { CategoryDto } from "src/application/dtos/category.dto";
+import { Category } from "@/domain/entities/category.entity";
 import slugify from "slugify";
 import {
   CategoryAlreadyExistException,
@@ -30,7 +30,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: UpdateCategoryInput): Promise<CategoryDto> {
+  async execute(dto: UpdateCategoryInput): Promise<Category> {
     return await this._tracer.startActiveSpan(
       "UpdateCategoryUseCase.execute",
       async () => {
@@ -62,7 +62,7 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
         await this._categoryRepository.update(category);
         this._logger.debug(`Updated category: ${dto.id}`);
 
-        return CategoryDto.fromDomain(category);
+        return category;
       },
     );
   }

@@ -1,5 +1,5 @@
-import { QuizDto } from "src/application/dtos/quiz.dto";
+import { Quiz } from "@/domain/entities/quiz.entity";
 
 export abstract class IGetQuizzesByCourseUseCase {
-  abstract execute(courseId: string): Promise<QuizDto[]>;
+  abstract execute(courseId: string): Promise<Quiz[]>;
 }

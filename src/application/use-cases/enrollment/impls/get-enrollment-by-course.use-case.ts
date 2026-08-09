@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { EnrollmentDto } from "src/application/dtos/enrollment.dto";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetEnrollmentsByCourseUseCase } from "../interfaces/get-enrollment-by-course.interface";
+import { Enrollment } from "@/domain/entities/enrollment.entity";
 
 @Injectable()
 export class GetEnrollmentsByCourseUseCase implements IGetEnrollmentsByCourseUseCase {
@@ -13,7 +13,7 @@ export class GetEnrollmentsByCourseUseCase implements IGetEnrollmentsByCourseUse
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(courseId: string): Promise<EnrollmentDto[]> {
+  async execute(courseId: string): Promise<Enrollment[]> {
     return await this._tracer.startActiveSpan(
       "GetEnrollmentsByCourseUseCase.execute",
       async (span) => {
@@ -32,7 +32,7 @@ export class GetEnrollmentsByCourseUseCase implements IGetEnrollmentsByCourseUse
         this._logger.log(`Enrollments by course ${courseId} fetched`, {
           ctx: GetEnrollmentsByCourseUseCase.name,
         });
-        return enrollments.map(EnrollmentDto.fromDomain);
+        return enrollments;
       },
     );
   }

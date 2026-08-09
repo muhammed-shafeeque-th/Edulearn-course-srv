@@ -23,6 +23,7 @@ import { Readable } from "node:stream";
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { CertificateMapper } from "../mappers/certificate.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -57,35 +58,24 @@ export class CertificateGrpcController {
       `[GetCertificate] Called with certificateId=${data.certificateId}, userId=${data.userId}`,
       { data },
     );
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetCertificate",
-        async (span) => {
-          span.setAttribute("certificate.id", data.certificateId);
 
-          const certificateDto = await this._getCertificateUseCase.execute(
-            data.certificateId,
-            data.userId,
-          );
-          this._logger.debug(
-            `[GetCertificate] Certificate fetched successfully, certificateId=${data.certificateId}`,
-          );
-          return {
-            certificate: certificateDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `[GetCertificate] Failed to get certificate: ${error.message}`,
-        {
-          error,
-          data,
-        },
-      );
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetCertificate",
+      async (span) => {
+        span.setAttribute("certificate.id", data.certificateId);
 
-      throw error;
-    }
+        const certificate = await this._getCertificateUseCase.execute(
+          data.certificateId,
+          data.userId,
+        );
+        this._logger.debug(
+          `[GetCertificate] Certificate fetched successfully, certificateId=${data.certificateId}`,
+        );
+        return {
+          certificate: CertificateMapper.toGrpcResponse(certificate),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetCertificatesByUser")
@@ -97,39 +87,28 @@ export class CertificateGrpcController {
       `[GetCertificatesByUser] Called with userId=${data.userId}`,
       { data },
     );
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetCertificatesByUser",
-        async (span) => {
-          span.setAttribute("user.id", data.userId);
 
-          const { certificates, total } =
-            await this._getCertificatesByUserUseCase.execute(data);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetCertificatesByUser",
+      async (span) => {
+        span.setAttribute("user.id", data.userId);
 
-          this._logger.debug(
-            `[GetCertificatesByUser] Certificates fetched successfully for userId=${data.userId}, total=${total}`,
-          );
-          return {
-            certificates: {
-              certificates: certificates.map((certificate) =>
-                certificate.toGrpcResponse(),
-              ),
-              total,
-            },
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `[GetCertificatesByUser] Failed to get certificates: ${error.message}`,
-        {
-          error,
-          data,
-        },
-      );
+        const { certificates, total } =
+          await this._getCertificatesByUserUseCase.execute(data);
 
-      throw error;
-    }
+        this._logger.debug(
+          `[GetCertificatesByUser] Certificates fetched successfully for userId=${data.userId}, total=${total}`,
+        );
+        return {
+          certificates: {
+            certificates: certificates.map((certificate) =>
+              CertificateMapper.toGrpcResponse(certificate),
+            ),
+            total,
+          },
+        };
+      },
+    );
   }
 
   @GrpcStreamMethod("CertificateService", "DownloadCertificate")
@@ -142,21 +121,14 @@ export class CertificateGrpcController {
     );
     // Generate PDF stream
     let pdfStream: Readable;
-    try {
-      pdfStream = await this._downloadCertificateUseCase.execute(
-        data.certificateId,
-        data.userId,
-      );
-      this._logger.debug(
-        `[DownloadCertificate] PDF stream created for certificateId=${data.certificateId}`,
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `[DownloadCertificate] Failed to create PDF stream: ${error.message}`,
-        { error, data },
-      );
-      throw error;
-    }
+
+    pdfStream = await this._downloadCertificateUseCase.execute(
+      data.certificateId,
+      data.userId,
+    );
+    this._logger.debug(
+      `[DownloadCertificate] PDF stream created for certificateId=${data.certificateId}`,
+    );
 
     // Convert Node.js stream to gRPC stream (Observable)
     return new Observable((observer) => {
@@ -190,37 +162,26 @@ export class CertificateGrpcController {
       `[GetCertificateByEnrollment] Called with enrollmentId=${data.enrollmentId}, userId=${data.userId}`,
       { data },
     );
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetCertificateByEnrollment",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
 
-          const certificateDto =
-            await this._getCertificateByEnrollmentUseCase.execute(
-              data.enrollmentId,
-              data.userId,
-            );
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetCertificateByEnrollment",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
 
-          this._logger.debug(
-            `[GetCertificateByEnrollment] Certificate fetched successfully for enrollmentId=${data.enrollmentId}`,
+        const certificate =
+          await this._getCertificateByEnrollmentUseCase.execute(
+            data.enrollmentId,
+            data.userId,
           );
-          return {
-            certificate: certificateDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `[GetCertificateByEnrollment] Failed to get certificate: ${error.message}`,
-        {
-          error,
-          data,
-        },
-      );
 
-      throw error;
-    }
+        this._logger.debug(
+          `[GetCertificateByEnrollment] Certificate fetched successfully for enrollmentId=${data.enrollmentId}`,
+        );
+        return {
+          certificate: CertificateMapper.toGrpcResponse(certificate),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GenerateCertificate")
@@ -232,33 +193,21 @@ export class CertificateGrpcController {
       `[GenerateCertificate] Called with enrollmentId=${data.enrollmentId}, userId=${data.userId}, studentName="${data.studentName}"`,
       { data },
     );
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GenerateCertificate",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GenerateCertificate",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
 
-          const certificateDto =
-            await this._generateCertificateUseCase.execute(data);
+        const certificate =
+          await this._generateCertificateUseCase.execute(data);
 
-          this._logger.debug(
-            `[GenerateCertificate] Certificate generated successfully for enrollmentId=${data.enrollmentId}, userId=${data.userId}, certificateId=${certificateDto?.id}`,
-          );
-          return {
-            certificate: certificateDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `[GenerateCertificate] Failed to generate certificate: ${error.message}`,
-        {
-          error,
-          data,
-        },
-      );
-
-      throw error;
-    }
+        this._logger.debug(
+          `[GenerateCertificate] Certificate generated successfully for enrollmentId=${data.enrollmentId}, userId=${data.userId}, certificateId=${certificate?.getId()}`,
+        );
+        return {
+          certificate: CertificateMapper.toGrpcResponse(certificate),
+        };
+      },
+    );
   }
 }

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { EnrollmentDto } from "src/application/dtos/enrollment.dto";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { IGetEnrollmentUseCase } from "../interfaces/get-enrollment.interface";
+import { Enrollment } from "@/domain/entities/enrollment.entity";
 
 @Injectable()
 export class GetEnrollmentUseCase implements IGetEnrollmentUseCase {
@@ -15,7 +15,7 @@ export class GetEnrollmentUseCase implements IGetEnrollmentUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(enrollmentId: string, userId: string): Promise<EnrollmentDto> {
+  async execute(enrollmentId: string, userId: string): Promise<Enrollment> {
     return await this._tracer.startActiveSpan(
       "GetEnrollmentUseCase.execute",
       async (span) => {
@@ -46,7 +46,7 @@ export class GetEnrollmentUseCase implements IGetEnrollmentUseCase {
         this._logger.log(`Enrollment ${enrollmentId} fetched`, {
           ctx: GetEnrollmentUseCase.name,
         });
-        return EnrollmentDto.fromDomain(enrollment);
+        return enrollment;
       },
     );
   }

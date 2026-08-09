@@ -1,4 +1,4 @@
-import { CourseDto } from "src/application/dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { PublishCourseRequest } from "src/infrastructure/grpc/generated/course/types/course";
 
 export abstract class IPublishCourseUseCase {
@@ -10,5 +10,5 @@ export abstract class IPublishCourseUseCase {
    * @returns Published CourseDto
    * @throws CourseNotFoundException | UnauthorizedException
    */
-  abstract execute(cmd: PublishCourseRequest): Promise<CourseDto>;
+  abstract execute(cmd: PublishCourseRequest): Promise<Course>;
 }

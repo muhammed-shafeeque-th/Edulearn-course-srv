@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ModuleDto } from "src/application/dtos/module.dto";
+import { Module } from "@/domain/entities/module.entity";
 import { ModuleNotFoundException } from "src/domain/exceptions/module.exceptions";
 import { IModuleRepository } from "src/domain/repositories/module.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
@@ -14,7 +14,7 @@ export class GetModuleUseCase implements IGetModuleUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(moduleId: string): Promise<ModuleDto> {
+  async execute(moduleId: string): Promise<Module> {
     return await this._tracer.startActiveSpan(
       "GetModuleUseCase.execute",
       async (span) => {
@@ -35,7 +35,7 @@ export class GetModuleUseCase implements IGetModuleUseCase {
         this._logger.log(`Module ${moduleId} fetched`, {
           ctx: GetModuleUseCase.name,
         });
-        return ModuleDto.fromDomain(module);
+        return module;
       },
     );
   }

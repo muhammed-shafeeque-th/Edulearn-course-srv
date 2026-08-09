@@ -1,5 +1,5 @@
-import { ModuleDto } from "src/application/dtos/module.dto";
+import { Module } from "@/domain/entities/module.entity";
 
 export abstract class IGetModuleUseCase {
-  abstract execute(moduleId: string): Promise<ModuleDto>;
+  abstract execute(moduleId: string): Promise<Module>;
 }

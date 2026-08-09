@@ -1,8 +1,8 @@
-import { EnrollmentDto } from "src/application/dtos/enrollment.dto";
+import { Enrollment } from "@/domain/entities/enrollment.entity";
 
 export abstract class IGetEnrollmentUseCase {
   abstract execute(
     enrollmentId: string,
     userId: string,
-  ): Promise<EnrollmentDto>;
+  ): Promise<Enrollment>;
 }

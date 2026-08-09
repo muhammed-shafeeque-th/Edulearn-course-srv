@@ -1,5 +1,5 @@
-import { ProgressDto } from "src/application/dtos/progress.dto";
+import { Progress } from "src/domain/entities/progress.entity";
 
 export abstract class IGetProgressesByEnrollmentUseCase {
-  abstract execute(enrollmentId: string): Promise<ProgressDto[]>;
+  abstract execute(enrollmentId: string): Promise<Progress[]>;
 }

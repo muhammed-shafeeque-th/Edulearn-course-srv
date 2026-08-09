@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ModuleDto } from "src/application/dtos/module.dto";
+import { Module } from "@/domain/entities/module.entity";
 import { IModuleRepository } from "src/domain/repositories/module.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
@@ -13,7 +13,7 @@ export class GetModulesByCourseUseCase implements IGetModulesByCourseUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(courseId: string): Promise<ModuleDto[]> {
+  async execute(courseId: string): Promise<Module[]> {
     return await this._tracer.startActiveSpan(
       "GetModulesByCourseUseCase.execute",
       async (span) => {
@@ -29,7 +29,7 @@ export class GetModulesByCourseUseCase implements IGetModulesByCourseUseCase {
         this._logger.log(`Modules ${modules.length} fetched`, {
           ctx: GetModulesByCourseUseCase.name,
         });
-        return modules.map(ModuleDto.fromDomain);
+        return modules;
       },
     );
   }

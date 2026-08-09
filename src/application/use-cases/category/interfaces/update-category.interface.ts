@@ -1,4 +1,4 @@
-import { CategoryDto } from "src/application/dtos/category.dto";
+import { Category } from "@/domain/entities/category.entity";
 
 interface UpdateCategoryInput {
   id: string;
@@ -11,5 +11,5 @@ interface UpdateCategoryInput {
 }
 
 export abstract class IUpdateCategoryUseCase {
-  abstract execute(dto: UpdateCategoryInput): Promise<CategoryDto>;
+  abstract execute(dto: UpdateCategoryInput): Promise<Category>;
 }

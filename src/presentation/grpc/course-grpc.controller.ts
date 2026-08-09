@@ -45,6 +45,7 @@ import { IGetInstructorCourseRatingStatsUseCase } from "src/application/use-case
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { CourseMapper } from "../mappers/course.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -84,38 +85,30 @@ export class CourseGrpcController {
     data: CreateCourseRequestDto,
     metadata: Metadata,
   ): Promise<CourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.CreateCourse",
-        async (span) => {
-          span.setAttribute("course.title", data.title);
-          span.setAttribute("course.instructor.id", data.instructorId);
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.CreateCourse",
+      async (span) => {
+        span.setAttribute("course.title", data.title);
+        span.setAttribute("course.instructor.id", data.instructorId);
 
-          this._logger.debug(`gRPC: Creating course: ${data.title}`, {
-            ctx: CourseGrpcController.name,
-          });
+        this._logger.debug(`gRPC: Creating course: ${data.title}`, {
+          ctx: CourseGrpcController.name,
+        });
 
-          const { idempotencyKey } = getMetadataValues(metadata, {
-            idempotencyKey: "idempotency-key",
-          });
+        const { idempotencyKey } = getMetadataValues(metadata, {
+          idempotencyKey: "idempotency-key",
+        });
 
-          const courseDto = await this._createCourseUseCase.execute(
-            data,
-            idempotencyKey,
-          );
+        const courseDto = await this._createCourseUseCase.execute(
+          data,
+          idempotencyKey,
+        );
 
-          return {
-            course: courseDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to create course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          course: CourseMapper.toGrpcCourseResponse(courseDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetCourse")
@@ -123,58 +116,40 @@ export class CourseGrpcController {
     data: GetCourseRequestDto,
     metadata: Metadata,
   ): Promise<CourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetCourse",
-        async (span) => {
-          this._logger.debug(`gRPC: Fetching course: ${data.courseId}`, {
-            ctx: CourseGrpcController.name,
-          });
-          span.setAttribute("course.id", data.courseId);
-          const courseDto = await this._getCourseUseCase.execute(data.courseId);
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetCourse",
+      async (span) => {
+        this._logger.debug(`gRPC: Fetching course: ${data.courseId}`, {
+          ctx: CourseGrpcController.name,
+        });
+        span.setAttribute("course.id", data.courseId);
+        const courseDto = await this._getCourseUseCase.execute(data.courseId);
 
-          return {
-            course: courseDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          course: CourseMapper.toGrpcCourseResponse(courseDto),
+        };
+      },
+    );
   }
   @GrpcMethod("CourseService", "GetCourseBySlug")
   async getCourseBySlug(
     data: GetCourseBySlugRequestDto,
     metadata: Metadata,
   ): Promise<CourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetCourseBySlug",
-        async (span) => {
-          this._logger.debug(`gRPC: Fetching course: ${data.slug}`, {
-            ctx: CourseGrpcController.name,
-          });
-          span.setAttribute("course.slug", data.slug);
-          const courseDto = await this._getCourseBySlugUseCase.execute(
-            data.slug,
-          );
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetCourseBySlug",
+      async (span) => {
+        this._logger.debug(`gRPC: Fetching course: ${data.slug}`, {
+          ctx: CourseGrpcController.name,
+        });
+        span.setAttribute("course.slug", data.slug);
+        const courseDto = await this._getCourseBySlugUseCase.execute(data.slug);
 
-          return {
-            course: courseDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          course: CourseMapper.toGrpcCourseResponse(courseDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "getCourses")
@@ -182,109 +157,85 @@ export class CourseGrpcController {
     data: GetCoursesRequestDto,
     metadata: Metadata,
   ): Promise<CoursesListResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetCourse",
-        async (span) => {
-          this._logger.debug(
-            `gRPC: Fetching courses page: ${data.params?.pagination.page} pageSize: ${data.params?.pagination?.pageSize} }`,
-            {
-              ctx: CourseGrpcController.name,
-            },
-          );
-          span.setAttribute("course.page", data.params?.pagination?.page);
-          span.setAttribute(
-            "course.pageSize",
-            data.params?.pagination?.pageSize,
-          );
-          span.setAttribute("course.sortBy", data.params?.pagination?.sortBy);
-          span.setAttribute(
-            "course.sortOrder",
-            data.params?.pagination?.sortOrder,
-          );
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetCourse",
+      async (span) => {
+        this._logger.debug(
+          `gRPC: Fetching courses page: ${data.params?.pagination.page} pageSize: ${data.params?.pagination?.pageSize} }`,
+          {
+            ctx: CourseGrpcController.name,
+          },
+        );
+        span.setAttribute("course.page", data.params?.pagination?.page);
+        span.setAttribute("course.pageSize", data.params?.pagination?.pageSize);
+        span.setAttribute("course.sortBy", data.params?.pagination?.sortBy);
+        span.setAttribute(
+          "course.sortOrder",
+          data.params?.pagination?.sortOrder,
+        );
 
-          const { courses: courseDtos, total } =
-            await this._listCoursesUseCase.execute(data.params);
+        const { courses: courseDtos, total } =
+          await this._listCoursesUseCase.execute(data.params);
 
-          return {
-            courses: {
-              courses: courseDtos?.map((course) => course.toGrpcResponse()),
-              total,
-            },
-          } as CoursesListResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get all courses: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          courses: {
+            courses: courseDtos?.map((course) =>
+              CourseMapper.toGrpcCourseMetaResponse(course),
+            ),
+            total,
+          },
+        } as CoursesListResponse;
+      },
+    );
   }
   @GrpcMethod("CourseService", "GetCoursesByIds")
   async getCoursesByIds(
     data: GetCourseByIdsRequestDto,
     metadata: Metadata,
   ): Promise<GetCoursesByIdsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetCourse",
-        async (span) => {
-          this._logger.debug(
-            `gRPC: Fetching courses for ${data.courseIds?.length} ids`,
-            {
-              ctx: CourseGrpcController.name,
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetCourse",
+      async (span) => {
+        this._logger.debug(
+          `gRPC: Fetching courses for ${data.courseIds?.length} ids`,
+          {
+            ctx: CourseGrpcController.name,
+          },
+        );
+
+        const courses = await this._getCoursesByIdsUseCase.execute(data);
+
+        return {
+          success: {
+            courses: {
+              courses: courses?.map((course) =>
+                CourseMapper.toGrpcCourseMetaResponse(course),
+              ),
             },
-          );
-
-          const { courses: courseDtos } =
-            await this._getCoursesByIdsUseCase.execute(data);
-
-          return {
-            success: {
-              courses: {
-                courses: courseDtos?.map((course) => course.toGrpcResponse()),
-              },
-            },
-          } as GetCoursesByIdsResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get all courses: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+          },
+        } as GetCoursesByIdsResponse;
+      },
+    );
   }
   @GrpcMethod("CourseService", "UpdateCourse")
   async updateCourse(
     data: UpdateCourseRequestDto,
     metadata: Metadata,
   ): Promise<CourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.UpdateCourse",
-        async (span) => {
-          this._logger.log(`gRPC: Updating course ${data.courseId}`, {
-            ctx: CourseGrpcController.name,
-          });
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.UpdateCourse",
+      async (span) => {
+        this._logger.log(`gRPC: Updating course ${data.courseId}`, {
+          ctx: CourseGrpcController.name,
+        });
+        span.setAttribute("course.id", data.courseId);
 
-          const courseDto = await this._updateCourseUseCase.execute(data);
-          return {
-            course: courseDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to update course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const courseDto = await this._updateCourseUseCase.execute(data);
+        return {
+          course: CourseMapper.toGrpcCourseResponse(courseDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "DeleteCourse")
@@ -292,78 +243,54 @@ export class CourseGrpcController {
     data: DeleteCourseRequestDto,
     metadata: Metadata,
   ): Promise<DeleteCourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.DeleteCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
-            ctx: CourseGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.DeleteCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
+          ctx: CourseGrpcController.name,
+        });
 
-          await this._deleteCourseUseCase.execute(data);
-          return { success: { deleted: true } } as DeleteCourseResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        await this._deleteCourseUseCase.execute(data);
+        return { success: { deleted: true } } as DeleteCourseResponse;
+      },
+    );
   }
   @GrpcMethod("CourseService", "PublishCourse")
   async publishCourse(
     data: PublishCourseRequest,
     metadata: Metadata,
   ): Promise<CourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.PublishCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
-            ctx: CourseGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.PublishCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
+          ctx: CourseGrpcController.name,
+        });
 
-          const result = await this._publishCourseUseCase.execute(data);
-          return { course: result.toGrpcResponse() };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to publish course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const result = await this._publishCourseUseCase.execute(data);
+        return { course: CourseMapper.toGrpcCourseResponse(result) };
+      },
+    );
   }
   @GrpcMethod("CourseService", "UnPublishCourse")
   async unPublishCourse(
     data: PublishCourseRequest,
     metadata: Metadata,
   ): Promise<CourseResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.UnPublishCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
-            ctx: CourseGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.UnPublishCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
+          ctx: CourseGrpcController.name,
+        });
 
-          const result = await this._unPublishCourseUseCase.execute(data);
-          return { course: result.toGrpcResponse() };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to un publish course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const result = await this._unPublishCourseUseCase.execute(data);
+        return { course: CourseMapper.toGrpcCourseResponse(result) };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetCoursesByInstructor")
@@ -371,77 +298,61 @@ export class CourseGrpcController {
     data: GetCoursesByInstructorRequestDto,
     metadata: Metadata,
   ): Promise<CoursesListResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetCoursesByInstructor",
-        async (span) => {
-          span.setAttribute("course.instructor.id", data.instructorId);
-          span.setAttribute("course.page", data.pagination?.page);
-          span.setAttribute("course.pageSize", data.pagination?.pageSize);
-          span.setAttribute("course.sortBy", data.pagination?.sortBy);
-          span.setAttribute("course.sortOrder", data.pagination?.sortOrder);
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetCoursesByInstructor",
+      async (span) => {
+        span.setAttribute("course.instructor.id", data.instructorId);
+        span.setAttribute("course.page", data.pagination?.page);
+        span.setAttribute("course.pageSize", data.pagination?.pageSize);
+        span.setAttribute("course.sortBy", data.pagination?.sortBy);
+        span.setAttribute("course.sortOrder", data.pagination?.sortOrder);
 
-          this._logger.log(
-            `gRPC: Fetching courses for instructor ${data.instructorId}`,
-            { ctx: CourseGrpcController.name },
+        this._logger.log(
+          `gRPC: Fetching courses for instructor ${data.instructorId}`,
+          { ctx: CourseGrpcController.name },
+        );
+        const { courses: courseDtos, total } =
+          await this._getCoursesByInstructorUseCase.execute(
+            data.instructorId,
+            data.pagination?.page,
+            data.pagination?.pageSize,
+            data.pagination?.sortBy,
+            (data.pagination?.sortOrder as any) || "DESC",
           );
-          const { courses: courseDtos, total } =
-            await this._getCoursesByInstructorUseCase.execute(
-              data.instructorId,
-              data.pagination?.page,
-              data.pagination?.pageSize,
-              data.pagination?.sortBy,
-              (data.pagination?.sortOrder as any) || "DESC",
-            );
-          return {
-            courses: {
-              courses: courseDtos?.map((course) => course.toGrpcResponse()),
-              total,
-            },
-          } as CoursesListResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get courses by instructor: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return {
+          courses: {
+            courses: courseDtos?.map((course) =>
+              CourseMapper.toGrpcCourseMetaResponse(course),
+            ),
+            total,
+          },
+        } as CoursesListResponse;
+      },
+    );
   }
   @GrpcMethod("CourseService", "GetInstructorCoursesStats")
   async getInstructorCoursesStats(
     data: GetInstructorCoursesStatsRequest,
     metadata: Metadata,
   ): Promise<GetInstructorCoursesStatsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetInstructorCoursesStats",
-        async (span) => {
-          span.setAttribute("course.instructor.id", data.instructorId);
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetInstructorCoursesStats",
+      async (span) => {
+        span.setAttribute("course.instructor.id", data.instructorId);
 
-          this._logger.log(
-            `gRPC: Fetching instructor's courses stats for ${data.instructorId}`,
-            { ctx: CourseGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching instructor's courses stats for ${data.instructorId}`,
+          { ctx: CourseGrpcController.name },
+        );
 
-          const stats =
-            await this._getInstructorCoursesStatsUseCase.execute(data);
+        const stats =
+          await this._getInstructorCoursesStatsUseCase.execute(data);
 
-          return {
-            success: stats,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get instructor courses stats: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return {
+          success: stats,
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetCoursesStats")
@@ -449,28 +360,20 @@ export class CourseGrpcController {
     _data: Empty,
     _metadata: Metadata,
   ): Promise<GetCoursesStatsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "CourseGrpcController.GetCoursesStats",
-        async (span) => {
-          this._logger.log(`gRPC: Fetching overall courses stats`, {
-            ctx: CourseGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "CourseGrpcController.GetCoursesStats",
+      async (span) => {
+        this._logger.log(`gRPC: Fetching overall courses stats`, {
+          ctx: CourseGrpcController.name,
+        });
 
-          const stats = await this._getCoursesStatsUseCase.execute();
+        const stats = await this._getCoursesStatsUseCase.execute();
 
-          return {
-            success: stats,
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to fetch courses stats: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          success: stats,
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetInstructorCourseRatingStats")
@@ -478,30 +381,21 @@ export class CourseGrpcController {
     data: GetInstructorCourseRatingStatsRequest,
     _metadata: Metadata,
   ): Promise<GetInstructorCourseRatingStatsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "EnrollmentGrpcController.GetInstructorCourseRatingStats",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "EnrollmentGrpcController.GetInstructorCourseRatingStats",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
 
-          this._logger.log(
-            `gRPC: Fetching rating stats for course ${data.courseId}`,
-            { ctx: CourseGrpcController.name },
-          );
+        this._logger.log(
+          `gRPC: Fetching rating stats for course ${data.courseId}`,
+          { ctx: CourseGrpcController.name },
+        );
 
-          const stats =
-            await this._getInstructorCourseRatingStatsUseCase.execute(data);
+        const stats =
+          await this._getInstructorCourseRatingStatsUseCase.execute(data);
 
-          return { success: stats };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(
-        `Failed to get instructor course rating stats: ${error.message}`,
-        { error },
-      );
-
-      throw error;
-    }
+        return { success: stats };
+      },
+    );
   }
 }

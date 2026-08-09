@@ -2,8 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
 import { IEventProducer } from "@/application/adaptors/event-producer.interface";
 import { ICategoryRepository } from "src/domain/repositories/category.repository";
-import { Category } from "src/domain/entities/category.entity";
-import { CategoryDto } from "src/application/dtos/category.dto";
+import { Category } from "@/domain/entities/category.entity";
 import slugify from "slugify";
 import { CategoryAlreadyExistException } from "src/domain/exceptions/category.exceptions";
 import { ITraceService } from "src/application/adaptors/trace.service";
@@ -31,7 +30,7 @@ export class CreateCategoryUseCase implements ICreateCategoryUseCase {
   async execute(
     dto: CreateCategoryInput,
     idempotencyKey: string,
-  ): Promise<CategoryDto> {
+  ): Promise<Category> {
     return await this._tracer.startActiveSpan(
       "CreateCategoryUseCase.execute",
       async (span) => {
@@ -56,7 +55,7 @@ export class CreateCategoryUseCase implements ICreateCategoryUseCase {
         await this._categoryRepository.create(category);
         this._logger.debug(`Created category: ${dto.name}`);
 
-        return CategoryDto.fromDomain(category);
+        return category;
       },
     );
   }

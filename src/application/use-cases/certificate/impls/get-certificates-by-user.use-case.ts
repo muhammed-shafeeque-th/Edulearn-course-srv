@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { Certificate } from "@/domain/entities/certificate.entity";
 import { GetCertificatesByUserRequest } from "src/infrastructure/grpc/generated/course/types/certificate";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { IGetCertificatesByUserUseCase } from "../interfaces/get-certificates-by-user.interface";
@@ -14,7 +14,7 @@ export class GetCertificatesByUserUseCase implements IGetCertificatesByUserUseCa
 
   async execute(
     dto: GetCertificatesByUserRequest,
-  ): Promise<{ certificates: CertificateDto[]; total: number }> {
+  ): Promise<{ certificates: Certificate[]; total: number }> {
     const { pagination, userId } = dto;
 
     // Default pagination handling
@@ -26,26 +26,16 @@ export class GetCertificatesByUserUseCase implements IGetCertificatesByUserUseCa
     const offset = (page - 1) * pageSize;
     const limit = pageSize;
 
+    
+    const { data: certificates, total } =
+    await this._certificateRepo.findByUserId(userId, offset, limit);
+    
     this._logger.debug(
-      `Fetching certificates for userId: ${userId} with offset: ${offset}, limit: ${limit}`,
+      `Fetched certificates for userId: ${userId} with offset: ${offset}, limit: ${limit}`,
     );
-
-    try {
-      const { data: certificates, total } =
-        await this._certificateRepo.findByUserId(userId, offset, limit);
-
-      return {
-        certificates: certificates.map((cert) =>
-          CertificateDto.fromDomain(cert),
-        ),
-        total,
-      };
-    } catch (error: any) {
-      this._logger.error(
-        `Error fetching certificates for userId: ${userId} - ${error.message}`,
-        { error },
-      );
-      throw error;
-    }
+    return {
+      certificates,
+      total,
+    };
   }
 }

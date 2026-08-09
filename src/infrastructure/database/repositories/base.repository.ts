@@ -61,7 +61,7 @@ export abstract class BaseRepository<TDomain, TOrm, ID = string> {
 
         // Success handling
         endTimer?.();
-        this.metrics.incrementDBRequestCounter(
+        this.metrics?.incrementDBRequestCounter(
           operationName.toUpperCase() as any,
         );
 

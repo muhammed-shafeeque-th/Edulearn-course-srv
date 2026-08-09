@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { LessonDto } from "src/application/dtos/lesson.dto";
+import { Lesson } from "@/domain/entities/lesson.entity";
 import {
   ContentMetadata,
   ContentType,
@@ -23,7 +23,7 @@ export class UpdateLessonUseCase implements IUpdateLessonUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: UpdateLessonDto): Promise<LessonDto> {
+  async execute(dto: UpdateLessonDto): Promise<Lesson> {
     return await this._tracer.startActiveSpan(
       "UpdateLessonUseCase.execute",
       async (span) => {
@@ -68,7 +68,7 @@ export class UpdateLessonUseCase implements IUpdateLessonUseCase {
         this._logger.log(`Lesson ${dto.lessonId} updated`, {
           ctx: UpdateLessonUseCase.name,
         });
-        return LessonDto.fromDomain(lesson);
+        return lesson
       },
     );
   }

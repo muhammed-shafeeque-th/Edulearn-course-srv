@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ICourseRepository } from "../../../../domain/repositories/course.repository";
-import { CourseDto } from "../../../dtos/course.dto";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
-import { CourseMetadataDto } from "src/application/dtos/courseMeta.dto";
+import { Course, CourseMetadata } from "@/domain/entities/course.entity";
 import { IGetCoursesByInstructorUseCase } from "../interfaces/get-courses-by-instructor.interface";
 
 @Injectable()
@@ -20,7 +19,7 @@ export class GetCoursesByInstructorUseCase implements IGetCoursesByInstructorUse
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: CourseMetadataDto[]; total: number }> {
+  ): Promise<{ courses: CourseMetadata[]; total: number }> {
     return await this._tracer.startActiveSpan(
       "GetCoursesByInstructorUseCase.execute",
       async (span) => {
@@ -38,15 +37,14 @@ export class GetCoursesByInstructorUseCase implements IGetCoursesByInstructorUse
             sortBy,
             sortOrder,
           );
-        const courseDtos = courses.map(CourseMetadataDto.fromPrimitive);
 
-        span.setAttribute("instructor.course.length", courseDtos.length);
+        span.setAttribute("instructor.course.length", courses.length);
 
         this._logger.log(
-          `Found ${courseDtos.length} courses for instructor ${instructorId}`,
+          `Found ${courses.length} courses for instructor ${instructorId}`,
           { ctx: GetCoursesByInstructorUseCase.name },
         );
-        return { courses: courseDtos, total };
+        return { courses: courses, total };
       },
     );
   }

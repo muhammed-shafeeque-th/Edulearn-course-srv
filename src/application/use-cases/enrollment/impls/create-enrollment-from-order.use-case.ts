@@ -205,7 +205,7 @@ export class CreateEnrollmentFromOrderUseCase implements ICreateEnrollmentFromOr
     }
   }
 
-  // private async getLessonsForCourse(courseId: string): Promise<LessonDTO[]> {
+  // private async getLessonsForCourse(courseId: string): Promise<Lesson[]> {
   //   try {
   //     // Fetch all lessons for the given courseId
   //     const lessons = await this._lessonRepository.findByCourseId(courseId);

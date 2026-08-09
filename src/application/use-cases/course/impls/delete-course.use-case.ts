@@ -66,54 +66,43 @@ export class DeleteCourseUseCase implements IDeleteCourseUseCase {
           );
         }
 
-        try {
-          span?.setAttribute("course.id", courseId);
+        span?.setAttribute("course.id", courseId);
 
-          // perform soft delete on domain entity.
-          course.softDelete();
+        // perform soft delete on domain entity.
+        course.softDelete();
 
-          // persist the change using the repository.
-          await this._courseRepository.delete(course);
+        // persist the change using the repository.
+        await this._courseRepository.delete(course);
 
-          span?.setAttribute("course.deleted", true);
+        span?.setAttribute("course.deleted", true);
 
-          // Emit event to signal that a course was deleted.
-          await this._eventProducer.produce<CourseDeletedEvent>(
-            KafkaTopics.CourseDeleted,
-            {
-              key: course.getId(),
-              value: {
-                eventId: uuidV4(),
-                timestamp: Date.now(),
-                eventType: "CourseDeletedEvent",
-                source: "course-service",
-                payload: {
-                  courseId: course.getId(),
-                  instructorId: course.getInstructorId(),
-                  slug: course.getSlug(),
-                  status: course.getStatus(),
-                  title: course.getTitle(),
-                  updatedAt: course.getUpdatedAt()?.toISOString() || "",
-                },
+        // Emit event to signal that a course was deleted.
+        await this._eventProducer.produce<CourseDeletedEvent>(
+          KafkaTopics.CourseDeleted,
+          {
+            key: course.getId(),
+            value: {
+              eventId: uuidV4(),
+              timestamp: Date.now(),
+              eventType: "CourseDeletedEvent",
+              source: "course-service",
+              payload: {
+                courseId: course.getId(),
+                instructorId: course.getInstructorId(),
+                slug: course.getSlug(),
+                status: course.getStatus(),
+                title: course.getTitle(),
+                updatedAt: course.getUpdatedAt()?.toISOString() || "",
               },
             },
-          );
+          },
+        );
 
-          this._logger.debug("Course deleted successfully.", {
-            ctx: DeleteCourseUseCase.name,
-            courseId,
-            userId,
-          });
-        } catch (error: any) {
-          const errorMsg = `Error while deleting course: ${error.message}`;
-          this._logger.error(errorMsg, {
-            error,
-            ctx: DeleteCourseUseCase.name,
-          });
-          span?.setAttribute("error", true);
-          span?.setAttribute("error.message", errorMsg);
-          throw error;
-        }
+        this._logger.debug("Course deleted successfully.", {
+          ctx: DeleteCourseUseCase.name,
+          courseId,
+          userId,
+        });
       },
     );
   }

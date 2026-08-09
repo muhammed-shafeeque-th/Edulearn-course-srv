@@ -23,6 +23,7 @@ import { UpdateQuizDto } from "./dtos/quiz/update-quiz.dto";
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
+import { QuizMapper } from "../mappers/quiz.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -54,32 +55,24 @@ export class QuizGrpcController {
     data: CreateQuizDto,
     metadata: Metadata,
   ): Promise<QuizResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "QuizGrpcController.CreateQuiz",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "QuizGrpcController.CreateQuiz",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
 
-          const { idempotencyKey } = getMetadataValues(metadata, {
-            idempotencyKey: "idempotency-key",
-          });
+        const { idempotencyKey } = getMetadataValues(metadata, {
+          idempotencyKey: "idempotency-key",
+        });
 
-          const quizDto = await this._createQuizUseCase.execute(
-            data,
-            idempotencyKey,
-          );
-          return {
-            quiz: quizDto.toGrpcResponse(),
-          } as QuizResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to create quiz: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const quizDto = await this._createQuizUseCase.execute(
+          data,
+          idempotencyKey,
+        );
+        return {
+          quiz: QuizMapper.toGrpcResponse(quizDto),
+        } as QuizResponse;
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetQuiz")
@@ -87,23 +80,17 @@ export class QuizGrpcController {
     data: GetQuizRequest,
     metadata: Metadata,
   ): Promise<QuizResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "QuizGrpcController.GetQuiz",
-        async (span) => {
-          span.setAttribute("quiz.id", data.quizId);
+    return await this._tracer.startActiveSpan(
+      "QuizGrpcController.GetQuiz",
+      async (span) => {
+        span.setAttribute("quiz.id", data.quizId);
 
-          const quizDto = await this._getQuizUseCase.execute(data.quizId);
-          return {
-            quiz: quizDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get quiz: ${error.message}`, { error });
-
-      throw error;
-    }
+        const quizDto = await this._getQuizUseCase.execute(data.quizId);
+        return {
+          quiz: QuizMapper.toGrpcResponse(quizDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "UpdateQuiz")
@@ -111,26 +98,18 @@ export class QuizGrpcController {
     data: UpdateQuizDto,
     metadata: Metadata,
   ): Promise<QuizResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "QuizGrpcController.UpdateQuiz",
-        async (span) => {
-          span.setAttribute("quiz.id", data.quizId);
-          span.setAttribute("quiz.title", data.title);
+    return await this._tracer.startActiveSpan(
+      "QuizGrpcController.UpdateQuiz",
+      async (span) => {
+        span.setAttribute("quiz.id", data.quizId);
+        span.setAttribute("quiz.title", data.title);
 
-          const quizDto = await this._updateQuizUseCase.execute(data);
-          return {
-            quiz: quizDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to update quiz: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const quizDto = await this._updateQuizUseCase.execute(data);
+        return {
+          quiz: QuizMapper.toGrpcResponse(quizDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "DeleteQuiz")
@@ -138,23 +117,15 @@ export class QuizGrpcController {
     data: DeleteQuizRequest,
     metadata: Metadata,
   ): Promise<DeleteQuizResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "QuizGrpcController.DeleteQuiz",
-        async (span) => {
-          span.setAttribute("quiz.id", data.quizId);
+    return await this._tracer.startActiveSpan(
+      "QuizGrpcController.DeleteQuiz",
+      async (span) => {
+        span.setAttribute("quiz.id", data.quizId);
 
-          await this._deleteQuizUseCase.execute(data);
-          return { success: { deleted: true } };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete quiz: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        await this._deleteQuizUseCase.execute(data);
+        return { success: { deleted: true } };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetQuizzesByCourse")
@@ -162,29 +133,21 @@ export class QuizGrpcController {
     data: GetQuizzesByCourseRequest,
     metadata: Metadata,
   ): Promise<QuizzesResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "QuizGrpcController.GetQuizzesByCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
+    return await this._tracer.startActiveSpan(
+      "QuizGrpcController.GetQuizzesByCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
 
-          const quizzes = await this._getQuizzesByCourseUseCase.execute(
-            data.courseId,
-          );
-          return {
-            quizzes: {
-              quizzes: quizzes?.map((quiz) => quiz.toGrpcResponse()),
-              total: 1,
-            },
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get quizzes by course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const quizzes = await this._getQuizzesByCourseUseCase.execute(
+          data.courseId,
+        );
+        return {
+          quizzes: {
+            quizzes: quizzes?.map((quiz) => QuizMapper.toGrpcResponse(quiz)),
+            total: 1,
+          },
+        };
+      },
+    );
   }
 }

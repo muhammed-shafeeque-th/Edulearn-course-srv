@@ -1,4 +1,4 @@
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { Certificate } from "@/domain/entities/certificate.entity";
 
 export interface GenerateCertificateRequest {
   enrollmentId: string;
@@ -9,5 +9,5 @@ export interface GenerateCertificateRequest {
 export abstract class IGenerateCertificateUseCase {
   abstract execute(
     request: GenerateCertificateRequest,
-  ): Promise<CertificateDto>;
+  ): Promise<Certificate>;
 }
