@@ -13,7 +13,7 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
-  constructor(private readonly logger: ILoggerService) {}
+  constructor(private readonly _logger: ILoggerService) {}
 
   catch(exception: any, _host: ArgumentsHost) {
     // const _ctx = host.switchToRpc();
@@ -25,10 +25,6 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 
     // Handle DomainException by returning the full grpc ServiceError (with metadata)
     if (exception instanceof BaseException) {
-      this.logger.warn(`DomainException: ${exception.message}`, {
-        ctx: GrpcExceptionFilter.name,
-        stack: exception.stack,
-      });
       // The client will get all fields (code, message, metadata, etc.)
       const grpcError = GrpcExceptionMapper.toGrpc(exception);
 
@@ -72,7 +68,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 
     // All other/unexpected errors
     else {
-      this.logger.error(
+      this._logger.error(
         `Unexpected error: ${exception?.message || exception}`,
         {
           ctx: GrpcExceptionFilter.name,
