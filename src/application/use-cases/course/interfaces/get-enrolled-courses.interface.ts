@@ -1,4 +1,4 @@
-import { CourseDto } from "../../../dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 
 export abstract class IGetEnrolledCoursesUseCase {
   abstract execute(
@@ -7,5 +7,5 @@ export abstract class IGetEnrolledCoursesUseCase {
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: CourseDto[]; total: number }>;
+  ): Promise<{ courses: Course[]; total: number }>;
 }

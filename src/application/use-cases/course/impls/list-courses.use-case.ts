@@ -3,12 +3,11 @@ import {
   GetCourseParams,
   ICourseRepository,
 } from "../../../../domain/repositories/course.repository";
-import { CourseDto } from "../../../dtos/course.dto";
+import {  CourseMetadata } from "@/domain/entities/course.entity";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { GetCoursesParamsDto } from "src/presentation/grpc/dtos/course/get-courses-params.dto";
 import { CourseStatus } from "src/domain/entities/course.entity";
-import { CourseMetadataDto } from "src/application/dtos/courseMeta.dto";
 import { IListCoursesUseCase } from "../interfaces/list-courses.interface";
 
 @Injectable()
@@ -21,7 +20,7 @@ export class ListCoursesUseCase implements IListCoursesUseCase {
 
   async execute(
     params: GetCoursesParamsDto,
-  ): Promise<{ courses: CourseMetadataDto[]; total: number }> {
+  ): Promise<{ courses: CourseMetadata[]; total: number }> {
     return await this._tracer.startActiveSpan(
       "ListCoursesUseCase.execute",
       async (span) => {
@@ -32,14 +31,13 @@ export class ListCoursesUseCase implements IListCoursesUseCase {
 
         const { data: courses, total } =
           await this._courseRepository.findAll(queryFilters);
-        const courseDtos = courses.map(CourseMetadataDto.fromPrimitive);
 
-        span.setAttribute("course.length", courseDtos.length);
+        span.setAttribute("course.length", courses.length);
 
         this._logger.log(`Fetch all available courses`, {
           ctx: ListCoursesUseCase.name,
         });
-        return { courses: courseDtos, total };
+        return { courses: courses, total };
       },
     );
   }

@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ICourseRepository } from "../../../../domain/repositories/course.repository";
-import { CourseDto } from "../../../dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
-import { Course } from "src/domain/entities/course.entity";
 import { v4 as uuidV4 } from "uuid";
 import { CourseAlreadyExistException } from "src/domain/exceptions/course.exceptions";
 import { CreateCourseRequestDto } from "src/presentation/grpc/dtos/course/create-course.dto";
@@ -26,7 +25,7 @@ export class CreateCourseUseCase implements ICreateCourseUseCase {
   async execute(
     payload: CreateCourseRequestDto,
     idempotencyKey: string,
-  ): Promise<CourseDto> {
+  ): Promise<Course> {
     return await this._tracer.startActiveSpan(
       "CreateCourseUseCase.execute",
       async (span) => {
@@ -42,7 +41,7 @@ export class CreateCourseUseCase implements ICreateCourseUseCase {
           this._logger.debug(
             `Course creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateCourseUseCase.name}`,
           );
-          return CourseDto.fromDomain(existingCourse);
+          return existingCourse;
         }
         span.setAttribute("idempotency.duplicate", false);
 
@@ -111,7 +110,7 @@ export class CreateCourseUseCase implements ICreateCourseUseCase {
         this._logger.debug(
           `Course created with ID: ${course.getId()} in ${CreateCourseUseCase.name}`,
         );
-        return CourseDto.fromDomain(course);
+        return course;
       },
     );
   }

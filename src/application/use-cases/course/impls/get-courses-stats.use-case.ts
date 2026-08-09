@@ -25,7 +25,6 @@ export class GetCoursesStatsUseCase implements IGetCoursesStatsUseCase {
           ctx: GetCoursesStatsUseCase.name,
         });
 
-        try {
           const stats = await this._courseRepository.getCoursesStats();
 
           span.setAttribute("courses.total", stats.totalCourses);
@@ -36,13 +35,7 @@ export class GetCoursesStatsUseCase implements IGetCoursesStatsUseCase {
           );
 
           return stats;
-        } catch (error) {
-          this._logger.error("Failed to fetch courses statistics", {
-            ctx: GetCoursesStatsUseCase.name,
-            error,
-          });
-          throw error;
-        }
+        
       },
     );
   }

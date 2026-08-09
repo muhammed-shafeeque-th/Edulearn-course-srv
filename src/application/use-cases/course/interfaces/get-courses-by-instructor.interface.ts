@@ -1,4 +1,4 @@
-import { CourseMetadataDto } from "src/application/dtos/courseMeta.dto";
+import {  CourseMetadata } from "@/domain/entities/course.entity";
 
 export abstract class IGetCoursesByInstructorUseCase {
   abstract execute(
@@ -7,5 +7,5 @@ export abstract class IGetCoursesByInstructorUseCase {
     limit?: number,
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
-  ): Promise<{ courses: CourseMetadataDto[]; total: number }>;
+  ): Promise<{ courses: CourseMetadata[]; total: number }>;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ICourseRepository } from "../../../../domain/repositories/course.repository";
-import { CourseDto } from "../../../dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import {
@@ -26,7 +26,7 @@ export class UpdateCourseUseCase implements IUpdateCourseUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: UpdateCourseRequestDto): Promise<CourseDto> {
+  async execute(dto: UpdateCourseRequestDto): Promise<Course> {
     return await this._tracer.startActiveSpan(
       "UpdateCourseUseCase.execute",
       async (span) => {
@@ -92,7 +92,7 @@ export class UpdateCourseUseCase implements IUpdateCourseUseCase {
         this._logger.log(`Course ${dto.courseId} updated`, {
           ctx: UpdateCourseUseCase.name,
         });
-        return CourseDto.fromDomain(course);
+        return course;
       },
     );
   }

@@ -1,8 +1,8 @@
 import { GetCoursesParamsDto } from "src/presentation/grpc/dtos/course/get-courses-params.dto";
-import { CourseMetadataDto } from "src/application/dtos/courseMeta.dto";
+import { CourseMetadata } from "@/domain/entities/course.entity";
 
 export abstract class IListCoursesUseCase {
   abstract execute(
     params: GetCoursesParamsDto,
-  ): Promise<{ courses: CourseMetadataDto[]; total: number }>;
+  ): Promise<{ courses: CourseMetadata[]; total: number }>;
 }

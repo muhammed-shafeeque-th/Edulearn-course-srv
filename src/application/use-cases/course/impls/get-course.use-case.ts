@@ -3,7 +3,7 @@ import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
-import { CourseDto } from "src/application/dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 import { IGetCourseUseCase } from "../interfaces/get-course.interface";
 
 @Injectable()
@@ -14,11 +14,10 @@ export class GetCourseUseCase implements IGetCourseUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(id: string): Promise<CourseDto> {
+  async execute(id: string): Promise<Course> {
     return await this._tracer.startActiveSpan(
       "GetCourseUseCase.execute",
       async (span) => {
-        try {
           this._logger.debug(
             `Fetching course with ID: ${id} in ${GetCourseUseCase.name}`,
           );
@@ -30,19 +29,8 @@ export class GetCourseUseCase implements IGetCourseUseCase {
             throw new CourseNotFoundException(`Course with ID ${id} not found`);
           }
 
-          const courseDto = CourseDto.fromDomain(course);
-          return courseDto;
-        } catch (error: any) {
-          span.setAttribute("error", true);
-          this._logger.error(
-            `Failed to fetch data for course ID: ${id} ${error.message}`,
-            {
-              error,
-            },
-          );
-
-          throw error;
-        }
+          return course;
+        
       },
     );
   }

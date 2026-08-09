@@ -1,5 +1,5 @@
-import { CourseDto } from "src/application/dtos/course.dto";
+import { Course } from "@/domain/entities/course.entity";
 
 export abstract class IGetCourseBySlugUseCase {
-  abstract execute(slug: string): Promise<CourseDto>;
+  abstract execute(slug: string): Promise<Course>;
 }
