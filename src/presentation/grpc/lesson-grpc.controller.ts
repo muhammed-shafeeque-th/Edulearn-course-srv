@@ -2,18 +2,13 @@ import { Controller, UseFilters } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
 
 import {
-  ContentMetaData,
   DeleteLessonRequest,
   DeleteLessonResponse,
   GetLessonRequest,
   GetLessonsByModuleRequest,
-  LessonData,
   LessonResponse,
   LessonsResponse,
 } from "src/infrastructure/grpc/generated/course/types/lesson";
-import { QuizData } from "src/infrastructure/grpc/generated/course/types/quiz";
-import { QuizDto } from "src/application/dtos/quiz.dto";
-import { LessonDto } from "src/application/dtos/lesson.dto";
 import { DomainException } from "src/domain/exceptions/domain.exception";
 import { Error } from "src/infrastructure/grpc/generated/course/common";
 import { getMetadataValues } from "src/shared/utils/get-metadata";
@@ -28,6 +23,7 @@ import { IDeleteLessonUseCase } from "src/application/use-cases/lesson/interface
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { LessonMapper } from "../mappers/lesson.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -59,36 +55,28 @@ export class LessonGrpcController {
     data: CreateLessonDto,
     metadata: Metadata,
   ): Promise<LessonResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "LessonGrpcController.CreateLesson",
-        async (span) => {
-          span.setAttribute("module.id", data.moduleId);
-          this._logger.log(
-            `gRPC: Creating lesson for moduleId ${data.moduleId}`,
-            { ctx: LessonGrpcController.name },
-          );
+    return await this._tracer.startActiveSpan(
+      "LessonGrpcController.CreateLesson",
+      async (span) => {
+        span.setAttribute("module.id", data.moduleId);
+        this._logger.log(
+          `gRPC: Creating lesson for moduleId ${data.moduleId}`,
+          { ctx: LessonGrpcController.name },
+        );
 
-          const { idempotencyKey } = getMetadataValues(metadata, {
-            idempotencyKey: "idempotency-key",
-          });
+        const { idempotencyKey } = getMetadataValues(metadata, {
+          idempotencyKey: "idempotency-key",
+        });
 
-          const lessonDto = await this._createLessonUseCase.execute(
-            data,
-            idempotencyKey,
-          );
-          return {
-            lesson: lessonDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to create lesson: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const lesson = await this._createLessonUseCase.execute(
+          data,
+          idempotencyKey,
+        );
+        return {
+          lesson: LessonMapper.toGrpcResponse(lesson),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetLesson")
@@ -96,29 +84,18 @@ export class LessonGrpcController {
     data: GetLessonRequest,
     metadata: Metadata,
   ): Promise<LessonResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "LessonGrpcController.GetLesson",
-        async (span) => {
-          span.setAttribute("lesson.id", data.lessonId);
-          this._logger.log(
-            `gRPC: Fetching lesson for module ${data.lessonId}`,
-            {
-              ctx: LessonGrpcController.name,
-            },
-          );
+    return await this._tracer.startActiveSpan(
+      "LessonGrpcController.GetLesson",
+      async (span) => {
+        span.setAttribute("lesson.id", data.lessonId);
+        this._logger.log(`gRPC: Fetching lesson for module ${data.lessonId}`, {
+          ctx: LessonGrpcController.name,
+        });
 
-          const lessonDto = await this._getLessonUseCase.execute(data.lessonId);
-          return { lesson: lessonDto.toGrpcResponse() };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get lesson: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const lesson = await this._getLessonUseCase.execute(data.lessonId);
+        return { lesson: LessonMapper.toGrpcResponse(lesson) };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "UpdateLesson")
@@ -126,25 +103,17 @@ export class LessonGrpcController {
     data: UpdateLessonDto,
     metadata: Metadata,
   ): Promise<LessonResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "LessonGrpcController.UpdateLesson",
-        async (span) => {
-          span.setAttribute("lesson.id", data.lessonId);
+    return await this._tracer.startActiveSpan(
+      "LessonGrpcController.UpdateLesson",
+      async (span) => {
+        span.setAttribute("lesson.id", data.lessonId);
 
-          const lessonDto = await this._updateLessonUseCase.execute(data);
-          return {
-            lesson: lessonDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to update lesson: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const lesson = await this._updateLessonUseCase.execute(data);
+        return {
+          lesson: LessonMapper.toGrpcResponse(lesson),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "DeleteLesson")
@@ -152,23 +121,15 @@ export class LessonGrpcController {
     data: DeleteLessonRequest,
     metadata: Metadata,
   ): Promise<DeleteLessonResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "LessonGrpcController.DeleteLesson",
-        async (span) => {
-          span.setAttribute("lesson.id", data.lessonId);
+    return await this._tracer.startActiveSpan(
+      "LessonGrpcController.DeleteLesson",
+      async (span) => {
+        span.setAttribute("lesson.id", data.lessonId);
 
-          await this._deleteLessonUseCase.execute(data);
-          return { success: { deleted: true } };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete lesson: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        await this._deleteLessonUseCase.execute(data);
+        return { success: { deleted: true } };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "GetLessonsByModule")
@@ -176,28 +137,22 @@ export class LessonGrpcController {
     data: GetLessonsByModuleRequest,
     metadata: Metadata,
   ): Promise<LessonsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "LessonGrpcController.GetLessonsByModule",
-        async (span) => {
-          span.setAttribute("module.id", data.moduleId);
+    return await this._tracer.startActiveSpan(
+      "LessonGrpcController.GetLessonsByModule",
+      async (span) => {
+        span.setAttribute("module.id", data.moduleId);
 
-          const lessons = await this._getLessonsByModuleUseCase.execute(
-            data.moduleId,
-          );
-          return {
-            lessons: {
-              lessons: lessons?.map((lesson) => lesson.toGrpcResponse()),
-            },
-          } as LessonsResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get lessons by module: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const lessons = await this._getLessonsByModuleUseCase.execute(
+          data.moduleId,
+        );
+        return {
+          lessons: {
+            lessons: lessons?.map((lesson) =>
+              LessonMapper.toGrpcResponse(lesson),
+            ),
+          },
+        } as LessonsResponse;
+      },
+    );
   }
 }

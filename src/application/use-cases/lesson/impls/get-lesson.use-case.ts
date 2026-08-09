@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { LessonDto } from "src/application/dtos/lesson.dto";
+import { Lesson } from "@/domain/entities/lesson.entity";
 import { LessonNotFoundException } from "src/domain/exceptions/lesson.exceptions";
 import { ILessonRepository } from "src/domain/repositories/lesson.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
@@ -14,7 +14,7 @@ export class GetLessonUseCase implements IGetLessonUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(lessonId: string): Promise<LessonDto> {
+  async execute(lessonId: string): Promise<Lesson> {
     return await this._tracer.startActiveSpan(
       "GetLessonUseCase.execute",
       async (span) => {
@@ -35,7 +35,7 @@ export class GetLessonUseCase implements IGetLessonUseCase {
         this._logger.log(`Lesson ${lessonId} fetched`, {
           ctx: GetLessonUseCase.name,
         });
-        return LessonDto.fromDomain(lesson);
+        return lesson
       },
     );
   }

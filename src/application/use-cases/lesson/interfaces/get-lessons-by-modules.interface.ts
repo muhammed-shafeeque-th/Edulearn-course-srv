@@ -1,5 +1,5 @@
-import { LessonDto } from "src/application/dtos/lesson.dto";
+import { Lesson } from "@/domain/entities/lesson.entity";
 
 export abstract class IGetLessonsByModuleUseCase {
-  abstract execute(moduleId: string): Promise<LessonDto[]>;
+  abstract execute(moduleId: string): Promise<Lesson[]>;
 }
