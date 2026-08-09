@@ -23,6 +23,7 @@ import { IGetReviewByEnrollmentUseCase } from "src/application/use-cases/review/
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { ReviewMapper } from "../mappers/review.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -55,26 +56,18 @@ export class ReviewGrpcController {
     data: SubmitCourseReviewRequest,
     metadata: Metadata,
   ): Promise<ReviewResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ReviewGrpcController.SubmitCourseReview",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
-          span.setAttribute("user.id", data.userId);
+    return await this._tracer.startActiveSpan(
+      "ReviewGrpcController.SubmitCourseReview",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
+        span.setAttribute("user.id", data.userId);
 
-          const reviewDto = await this._createReviewUseCase.execute(data);
-          return {
-            review: reviewDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to create review: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const reviewDto = await this._createReviewUseCase.execute(data);
+        return {
+          review: ReviewMapper.toGrpcResponse(reviewDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetReview")
@@ -82,52 +75,36 @@ export class ReviewGrpcController {
     data: GetReviewRequest,
     metadata: Metadata,
   ): Promise<ReviewResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ReviewGrpcController.GetReview",
-        async (span) => {
-          span.setAttribute("review.id", data.reviewId);
+    return await this._tracer.startActiveSpan(
+      "ReviewGrpcController.GetReview",
+      async (span) => {
+        span.setAttribute("review.id", data.reviewId);
 
-          const reviewDto = await this._getReviewUseCase.execute(data.reviewId);
-          return {
-            review: reviewDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get review: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const reviewDto = await this._getReviewUseCase.execute(data.reviewId);
+        return {
+          review: ReviewMapper.toGrpcResponse(reviewDto),
+        };
+      },
+    );
   }
   @GrpcMethod("EnrollmentService", "GetReviewByEnrollment")
   async getReviewByEnrollment(
     data: GetReviewByEnrollmentRequest,
     metadata: Metadata,
   ): Promise<ReviewResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ReviewGrpcController.GetReviewByEnrollment",
-        async (span) => {
-          span.setAttribute("enrollment.id", data.enrollmentId);
-          span.setAttribute("user.id", data.userId);
+    return await this._tracer.startActiveSpan(
+      "ReviewGrpcController.GetReviewByEnrollment",
+      async (span) => {
+        span.setAttribute("enrollment.id", data.enrollmentId);
+        span.setAttribute("user.id", data.userId);
 
-          const reviewDto =
-            await this._getReviewByEnrollmentUseCase.execute(data);
-          return {
-            review: reviewDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get review: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const reviewDto =
+          await this._getReviewByEnrollmentUseCase.execute(data);
+        return {
+          review: ReviewMapper.toGrpcResponse(reviewDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "UpdateReview")
@@ -135,25 +112,17 @@ export class ReviewGrpcController {
     data: UpdateReviewRequest,
     metadata: Metadata,
   ): Promise<ReviewResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ReviewGrpcController.UpdateReview",
-        async (span) => {
-          span.setAttribute("review.id", data.reviewId);
+    return await this._tracer.startActiveSpan(
+      "ReviewGrpcController.UpdateReview",
+      async (span) => {
+        span.setAttribute("review.id", data.reviewId);
 
-          const reviewDto = await this._updateReviewUseCase.execute(data);
-          return {
-            review: reviewDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to update review: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const reviewDto = await this._updateReviewUseCase.execute(data);
+        return {
+          review: ReviewMapper.toGrpcResponse(reviewDto),
+        };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "DeleteReview")
@@ -161,23 +130,15 @@ export class ReviewGrpcController {
     data: DeleteReviewRequest,
     metadata: Metadata,
   ): Promise<DeleteReviewResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ReviewGrpcController.DeleteReview",
-        async (span) => {
-          span.setAttribute("review.id", data.reviewId);
+    return await this._tracer.startActiveSpan(
+      "ReviewGrpcController.DeleteReview",
+      async (span) => {
+        span.setAttribute("review.id", data.reviewId);
 
-          await this._deleteReviewUseCase.execute(data);
-          return { success: { deleted: true } };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete review: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        await this._deleteReviewUseCase.execute(data);
+        return { success: { deleted: true } };
+      },
+    );
   }
 
   @GrpcMethod("EnrollmentService", "GetReviewsByCourse")
@@ -185,38 +146,32 @@ export class ReviewGrpcController {
     data: GetReviewsByCourseRequest,
     metadata: Metadata,
   ): Promise<ReviewsResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ReviewGrpcController.GetReviewsByCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          span.setAttribute("page", data.pagination?.page);
-          span.setAttribute("pageSize", data.pagination?.pageSize);
-          span.setAttribute("sortBy", data.pagination?.sortBy);
-          span.setAttribute("sortOrder", data.pagination?.sortOrder);
+    return await this._tracer.startActiveSpan(
+      "ReviewGrpcController.GetReviewsByCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        span.setAttribute("page", data.pagination?.page);
+        span.setAttribute("pageSize", data.pagination?.pageSize);
+        span.setAttribute("sortBy", data.pagination?.sortBy);
+        span.setAttribute("sortOrder", data.pagination?.sortOrder);
 
-          const { reviews, total } =
-            await this._getReviewsByCourseUseCase.execute(
-              data.courseId,
-              data.pagination?.page,
-              data.pagination?.pageSize,
-              data.pagination?.sortBy,
-              (data.pagination?.sortOrder as any) || "DESC",
-            );
-          return {
-            reviews: {
-              reviews: reviews.map((review) => review.toGrpcResponse()),
-              total,
-            },
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get reviews by course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const { reviews, total } =
+          await this._getReviewsByCourseUseCase.execute(
+            data.courseId,
+            data.pagination?.page,
+            data.pagination?.pageSize,
+            data.pagination?.sortBy,
+            (data.pagination?.sortOrder as any) || "DESC",
+          );
+        return {
+          reviews: {
+            reviews: reviews.map((review) =>
+              ReviewMapper.toGrpcResponse(review),
+            ),
+            total,
+          },
+        };
+      },
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { ReviewDto } from "src/application/dtos/review.dto";
+import { Review } from "src/domain/entities/review.entity";
 
 export abstract class IGetReviewsByCourseUseCase {
   abstract execute(
@@ -8,5 +8,5 @@ export abstract class IGetReviewsByCourseUseCase {
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
     minRating?: number,
-  ): Promise<{ reviews: ReviewDto[]; total: number }>;
+  ): Promise<{ reviews: Review[]; total: number }>;
 }

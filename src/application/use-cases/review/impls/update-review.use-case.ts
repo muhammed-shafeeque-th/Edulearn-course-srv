@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewDto } from "src/application/dtos/review.dto";
+import { Review } from "src/domain/entities/review.entity";
 import { ReviewNotFoundException } from "src/domain/exceptions/certificate.exceptions";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
@@ -22,7 +22,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: UpdateReviewRequest): Promise<ReviewDto> {
+  async execute(dto: UpdateReviewRequest): Promise<Review> {
     return await this._tracer.startActiveSpan(
       "UpdateReviewUseCase.execute",
       async (span) => {
@@ -106,7 +106,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
         this._logger.log(`Review ${reviewId} updated`, {
           ctx: UpdateReviewUseCase.name,
         });
-        return ReviewDto.fromDomain(review);
+        return review;
       },
     );
   }

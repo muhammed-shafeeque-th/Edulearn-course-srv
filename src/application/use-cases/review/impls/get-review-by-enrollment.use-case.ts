@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewDto } from "src/application/dtos/review.dto";
+import { Review } from "src/domain/entities/review.entity";
 import { EnrollmentNotFoundException } from "src/domain/exceptions/enrollment.exceptions";
 import { ReviewNotFoundException } from "src/domain/exceptions/review.exceptions";
 import { IEnrollmentRepository } from "src/domain/repositories/enrollment.repository";
@@ -19,7 +19,7 @@ export class GetReviewByEnrollmentUseCase implements IGetReviewByEnrollmentUseCa
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: GetReviewByEnrollmentRequest): Promise<ReviewDto> {
+  async execute(dto: GetReviewByEnrollmentRequest): Promise<Review> {
     return await this._tracer.startActiveSpan(
       "GetReviewByEnrollmentUseCase.execute",
       async (span) => {
@@ -63,7 +63,7 @@ export class GetReviewByEnrollmentUseCase implements IGetReviewByEnrollmentUseCa
         });
 
         span.setAttribute("review.found", true);
-        return ReviewDto.fromDomain(review);
+        return review;
       },
     );
   }

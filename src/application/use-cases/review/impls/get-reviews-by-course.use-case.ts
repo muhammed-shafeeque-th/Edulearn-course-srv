@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewDto } from "src/application/dtos/review.dto";
+import { Review } from "src/domain/entities/review.entity";
 import { IReviewRepository } from "src/domain/repositories/review.repository";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ILoggerService } from "src/application/adaptors/logger.service";
@@ -20,7 +20,7 @@ export class GetReviewsByCourseUseCase implements IGetReviewsByCourseUseCase {
     sortBy?: string,
     sortOrder?: "ASC" | "DESC",
     minRating?: number,
-  ): Promise<{ reviews: ReviewDto[]; total: number }> {
+  ): Promise<{ reviews: Review[]; total: number }> {
     return await this._tracer.startActiveSpan(
       "GetReviewsByCourseUseCase.execute",
       async (span) => {
@@ -40,13 +40,12 @@ export class GetReviewsByCourseUseCase implements IGetReviewsByCourseUseCase {
           minRating,
         );
         span.setAttribute("reviews.count", reviews.length);
-        const reviewDtos = reviews.map(ReviewDto.fromDomain);
 
         this._logger.log(
-          `Found ${reviewDtos.length} reviews for course ${courseId}`,
+          `Found ${reviews.length} reviews for course ${courseId}`,
           { ctx: GetReviewsByCourseUseCase.name },
         );
-        return { reviews: reviewDtos, total };
+        return { reviews: reviews, total };
       },
     );
   }
