@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ModuleDto } from "src/application/dtos/module.dto";
+import { Module } from "@/domain/entities/module.entity";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ModuleNotFoundException } from "src/domain/exceptions/module.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
@@ -19,7 +19,7 @@ export class UpdateModuleUseCase implements IUpdateModuleUseCase {
     private readonly _tracer: ITraceService,
   ) {}
 
-  async execute(dto: UpdateModuleDto): Promise<ModuleDto> {
+  async execute(dto: UpdateModuleDto): Promise<Module> {
     return await this._tracer.startActiveSpan(
       "UpdateModuleUseCase.execute",
       async (span) => {
@@ -57,7 +57,7 @@ export class UpdateModuleUseCase implements IUpdateModuleUseCase {
         this._logger.log(`Module ${dto.moduleId} updated`, {
           ctx: UpdateModuleUseCase.name,
         });
-        return ModuleDto.fromDomain(module);
+        return module;
       },
     );
   }

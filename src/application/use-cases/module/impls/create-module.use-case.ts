@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { ModuleDto } from "src/application/dtos/module.dto";
 import { Module } from "src/domain/entities/module.entity";
 import { CourseNotFoundException } from "src/domain/exceptions/course.exceptions";
 import { ICourseRepository } from "src/domain/repositories/course.repository";
@@ -23,7 +22,7 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
   async execute(
     dto: CreateModuleRequestDto,
     idempotencyKey: string,
-  ): Promise<ModuleDto> {
+  ): Promise<Module> {
     return await this._tracer.startActiveSpan(
       "CreateModuleUseCase.execute",
       async (span) => {
@@ -39,7 +38,7 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
           this._logger.debug(
             `Module creation deduplicated by idempotencyKey: ${idempotencyKey} in ${CreateModuleUseCase.name}`,
           );
-          return ModuleDto.fromDomain(existingModule);
+          return existingModule;
         }
 
         this._logger.log(`Creating module for course ${dto.courseId}`, {
@@ -79,7 +78,7 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
         this._logger.log(`Module created for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
-        return ModuleDto.fromDomain(module);
+        return module;
       },
     );
   }

@@ -23,6 +23,7 @@ import { DeleteModuleDto } from "./dtos/module/delete-module.dto";
 import { GrpcExceptionFilter } from "src/infrastructure/filters/grpc-exception.filter";
 import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
+import { ModuleMapper } from "../mappers/module.mapper";
 
 @Controller()
 @UseFilters(GrpcExceptionFilter)
@@ -53,95 +54,71 @@ export class ModuleGrpcController {
     data: CreateModuleRequestDto,
     metadata: Metadata,
   ): Promise<ModuleResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ModuleGrpcController.CreateModule",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          this._logger.log(
-            `gRPC: Creating module for courseID ${data.courseId}`,
-            { ctx: ModuleGrpcController.name },
-          );
-          const { idempotencyKey } = getMetadataValues(metadata, {
-            idempotencyKey: "idempotency-key",
-          });
+    return await this._tracer.startActiveSpan(
+      "ModuleGrpcController.CreateModule",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        this._logger.log(
+          `gRPC: Creating module for courseID ${data.courseId}`,
+          { ctx: ModuleGrpcController.name },
+        );
+        const { idempotencyKey } = getMetadataValues(metadata, {
+          idempotencyKey: "idempotency-key",
+        });
 
-          const moduleDto = await this._createModuleUseCase.execute(
-            data,
-            idempotencyKey,
-          );
-          return {
-            module: moduleDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to create module: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        const module = await this._createModuleUseCase.execute(
+          data,
+          idempotencyKey,
+        );
+        return {
+          module: ModuleMapper.toGrpcResponse(module),
+        };
+      },
+    );
   }
   @GrpcMethod("CourseService", "GetModule")
   async getModule(
     data: GetModuleRequestDto,
     metadata: Metadata,
   ): Promise<ModuleResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ModuleGrpcController.GetModule",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          span.setAttribute("module.id", data.moduleId);
-          this._logger.log(
-            `gRPC: Fetching module for courseID ${data.courseId}`,
-            { ctx: ModuleGrpcController.name },
-          );
+    return await this._tracer.startActiveSpan(
+      "ModuleGrpcController.GetModule",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        span.setAttribute("module.id", data.moduleId);
+        this._logger.log(
+          `gRPC: Fetching module for courseID ${data.courseId}`,
+          { ctx: ModuleGrpcController.name },
+        );
 
-          const moduleDto = await this._getModuleUseCase.execute(data.moduleId);
+        const module = await this._getModuleUseCase.execute(data.moduleId);
 
-          return {
-            module: moduleDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get module: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          module: ModuleMapper.toGrpcResponse(module),
+        };
+      },
+    );
   }
   @GrpcMethod("CourseService", "UpdateModule")
   async updateModule(
     data: UpdateModuleRequest,
     metadata: Metadata,
   ): Promise<ModuleResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ModuleGrpcController.UpdateModule",
-        async (span) => {
-          span.setAttribute("course.module.id", data.moduleId);
-          this._logger.log(`gRPC: Updating module  ${data.moduleId}`, {
-            ctx: ModuleGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "ModuleGrpcController.UpdateModule",
+      async (span) => {
+        span.setAttribute("course.module.id", data.moduleId);
+        this._logger.log(`gRPC: Updating module  ${data.moduleId}`, {
+          ctx: ModuleGrpcController.name,
+        });
 
-          const moduleDto = await this._updateModuleUseCase.execute(data);
+        const module = await this._updateModuleUseCase.execute(data);
 
-          return {
-            module: moduleDto.toGrpcResponse(),
-          };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to update module: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          module: ModuleMapper.toGrpcResponse(module),
+        };
+      },
+    );
   }
 
   @GrpcMethod("CourseService", "DeleteModule")
@@ -149,59 +126,45 @@ export class ModuleGrpcController {
     data: DeleteModuleDto,
     metadata: Metadata,
   ): Promise<DeleteModuleResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ModuleGrpcController.DeleteModule",
-        async (span) => {
-          span.setAttribute("module.id", data.moduleId);
-          this._logger.log(`gRPC: Deleting module  ${data.moduleId}`, {
-            ctx: ModuleGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "ModuleGrpcController.DeleteModule",
+      async (span) => {
+        span.setAttribute("module.id", data.moduleId);
+        this._logger.log(`gRPC: Deleting module  ${data.moduleId}`, {
+          ctx: ModuleGrpcController.name,
+        });
 
-          await this._deleteModuleUseCase.execute(data);
+        await this._deleteModuleUseCase.execute(data);
 
-          return { success: { deleted: true } };
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to delete module: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return { success: { deleted: true } };
+      },
+    );
   }
   @GrpcMethod("CourseService", "GetModulesByCourse")
   async getModulesByCourse(
     data: GetModulesByCourseRequest,
     metadata: Metadata,
   ): Promise<ModulesResponse> {
-    try {
-      return await this._tracer.startActiveSpan(
-        "ModuleGrpcController.GetModulesByCourse",
-        async (span) => {
-          span.setAttribute("course.id", data.courseId);
-          this._logger.log(`gRPC: Fetching modules `, {
-            ctx: ModuleGrpcController.name,
-          });
+    return await this._tracer.startActiveSpan(
+      "ModuleGrpcController.GetModulesByCourse",
+      async (span) => {
+        span.setAttribute("course.id", data.courseId);
+        this._logger.log(`gRPC: Fetching modules `, {
+          ctx: ModuleGrpcController.name,
+        });
 
-          const modules = await this._getModulesByCourseUseCase.execute(
-            data.courseId,
-          );
+        const modules = await this._getModulesByCourseUseCase.execute(
+          data.courseId,
+        );
 
-          return {
-            modules: {
-              modules: modules.map((module) => module.toGrpcResponse()),
-            },
-          } as ModulesResponse;
-        },
-      );
-    } catch (error: any) {
-      this._logger.error(`Failed to get modules by course: ${error.message}`, {
-        error,
-      });
-
-      throw error;
-    }
+        return {
+          modules: {
+            modules: modules.map((module) =>
+              ModuleMapper.toGrpcResponse(module),
+            ),
+          },
+        } as ModulesResponse;
+      },
+    );
   }
 }
