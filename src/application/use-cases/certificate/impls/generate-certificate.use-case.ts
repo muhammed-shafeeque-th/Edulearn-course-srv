@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import { IEnrollmentRepository } from "../../../../domain/repositories/enrollment.repository";
-import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
-import { Certificate } from "../../../../domain/entities/certificate.entity";
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { IEnrollmentRepository } from "@/domain/repositories/enrollment.repository";
+import { ICertificateRepository } from "@/domain/repositories/certificate.repository";
+import { Certificate } from "@/domain/entities/certificate.entity";
 import {
   BadRequestException,
   UnauthorizedException,
@@ -24,7 +23,7 @@ export class GenerateCertificateUseCase implements IGenerateCertificateUseCase {
     private readonly _certificateRepo: ICertificateRepository,
   ) {}
 
-  async execute(request: GenerateCertificateRequest): Promise<CertificateDto> {
+  async execute(request: GenerateCertificateRequest): Promise<Certificate> {
     //  Validate enrollment exists and belongs to user
     const enrollment = await this._enrollmentRepo.findById(
       request.enrollmentId,
@@ -65,7 +64,7 @@ export class GenerateCertificateUseCase implements IGenerateCertificateUseCase {
         await this._certificateRepo.save(existingCertificate);
       }
 
-      return CertificateDto.fromDomain(existingCertificate);
+      return existingCertificate;
     }
 
     //  Validate student name
@@ -102,6 +101,6 @@ export class GenerateCertificateUseCase implements IGenerateCertificateUseCase {
     //  Save certificate
     await this._certificateRepo.save(certificate);
 
-    return CertificateDto.fromDomain(certificate);
+    return certificate;
   }
 }

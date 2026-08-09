@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { Certificate } from "@/domain/entities/certificate.entity";
 import { CertificateNotFoundException } from "src/domain/exceptions/certificate.exceptions";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { IGetCertificateByEnrollmentUseCase } from "../interfaces/get-certificate-by-enrollment.interface";
@@ -9,7 +9,7 @@ import { IGetCertificateByEnrollmentUseCase } from "../interfaces/get-certificat
 export class GetCertificateByEnrollmentUseCase implements IGetCertificateByEnrollmentUseCase {
   constructor(private readonly _certificateRepo: ICertificateRepository) {}
 
-  async execute(enrollmentId: string, userId: string): Promise<CertificateDto> {
+  async execute(enrollmentId: string, userId: string): Promise<Certificate> {
     const certificate =
       await this._certificateRepo.findByEnrollmentId(enrollmentId);
 
@@ -24,6 +24,6 @@ export class GetCertificateByEnrollmentUseCase implements IGetCertificateByEnrol
       throw new UnauthorizedException("Not authorized");
     }
 
-    return CertificateDto.fromDomain(certificate);
+    return certificate;
   }
 }

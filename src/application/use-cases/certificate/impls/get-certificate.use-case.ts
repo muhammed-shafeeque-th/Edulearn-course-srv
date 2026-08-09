@@ -4,7 +4,7 @@ import {
   ForbiddenException,
 } from "@nestjs/common";
 import { ICertificateRepository } from "../../../../domain/repositories/certificate.repository";
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { Certificate } from "@/domain/entities/certificate.entity";
 import { CertificateNotFoundException } from "src/domain/exceptions/certificate.exceptions";
 import { UnauthorizedException } from "src/shared/exceptions/infra.exceptions";
 import { IGetCertificateUseCase } from "../interfaces/get-certificate.interface";
@@ -16,7 +16,7 @@ export class GetCertificateUseCase implements IGetCertificateUseCase {
   async execute(
     certificateId: string,
     userId: string,
-  ): Promise<CertificateDto> {
+  ): Promise<Certificate> {
     const certificate = await this._certificateRepo.findById(certificateId);
 
     if (!certificate) {
@@ -28,6 +28,6 @@ export class GetCertificateUseCase implements IGetCertificateUseCase {
       throw new UnauthorizedException("Not authorized");
     }
 
-    return CertificateDto.fromDomain(certificate);
+    return certificate;
   }
 }

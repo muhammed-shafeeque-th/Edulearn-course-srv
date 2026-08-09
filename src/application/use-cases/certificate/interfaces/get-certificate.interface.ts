@@ -1,8 +1,8 @@
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { Certificate } from "@/domain/entities/certificate.entity";
 
 export abstract class IGetCertificateUseCase {
   abstract execute(
     certificateId: string,
     userId: string,
-  ): Promise<CertificateDto>;
+  ): Promise<Certificate>;
 }

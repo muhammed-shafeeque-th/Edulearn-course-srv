@@ -1,4 +1,4 @@
-import { CertificateDto } from "src/application/dtos/certificate.dto";
+import { Certificate } from "@/domain/entities/certificate.entity";
 import { GetCertificatesByUserRequest } from "src/infrastructure/grpc/generated/course/types/certificate";
 
 export abstract class IGetCertificatesByUserUseCase {
@@ -9,5 +9,5 @@ export abstract class IGetCertificatesByUserUseCase {
    */
   abstract execute(
     dto: GetCertificatesByUserRequest,
-  ): Promise<{ certificates: CertificateDto[]; total: number }>;
+  ): Promise<{ certificates: Certificate[]; total: number }>;
 }
