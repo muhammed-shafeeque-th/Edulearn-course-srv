@@ -364,10 +364,10 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@edulearn/core@^1.0.24":
-  version "1.0.24"
-  resolved "https://registry.yarnpkg.com/@edulearn/core/-/core-1.0.24.tgz#d45c48eb54cfb9084a0a9d8d4eb1e20c359fb39c"
-  integrity sha512-rDW6SdVOtFbzhm0bMw7THeMzX5uXaIIuclIP1P/yN/luWwDDJXO5tVhBCJ+E7aWZ364/GqDoaAWEPjZ2nlq8lA==
+"@edulearn/core@^1.0.27":
+  version "1.0.27"
+  resolved "https://registry.yarnpkg.com/@edulearn/core/-/core-1.0.27.tgz#0655742a4f09412d8a4f23c8778e422c9cda6d8e"
+  integrity sha512-MwU77KWVaGoPBNbWq44Q7cZh5p/JY+bWXgE9A6OGxs0t9chc4FaATVK5ArPzzUXPrRaxB3wbDwJk5xy8/BkVMg==
   dependencies:
     "@opentelemetry/api" "^1.9.0"
     "@opentelemetry/exporter-trace-otlp-http" "^0.220.0"
@@ -385,12 +385,12 @@
     prom-client "^15.1.3"
     winston "^3.18.3"
 
-"@edulearn/nest@1.0.21":
-  version "1.0.21"
-  resolved "https://registry.yarnpkg.com/@edulearn/nest/-/nest-1.0.21.tgz#7b081c791c62301f74ce273cd6cb7e3aef9619ec"
-  integrity sha512-5eczR4OW0KL6SOKVUL5hW6SOdJ2RBZ+a4VM6rnyLjuI5RCXhGD4Q7GitaA2UaE7m0IQsAGW/2L97kYpFjNVVjg==
+"@edulearn/nest@1.0.23":
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/@edulearn/nest/-/nest-1.0.23.tgz#d521771156f3192bf2391be970dfafa8d905f0ed"
+  integrity sha512-3p32UOaTY83AifgO8EXQ6k4lAP1BzD1Ot8YBYPanm/lxAIclNtMobLZc2neqGc8AgY1ZIj+MsPeC2kBVj9VqIg==
   dependencies:
-    "@edulearn/core" "^1.0.24"
+    "@edulearn/core" "^1.0.27"
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.9.1":
   version "4.10.1"
