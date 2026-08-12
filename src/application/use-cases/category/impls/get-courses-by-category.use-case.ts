@@ -23,7 +23,7 @@ export class GetCoursesByCategoryUseCase implements IGetCoursesByCategoryUseCase
         span.setAttributes({
           "category.id": categoryId,
         });
-        this._logger.log(`Fetching courses by category id ${categoryId}`, {
+        this._logger.debug(`Fetching courses by category id ${categoryId}`, {
           ctx: GetCoursesByCategoryUseCase.name,
         });
         const courses =

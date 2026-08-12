@@ -51,7 +51,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
           return existingLesson;
         }
 
-        this._logger.log(`Creating lesson for module ${dto.moduleId}`, {
+        this._logger.debug(`Creating lesson for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         const course = await this._courseRepository.findById(dto.courseId);
@@ -99,7 +99,7 @@ export class CreateLessonUseCase implements ICreateLessonUseCase {
         //   new LessonCreatedEvent(dto.courseId),
         // );
 
-        this._logger.log(`Lesson created for module ${dto.moduleId}`, {
+        this._logger.debug(`Lesson created for module ${dto.moduleId}`, {
           ctx: CreateLessonUseCase.name,
         });
         return lesson

@@ -55,7 +55,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-        this._logger.log(
+        this._logger.debug(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: AddReviewUseCase.name },
         );
@@ -160,7 +160,7 @@ export class AddReviewUseCase implements IAddReviewUseCase {
               );
             }));
 
-        this._logger.log(
+        this._logger.debug(
           `Review added for course ${courseId} by user ${userId}`,
           { ctx: AddReviewUseCase.name },
         );

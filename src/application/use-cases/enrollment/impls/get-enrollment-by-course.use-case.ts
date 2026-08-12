@@ -20,7 +20,7 @@ export class GetEnrollmentsByCourseUseCase implements IGetEnrollmentsByCourseUse
         span.setAttributes({
           "course.id": courseId,
         });
-        this._logger.log(`Fetching enrollments by course ${courseId}`, {
+        this._logger.debug(`Fetching enrollments by course ${courseId}`, {
           ctx: GetEnrollmentsByCourseUseCase.name,
         });
 
@@ -29,7 +29,7 @@ export class GetEnrollmentsByCourseUseCase implements IGetEnrollmentsByCourseUse
 
         span.setAttribute("course.enrollment.count", enrollments.length);
 
-        this._logger.log(`Enrollments by course ${courseId} fetched`, {
+        this._logger.debug(`Enrollments by course ${courseId} fetched`, {
           ctx: GetEnrollmentsByCourseUseCase.name,
         });
         return enrollments;

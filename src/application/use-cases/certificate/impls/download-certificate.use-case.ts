@@ -47,7 +47,7 @@ export class DownloadCertificateUseCase implements IDownloadCertificateUseCase {
     try {
       const pdfStream =
         await this._certificatePdfGenerator.generate(certificate);
-      this._logger.log(
+      this._logger.debug(
         `Successfully generated PDF for certificate ${certificateId}`,
       );
       return pdfStream;

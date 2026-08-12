@@ -20,7 +20,7 @@ export class GetEnrollmentsByUserUseCase implements IGetEnrollmentsByUserUseCase
         span.setAttributes({
           "user.id": userId,
         });
-        this._logger.log(`Fetching enrollments by user ${userId}`, {
+        this._logger.debug(`Fetching enrollments by user ${userId}`, {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
 
@@ -30,7 +30,7 @@ export class GetEnrollmentsByUserUseCase implements IGetEnrollmentsByUserUseCase
             includeProgressSummary: true,
           });
 
-        this._logger.log(`Enrollments of user ${userId} fetched`, {
+        this._logger.debug(`Enrollments of user ${userId} fetched`, {
           ctx: GetEnrollmentsByUserUseCase.name,
         });
         return enrollments;

@@ -41,7 +41,7 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
           return existingModule;
         }
 
-        this._logger.log(`Creating module for course ${dto.courseId}`, {
+        this._logger.debug(`Creating module for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
 
@@ -75,7 +75,7 @@ export class CreateModuleUseCase implements ICreateModuleUseCase {
 
         span.setAttribute("course.module.created", true);
 
-        this._logger.log(`Module created for course ${dto.courseId}`, {
+        this._logger.debug(`Module created for course ${dto.courseId}`, {
           ctx: CreateModuleUseCase.name,
         });
         return module;

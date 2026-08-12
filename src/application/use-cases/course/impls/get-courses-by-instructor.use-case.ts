@@ -23,7 +23,7 @@ export class GetCoursesByInstructorUseCase implements IGetCoursesByInstructorUse
     return await this._tracer.startActiveSpan(
       "GetCoursesByInstructorUseCase.execute",
       async (span) => {
-        this._logger.log(`Fetching courses for instructor ${instructorId}`, {
+        this._logger.debug(`Fetching courses for instructor ${instructorId}`, {
           ctx: GetCoursesByInstructorUseCase.name,
         });
 
@@ -40,7 +40,7 @@ export class GetCoursesByInstructorUseCase implements IGetCoursesByInstructorUse
 
         span.setAttribute("instructor.course.length", courses.length);
 
-        this._logger.log(
+        this._logger.debug(
           `Found ${courses.length} courses for instructor ${instructorId}`,
           { ctx: GetCoursesByInstructorUseCase.name },
         );

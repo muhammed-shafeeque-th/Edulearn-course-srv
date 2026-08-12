@@ -59,7 +59,7 @@ export class LessonGrpcController {
       "LessonGrpcController.CreateLesson",
       async (span) => {
         span.setAttribute("module.id", data.moduleId);
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Creating lesson for moduleId ${data.moduleId}`,
           { ctx: LessonGrpcController.name },
         );
@@ -88,7 +88,7 @@ export class LessonGrpcController {
       "LessonGrpcController.GetLesson",
       async (span) => {
         span.setAttribute("lesson.id", data.lessonId);
-        this._logger.log(`gRPC: Fetching lesson for module ${data.lessonId}`, {
+        this._logger.debug(`gRPC: Fetching lesson for module ${data.lessonId}`, {
           ctx: LessonGrpcController.name,
         });
 

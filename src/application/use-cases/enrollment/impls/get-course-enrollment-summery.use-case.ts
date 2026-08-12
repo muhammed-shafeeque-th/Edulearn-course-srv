@@ -26,7 +26,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase implements IGetInstruct
           span.setAttribute("instructor.id", data.instructorId);
           span.setAttribute("course.id", data.courseId);
 
-          this._logger.log(
+          this._logger.debug(
             `Fetching course enrollment summary for instructor ${data.instructorId}, course ${data.courseId}`,
             { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
           );
@@ -51,7 +51,7 @@ export class GetInstructorCourseEnrollmentSummeryUseCase implements IGetInstruct
           span.setAttribute("summary.completionRate", summary.completionRate);
           span.setAttribute("summary.avgProgress", summary.avgProgress);
 
-          this._logger.log(
+          this._logger.debug(
             `Successfully fetched enrollment summary for instructor ${data.instructorId}, course ${data.courseId}`,
             { ctx: GetInstructorCourseEnrollmentSummeryUseCase.name },
           );

@@ -285,7 +285,7 @@ export class EnrollmentGrpcController {
         // Best practice: log and trace using existing data shape, avoid hardcoded/wrong field access
         span.setAttribute("instructor.id", data.instructorId);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching enrollments summary for instructor ${data.instructorId}`,
           { ctx: EnrollmentGrpcController.name },
         );
@@ -312,7 +312,7 @@ export class EnrollmentGrpcController {
         // Best practice: log and trace using existing data shape, avoid hardcoded/wrong field access
         span.setAttribute("year.id", data.year);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching revenue stats  for year ${data.year}`,
           { ctx: EnrollmentGrpcController.name },
         );
@@ -337,7 +337,7 @@ export class EnrollmentGrpcController {
         span.setAttribute("instructor.id", data.instructorId);
         span.setAttribute("course.id", data.courseId);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching enrollment summary for course ${data.courseId}, instructor ${data.instructorId}`,
           { ctx: EnrollmentGrpcController.name },
         );
@@ -360,7 +360,7 @@ export class EnrollmentGrpcController {
       async (span) => {
         span.setAttribute("course.id", data.courseId);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching enrollment trend for course ${data.courseId}`,
           { ctx: EnrollmentGrpcController.name },
         );
@@ -382,7 +382,7 @@ export class EnrollmentGrpcController {
       async (span) => {
         span.setAttribute("year", data.year);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching enrollment trend for year ${data.year}`,
           { ctx: EnrollmentGrpcController.name },
         );
@@ -405,7 +405,7 @@ export class EnrollmentGrpcController {
       async (span) => {
         span.setAttribute("year", data.year);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching monthly courses enrollment stats for year ${data.year}`,
           { ctx: EnrollmentGrpcController.name },
         );
@@ -429,7 +429,7 @@ export class EnrollmentGrpcController {
         span.setAttribute("instructor.id", data.instructorId);
         span.setAttribute("course.id", data.courseId);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching revenue summary for course ${data.courseId}, instructor ${data.instructorId}`,
           { ctx: EnrollmentGrpcController.name },
         );

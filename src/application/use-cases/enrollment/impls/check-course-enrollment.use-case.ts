@@ -24,7 +24,7 @@ export class CheckCourseEnrollmentUseCase implements ICheckCourseEnrollmentUseCa
       async (span) => {
           span.setAttribute("course.id", courseId);
 
-          this._logger.log(
+          this._logger.debug(
             `Checking enrollment for user ${userId} in course ${courseId}`,
             { ctx: CheckCourseEnrollmentUseCase.name },
           );
@@ -47,7 +47,7 @@ export class CheckCourseEnrollmentUseCase implements ICheckCourseEnrollmentUseCa
               courseId,
             );
 
-          this._logger.log(
+          this._logger.debug(
             `Enrollment check for user ${userId} in course ${courseId} completed`,
             { ctx: CheckCourseEnrollmentUseCase.name },
           );

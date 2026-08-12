@@ -34,7 +34,7 @@ export class UpdateProgressUseCase implements IUpdateProgressUseCase {
           "enrollment.id": enrollmentId,
         });
 
-        this._logger.log(
+        this._logger.debug(
           `Updating progress for enrollment ${enrollmentId}, lesson ${lessonId}`,
           { ctx: UpdateProgressUseCase.name },
         );
@@ -84,7 +84,7 @@ export class UpdateProgressUseCase implements IUpdateProgressUseCase {
         await this._progressRepository.save(progress);
         span.setAttribute("progress.saved", true);
 
-        this._logger.log(`Progress updated for enrollment ${enrollmentId}`, {
+        this._logger.debug(`Progress updated for enrollment ${enrollmentId}`, {
           ctx: UpdateProgressUseCase.name,
         });
         return progress;

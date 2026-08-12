@@ -23,7 +23,7 @@ export class GetEnrolledCoursesUseCase implements IGetEnrolledCoursesUseCase {
     return await this._tracer.startActiveSpan(
       "GetEnrolledCoursesUseCase.execute",
       async (span) => {
-        this._logger.log(`Fetching enrolled courses for user ${userId}`, {
+        this._logger.debug(`Fetching enrolled courses for user ${userId}`, {
           ctx: GetEnrolledCoursesUseCase.name,
         });
 
@@ -38,7 +38,7 @@ export class GetEnrolledCoursesUseCase implements IGetEnrolledCoursesUseCase {
             sortOrder,
           );
 
-        this._logger.log(
+        this._logger.debug(
           `Found ${courses.length} enrolled courses for user ${userId}`,
           { ctx: GetEnrolledCoursesUseCase.name },
         );

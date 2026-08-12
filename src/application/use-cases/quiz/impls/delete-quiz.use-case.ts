@@ -25,7 +25,7 @@ export class DeleteQuizUseCase implements IDeleteQuizUseCase {
         span.setAttributes({
           "quiz.id": dto.quizId,
         });
-        this._logger.log(`Deleting quiz ${dto.quizId}`, {
+        this._logger.debug(`Deleting quiz ${dto.quizId}`, {
           ctx: DeleteQuizUseCase.name,
         });
         const course = await this._courseRepository.findById(dto.courseId);
@@ -51,7 +51,7 @@ export class DeleteQuizUseCase implements IDeleteQuizUseCase {
 
         await this._quizRepository.delete(quiz);
         span.setAttribute("quiz.deleted", true);
-        this._logger.log(`Quiz ${dto.quizId} deleted`, {
+        this._logger.debug(`Quiz ${dto.quizId} deleted`, {
           ctx: DeleteQuizUseCase.name,
         });
       },

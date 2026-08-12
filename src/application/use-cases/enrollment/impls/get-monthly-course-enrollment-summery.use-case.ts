@@ -25,7 +25,7 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase implements IGetMonthlyCours
       async (span) => {
         span.setAttribute("year", data.year);
 
-        this._logger.log(
+        this._logger.debug(
           `Fetching monthly courses enrollment stats for year ${data.year}`,
           { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
         );
@@ -49,7 +49,7 @@ export class GetMonthlyCoursesEnrollmentStatsUseCase implements IGetMonthlyCours
           span.setAttribute("trend.found", true);
           span.setAttribute("trend.length", trend.length);
 
-          this._logger.log(
+          this._logger.debug(
             `Successfully fetched ${trend.length} monthly courses enrollment trend for year ${data.year}`,
             { ctx: GetMonthlyCoursesEnrollmentStatsUseCase.name },
           );

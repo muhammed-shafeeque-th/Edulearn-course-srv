@@ -32,7 +32,7 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
           "quiz.passingScore": dto.passingScore,
           "quiz.questionsCount": dto.questions.length,
         });
-        this._logger.log(`Updating quiz ${dto.quizId}`, {
+        this._logger.debug(`Updating quiz ${dto.quizId}`, {
           ctx: UpdateQuizUseCase.name,
         });
 
@@ -99,7 +99,7 @@ export class UpdateQuizUseCase implements IUpdateQuizUseCase {
         await this._quizRepository.save(quiz);
         span.setAttribute("quiz.updated", true);
 
-        this._logger.log(`Quiz ${dto.quizId} updated`, {
+        this._logger.debug(`Quiz ${dto.quizId} updated`, {
           ctx: UpdateQuizUseCase.name,
         });
         return quiz;

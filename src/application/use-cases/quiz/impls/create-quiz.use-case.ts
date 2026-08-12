@@ -52,7 +52,7 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
           return existingModuleQuiz;
         }
 
-        this._logger.log(`Creating quiz for course ${dto.courseId}`, {
+        this._logger.debug(`Creating quiz for course ${dto.courseId}`, {
           ctx: CreateQuizUseCase.name,
         });
 
@@ -113,7 +113,7 @@ export class CreateQuizUseCase implements ICreateQuizUseCase {
         await this._quizRepository.save(quiz);
         span.setAttribute("quiz.saved", true);
 
-        this._logger.log(`Quiz created for course ${dto.courseId}`, {
+        this._logger.debug(`Quiz created for course ${dto.courseId}`, {
           ctx: CreateQuizUseCase.name,
         });
         return quiz;

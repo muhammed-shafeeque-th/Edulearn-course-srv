@@ -20,7 +20,7 @@ export class GetQuizzesByCourseUseCase implements IGetQuizzesByCourseUseCase {
         span.setAttributes({
           "course.id": courseId,
         });
-        this._logger.log(`Fetching quizzes for course ${courseId}`, {
+        this._logger.debug(`Fetching quizzes for course ${courseId}`, {
           ctx: GetQuizzesByCourseUseCase.name,
         });
 
@@ -28,7 +28,7 @@ export class GetQuizzesByCourseUseCase implements IGetQuizzesByCourseUseCase {
 
         span.setAttribute("db.quizzes.count", quizzes.length);
 
-        this._logger.log(`Quiz fetched for courseId ${courseId} `, {
+        this._logger.debug(`Quiz fetched for courseId ${courseId} `, {
           ctx: GetQuizzesByCourseUseCase.name,
         });
         return quizzes;

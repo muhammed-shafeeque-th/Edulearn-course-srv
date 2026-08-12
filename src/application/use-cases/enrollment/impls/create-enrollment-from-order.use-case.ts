@@ -116,7 +116,7 @@ export class CreateEnrollmentFromOrderUseCase implements ICreateEnrollmentFromOr
         );
 
         await this._enrollmentRepo.upsert(enrollment);
-        this._logger.log(
+        this._logger.debug(
           `Enrollment [${enrollmentId}] created for user [${payload.userId}] in course [${item.courseId}].`,
         );
 
