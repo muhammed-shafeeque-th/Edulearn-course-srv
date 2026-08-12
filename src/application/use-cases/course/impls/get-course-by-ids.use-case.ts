@@ -18,7 +18,7 @@ export class GetCoursesByIdsUseCase implements IGetCoursesByIdsUseCase {
     return await this._tracer.startActiveSpan(
       "GetCoursesByIdsUseCase.execute",
       async (span) => {
-        this._logger.log(
+        this._logger.debug(
           `Fetching  courses for ${dto.courseIds.length} courses`,
           {
             ctx: GetCoursesByIdsUseCase.name,
@@ -29,7 +29,7 @@ export class GetCoursesByIdsUseCase implements IGetCoursesByIdsUseCase {
 
         span.setAttribute("course.length", courses.length);
 
-        this._logger.log(`Fetch all available courses`, {
+        this._logger.debug(`Fetch all available courses`, {
           ctx: GetCoursesByIdsUseCase.name,
         });
         return courses;

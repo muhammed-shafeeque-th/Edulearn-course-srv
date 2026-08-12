@@ -58,7 +58,7 @@ export class ModuleGrpcController {
       "ModuleGrpcController.CreateModule",
       async (span) => {
         span.setAttribute("course.id", data.courseId);
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Creating module for courseID ${data.courseId}`,
           { ctx: ModuleGrpcController.name },
         );
@@ -86,7 +86,7 @@ export class ModuleGrpcController {
       async (span) => {
         span.setAttribute("course.id", data.courseId);
         span.setAttribute("module.id", data.moduleId);
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching module for courseID ${data.courseId}`,
           { ctx: ModuleGrpcController.name },
         );
@@ -108,7 +108,7 @@ export class ModuleGrpcController {
       "ModuleGrpcController.UpdateModule",
       async (span) => {
         span.setAttribute("course.module.id", data.moduleId);
-        this._logger.log(`gRPC: Updating module  ${data.moduleId}`, {
+        this._logger.debug(`gRPC: Updating module  ${data.moduleId}`, {
           ctx: ModuleGrpcController.name,
         });
 
@@ -130,7 +130,7 @@ export class ModuleGrpcController {
       "ModuleGrpcController.DeleteModule",
       async (span) => {
         span.setAttribute("module.id", data.moduleId);
-        this._logger.log(`gRPC: Deleting module  ${data.moduleId}`, {
+        this._logger.debug(`gRPC: Deleting module  ${data.moduleId}`, {
           ctx: ModuleGrpcController.name,
         });
 
@@ -149,7 +149,7 @@ export class ModuleGrpcController {
       "ModuleGrpcController.GetModulesByCourse",
       async (span) => {
         span.setAttribute("course.id", data.courseId);
-        this._logger.log(`gRPC: Fetching modules `, {
+        this._logger.debug(`gRPC: Fetching modules `, {
           ctx: ModuleGrpcController.name,
         });
 

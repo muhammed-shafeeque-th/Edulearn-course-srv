@@ -31,7 +31,7 @@ export class GetInstructorCoursesStatsUseCase implements IGetInstructorCoursesSt
       "GetInstructorCoursesStatsUseCase.execute",
       async (span) => {
         const { instructorId } = dto;
-        this._logger.log(
+        this._logger.debug(
           `Fetching course stats for instructor ${instructorId}`,
           { ctx: GetInstructorCoursesStatsUseCase.name },
         );
@@ -68,7 +68,7 @@ export class GetInstructorCoursesStatsUseCase implements IGetInstructorCoursesSt
 
           const averageRating = instructorCourseStats?.averageRating ?? 0;
 
-          this._logger.log(
+          this._logger.debug(
             `Fetched instructor course stats: total=${totalCourses}, published=${publishedCourses}, draft=${draftCourses}`,
             { ctx: GetInstructorCoursesStatsUseCase.name },
           );

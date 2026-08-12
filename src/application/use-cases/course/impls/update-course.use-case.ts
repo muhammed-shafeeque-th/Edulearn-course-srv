@@ -89,7 +89,7 @@ export class UpdateCourseUseCase implements IUpdateCourseUseCase {
 
         span.setAttribute("course.updated", true);
 
-        this._logger.log(`Course ${dto.courseId} updated`, {
+        this._logger.debug(`Course ${dto.courseId} updated`, {
           ctx: UpdateCourseUseCase.name,
         });
         return course;

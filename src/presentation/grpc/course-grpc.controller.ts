@@ -225,7 +225,7 @@ export class CourseGrpcController {
     return await this._tracer.startActiveSpan(
       "CourseGrpcController.UpdateCourse",
       async (span) => {
-        this._logger.log(`gRPC: Updating course ${data.courseId}`, {
+        this._logger.debug(`gRPC: Updating course ${data.courseId}`, {
           ctx: CourseGrpcController.name,
         });
         span.setAttribute("course.id", data.courseId);
@@ -247,7 +247,7 @@ export class CourseGrpcController {
       "CourseGrpcController.DeleteCourse",
       async (span) => {
         span.setAttribute("course.id", data.courseId);
-        this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
+        this._logger.debug(`gRPC: Deleting course ${data.courseId}`, {
           ctx: CourseGrpcController.name,
         });
 
@@ -265,7 +265,7 @@ export class CourseGrpcController {
       "CourseGrpcController.PublishCourse",
       async (span) => {
         span.setAttribute("course.id", data.courseId);
-        this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
+        this._logger.debug(`gRPC: Deleting course ${data.courseId}`, {
           ctx: CourseGrpcController.name,
         });
 
@@ -283,7 +283,7 @@ export class CourseGrpcController {
       "CourseGrpcController.UnPublishCourse",
       async (span) => {
         span.setAttribute("course.id", data.courseId);
-        this._logger.log(`gRPC: Deleting course ${data.courseId}`, {
+        this._logger.debug(`gRPC: Deleting course ${data.courseId}`, {
           ctx: CourseGrpcController.name,
         });
 
@@ -307,7 +307,7 @@ export class CourseGrpcController {
         span.setAttribute("course.sortBy", data.pagination?.sortBy);
         span.setAttribute("course.sortOrder", data.pagination?.sortOrder);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching courses for instructor ${data.instructorId}`,
           { ctx: CourseGrpcController.name },
         );
@@ -340,7 +340,7 @@ export class CourseGrpcController {
       async (span) => {
         span.setAttribute("course.instructor.id", data.instructorId);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching instructor's courses stats for ${data.instructorId}`,
           { ctx: CourseGrpcController.name },
         );
@@ -363,7 +363,7 @@ export class CourseGrpcController {
     return await this._tracer.startActiveSpan(
       "CourseGrpcController.GetCoursesStats",
       async (span) => {
-        this._logger.log(`gRPC: Fetching overall courses stats`, {
+        this._logger.debug(`gRPC: Fetching overall courses stats`, {
           ctx: CourseGrpcController.name,
         });
 
@@ -386,7 +386,7 @@ export class CourseGrpcController {
       async (span) => {
         span.setAttribute("course.id", data.courseId);
 
-        this._logger.log(
+        this._logger.debug(
           `gRPC: Fetching rating stats for course ${data.courseId}`,
           { ctx: CourseGrpcController.name },
         );

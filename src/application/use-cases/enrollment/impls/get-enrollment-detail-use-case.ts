@@ -85,7 +85,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
       `${GetEnrollmentDetailUseCase.name}.execute`,
       async (span) => {
         try {
-          this._logger.log(`Fetching enrollment [${enrollmentId}] detail`, {
+          this._logger.debug(`Fetching enrollment [${enrollmentId}] detail`, {
             ctx: GetEnrollmentDetailUseCase.name,
             userId,
           });
@@ -198,7 +198,7 @@ export class GetEnrollmentDetailUseCase implements IGetEnrollmentDetailUseCase {
               };
             });
 
-          this._logger.log(`Enrollment [${enrollmentId}] detail fetched`, {
+          this._logger.debug(`Enrollment [${enrollmentId}] detail fetched`, {
             ctx: GetEnrollmentDetailUseCase.name,
             userId,
           });

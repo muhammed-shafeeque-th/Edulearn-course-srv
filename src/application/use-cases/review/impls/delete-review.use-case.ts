@@ -29,7 +29,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           "review.id": reviewId,
         });
 
-        this._logger.log(`Deleting review ${reviewId}`, {
+        this._logger.debug(`Deleting review ${reviewId}`, {
           ctx: DeleteReviewUseCase.name,
         });
 
@@ -52,7 +52,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-        this._logger.log(
+        this._logger.debug(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: DeleteReviewUseCase.name },
         );
@@ -83,7 +83,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
           );
         }
 
-        this._logger.log(`Updating review ${reviewId}`, {
+        this._logger.debug(`Updating review ${reviewId}`, {
           ctx: DeleteReviewUseCase.name,
         });
 
@@ -103,7 +103,7 @@ export class DeleteReviewUseCase implements IDeleteReviewUseCase {
         ]);
         span.setAttribute("review.deleted", true);
 
-        this._logger.log(`Review ${reviewId} deleted`, {
+        this._logger.debug(`Review ${reviewId} deleted`, {
           ctx: DeleteReviewUseCase.name,
         });
       },

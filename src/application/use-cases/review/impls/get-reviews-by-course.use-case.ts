@@ -27,7 +27,7 @@ export class GetReviewsByCourseUseCase implements IGetReviewsByCourseUseCase {
         span.setAttributes({
           "course.id": courseId,
         });
-        this._logger.log(`Fetching reviews for course ${courseId}`, {
+        this._logger.debug(`Fetching reviews for course ${courseId}`, {
           ctx: GetReviewsByCourseUseCase.name,
         });
 
@@ -41,7 +41,7 @@ export class GetReviewsByCourseUseCase implements IGetReviewsByCourseUseCase {
         );
         span.setAttribute("reviews.count", reviews.length);
 
-        this._logger.log(
+        this._logger.debug(
           `Found ${reviews.length} reviews for course ${courseId}`,
           { ctx: GetReviewsByCourseUseCase.name },
         );

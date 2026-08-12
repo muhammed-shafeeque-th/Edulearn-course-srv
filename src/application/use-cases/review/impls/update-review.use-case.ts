@@ -49,7 +49,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
           "enrollment.id": enrollmentId,
         });
 
-        this._logger.log(
+        this._logger.debug(
           `Adding review by user ${userId} for course ${courseId}`,
           { ctx: UpdateReviewUseCase.name },
         );
@@ -80,7 +80,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
           throw new UnauthorizedException(`Enrollment-user-course mismatch`);
         }
 
-        this._logger.log(`Updating review ${reviewId}`, {
+        this._logger.debug(`Updating review ${reviewId}`, {
           ctx: UpdateReviewUseCase.name,
         });
 
@@ -103,7 +103,7 @@ export class UpdateReviewUseCase implements IUpdateReviewUseCase {
         // ]);
         span.setAttribute("review.updated", true);
 
-        this._logger.log(`Review ${reviewId} updated`, {
+        this._logger.debug(`Review ${reviewId} updated`, {
           ctx: UpdateReviewUseCase.name,
         });
         return review;

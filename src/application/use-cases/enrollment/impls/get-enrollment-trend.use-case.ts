@@ -28,7 +28,7 @@ export class GetEnrollmentTrendUseCase implements IGetEnrollmentTrendUseCase {
       "GetEnrollmentTrendUseCase.execute",
       async (span) => {
         span.setAttribute("year", data.year);
-        this._logger.log(
+        this._logger.debug(
           `Fetching course enrollment trend for year ${data.year}`,
           { ctx: GetEnrollmentTrendUseCase.name },
         );
@@ -49,7 +49,7 @@ export class GetEnrollmentTrendUseCase implements IGetEnrollmentTrendUseCase {
 
           span.setAttribute("trend.found", true);
 
-          this._logger.log(
+          this._logger.debug(
             `Successfully fetched enrollment trend for year ${data.year}`,
             { ctx: GetEnrollmentTrendUseCase.name },
           );

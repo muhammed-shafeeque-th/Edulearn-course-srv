@@ -24,7 +24,7 @@ export class GetInstructorCourseEnrollmentTrendUseCase implements IGetInstructor
       async (span) => {
         span.setAttribute("instructor.id", data.instructorId);
         span.setAttribute("course.id", data.courseId);
-        this._logger.log(
+        this._logger.debug(
           `Fetching course enrollment trend for instructor ${data.instructorId}, course ${data.courseId}`,
           { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
         );
@@ -52,7 +52,7 @@ export class GetInstructorCourseEnrollmentTrendUseCase implements IGetInstructor
             Array.isArray(trend.trend) ? trend.trend.length : 0,
           );
 
-          this._logger.log(
+          this._logger.debug(
             `Successfully fetched enrollment trend for instructor ${data.instructorId}, course ${data.courseId}`,
             { ctx: GetInstructorCourseEnrollmentTrendUseCase.name },
           );

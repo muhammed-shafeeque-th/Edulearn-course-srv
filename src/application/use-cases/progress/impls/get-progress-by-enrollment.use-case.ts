@@ -22,14 +22,14 @@ export class GetProgressesByEnrollmentUseCase implements IGetProgressesByEnrollm
           "enrollment.id": enrollmentId,
         });
 
-        this._logger.log(`Fetching progress by enrollment ${enrollmentId}`, {
+        this._logger.debug(`Fetching progress by enrollment ${enrollmentId}`, {
           ctx: GetProgressesByEnrollmentUseCase.name,
         });
 
         const progresses =
           await this._progressRepository.findByEnrollmentId(enrollmentId);
 
-        this._logger.log(`Progresses of enrolment ${enrollmentId} fetched`, {
+        this._logger.debug(`Progresses of enrolment ${enrollmentId} fetched`, {
           ctx: GetProgressesByEnrollmentUseCase.name,
         });
         return progresses;

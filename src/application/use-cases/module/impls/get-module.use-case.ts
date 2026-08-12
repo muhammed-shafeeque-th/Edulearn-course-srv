@@ -21,7 +21,7 @@ export class GetModuleUseCase implements IGetModuleUseCase {
         span.setAttributes({
           "module.id": moduleId,
         });
-        this._logger.log(`Fetching module ${moduleId}`, {
+        this._logger.debug(`Fetching module ${moduleId}`, {
           ctx: GetModuleUseCase.name,
         });
 
@@ -32,7 +32,7 @@ export class GetModuleUseCase implements IGetModuleUseCase {
         }
         span.setAttribute("module.found", true);
 
-        this._logger.log(`Module ${moduleId} fetched`, {
+        this._logger.debug(`Module ${moduleId} fetched`, {
           ctx: GetModuleUseCase.name,
         });
         return module;

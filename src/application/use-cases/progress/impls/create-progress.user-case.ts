@@ -29,7 +29,7 @@ export class CreateProgressUseCase implements ICreateProgressUseCase {
           "enrollment.id": enrollmentId,
           "lesson.id": lessonId,
         });
-        this._logger.log(
+        this._logger.debug(
           `Creating progress for enrollment ${enrollmentId}, lesson ${lessonId}`,
           { ctx: CreateProgressUseCase.name },
         );
@@ -74,7 +74,7 @@ export class CreateProgressUseCase implements ICreateProgressUseCase {
         await this._progressRepository.save(progress);
 
         span.setAttribute("progress.saved", true);
-        this._logger.log(`Progress created for enrollment ${enrollmentId}`, {
+        this._logger.debug(`Progress created for enrollment ${enrollmentId}`, {
           ctx: CreateProgressUseCase.name,
         });
         return progress;

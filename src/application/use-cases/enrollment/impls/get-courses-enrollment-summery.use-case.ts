@@ -26,7 +26,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase implements IGetInstruc
           "instructor.id": data.instructorId,
         });
 
-        this._logger.log(
+        this._logger.debug(
           `Fetching courses enrollment summary for instructor ${data.instructorId}`,
           { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );
@@ -54,7 +54,7 @@ export class GetInstructorCoursesEnrollmentSummeryUseCase implements IGetInstruc
         span.setAttribute("summary.avgCompletion", summary.avgCompletion);
         span.setAttribute("summary.activeStudents", summary.activeStudents);
 
-        this._logger.log(
+        this._logger.debug(
           `Successfully fetched enrollment summary for instructor ${data.instructorId}`,
           { ctx: GetInstructorCoursesEnrollmentSummeryUseCase.name },
         );

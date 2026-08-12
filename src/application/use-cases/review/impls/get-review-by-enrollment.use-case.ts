@@ -27,7 +27,7 @@ export class GetReviewByEnrollmentUseCase implements IGetReviewByEnrollmentUseCa
         span.setAttributes({
           "enrollment.id": enrollmentId,
         });
-        this._logger.log(`Fetching enrollment ${enrollmentId}`, {
+        this._logger.debug(`Fetching enrollment ${enrollmentId}`, {
           ctx: GetReviewByEnrollmentUseCase.name,
         });
         const enrollment =
@@ -58,7 +58,7 @@ export class GetReviewByEnrollmentUseCase implements IGetReviewByEnrollmentUseCa
             `Not found review by enrollment id ${enrollmentId}`,
           );
         }
-        this._logger.log(`found review by enrollment id ${enrollmentId} `, {
+        this._logger.debug(`found review by enrollment id ${enrollmentId} `, {
           ctx: GetReviewByEnrollmentUseCase.name,
         });
 
