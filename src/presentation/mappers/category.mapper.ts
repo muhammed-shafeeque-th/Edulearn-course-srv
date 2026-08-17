@@ -16,7 +16,7 @@ export class CategoryMapper {
         ?.map((cat) => CategoryMapper.toGrpcResponse(cat)),
       updatedAt: certificate.getUpdatedAt().toISOString(),
       color: certificate.getColor(),
-      deletedAt: certificate.getDeletedAt().toISOString(),
+      deletedAt: certificate.getDeletedAt()?.toISOString(),
       description: certificate.getDescription(),
       icon: certificate.getIcon(),
       parentId: certificate.getParentId(),
