@@ -21,8 +21,6 @@ import { ILoggerService } from "src/application/adaptors/logger.service";
 import { ITraceService } from "src/application/adaptors/trace.service";
 import { ProgressOrmEntity } from "../entities/progress.orm-entity";
 import { EnrollmentEntityMapper } from "../mappers/enrollment.entity.mapper";
-import { ICacheService } from "src/application/adaptors/cache-service";
-import { CACHE_KEYS } from "@/infrastructure/redis/cache-keys";
 import { BaseRepository } from "./base.repository";
 
 @Injectable()
@@ -35,12 +33,11 @@ export class EnrollmentTypeOrmRepository
     @InjectRepository(EnrollmentOrmEntity)
     repo: Repository<EnrollmentOrmEntity>,
 
-    redisService: ICacheService,
     logger: ILoggerService,
     tracer: ITraceService,
     metrics: IMetricService,
   ) {
-    super(repo, logger, tracer, metrics, redisService);
+    super(repo, logger, tracer, metrics);
   }
 
   async upsert(enrollment: Enrollment): Promise<void> {
@@ -69,27 +66,6 @@ export class EnrollmentTypeOrmRepository
             { ctx: EnrollmentTypeOrmRepository.name },
           );
         }
-
-        // Cache invalidation
-        const patterns = [
-          CACHE_KEYS.enrollment.byEnrollmentId(enrollment.getId()),
-          CACHE_KEYS.enrollment.byUserOnly(enrollment.getStudentId()),
-          CACHE_KEYS.enrollment.byUserAndCoursePattern(
-            enrollment.getStudentId(),
-            enrollment.getCourseId(),
-          ),
-          CACHE_KEYS.enrollment.byCourseOnly(enrollment.getCourseId()),
-        ];
-        await Promise.all(
-          patterns.map((pattern) => this.cache.delByPattern(pattern)),
-        );
-
-        this.logger.debug(
-          `Invalidated cache for enrollment ${enrollment.getId()}`,
-          {
-            ctx: EnrollmentTypeOrmRepository.name,
-          },
-        );
       } catch (err) {
         this.logger.error(
           `Error saving enrollment ${enrollment.getId()}: ${err}`,
@@ -109,28 +85,6 @@ export class EnrollmentTypeOrmRepository
       const { includeCourse = false, includeProgressSummary = false } =
         options ?? {};
       const withProgress = includeProgressSummary;
-      const cacheKey = CACHE_KEYS.enrollment.byIdAndUser(
-        enrollmentId,
-        studentId,
-        {
-          includeCourse,
-          withProgress,
-        },
-      );
-
-      // Try cache
-      const cached = await this.cache.get<EnrollmentOrmEntity>(cacheKey);
-      if (cached) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(
-          `Cache hit for enrollmentId="${enrollmentId}" studentId="${studentId}"`,
-          { ctx: EnrollmentTypeOrmRepository.name },
-        );
-        return EnrollmentEntityMapper.toDomainEnrollment(cached, {
-          withProgress,
-        });
-      }
-      span.setAttribute("cache.hit", false);
 
       const end = this.metrics.measureDBOperationDuration(
         "enrollment.findByIdAndUserId",
@@ -161,11 +115,6 @@ export class EnrollmentTypeOrmRepository
       }
       span.setAttribute("db.found", true);
 
-      await this.cache.set(cacheKey, orm, 3600);
-      this.logger.debug(
-        `Cached enrollment for enrollmentId="${enrollmentId}" studentId="${studentId}"`,
-        { ctx: EnrollmentTypeOrmRepository.name },
-      );
       return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
     });
   }
@@ -178,22 +127,6 @@ export class EnrollmentTypeOrmRepository
       options ?? {};
     const withProgress = includeProgressSummary;
     return this.execute("findById", async (span) => {
-      const cacheKey = CACHE_KEYS.enrollment.byId(enrollmentId, {
-        includeCourse,
-        withProgress,
-      });
-      const cached = await this.cache.get<EnrollmentOrmEntity>(cacheKey);
-      if (cached) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(`Cache hit for enrollment ${enrollmentId}`, {
-          ctx: EnrollmentTypeOrmRepository.name,
-        });
-        return EnrollmentEntityMapper.toDomainEnrollment(cached, {
-          withProgress,
-        });
-      }
-      span.setAttribute("cache.hit", false);
-
       const relations: string[] = [];
       if (includeCourse) relations.push("course");
       if (includeProgressSummary) relations.push("progressEntries");
@@ -215,11 +148,6 @@ export class EnrollmentTypeOrmRepository
       }
       span.setAttribute("db.found", true);
 
-      await this.cache.set(cacheKey, orm, 3600);
-      this.logger.debug(`Cached enrollment ${enrollmentId}`, {
-        ctx: EnrollmentTypeOrmRepository.name,
-      });
-
       return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
     });
   }
@@ -232,22 +160,6 @@ export class EnrollmentTypeOrmRepository
     const withProgress = withProgressSummary;
 
     return this.execute("findByUserId", async (span) => {
-      const cacheKey = CACHE_KEYS.enrollment.byUser(studentId, {
-        withCourse,
-        withProgress,
-      });
-      const cached = await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
-      if (cached) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(`Cache hit for enrollments of user ${studentId}`, {
-          ctx: EnrollmentTypeOrmRepository.name,
-        });
-        return cached.map((e) =>
-          EnrollmentEntityMapper.toDomainEnrollment(e, { withProgress }),
-        );
-      }
-      span.setAttribute("cache.hit", false);
-
       const relations: string[] = [];
       if (withCourse) {
         relations.push("course");
@@ -269,8 +181,6 @@ export class EnrollmentTypeOrmRepository
       end();
       this.metrics.incrementDBRequestCounter("SELECT");
 
-      await this.cache.set(cacheKey, ormEntities, 600);
-
       return ormEntities.map((e) =>
         EnrollmentEntityMapper.toDomainEnrollment(e, { withProgress }),
       );
@@ -287,27 +197,6 @@ export class EnrollmentTypeOrmRepository
     const withProgress = includeProgressSummary;
 
     return this.execute("findByUserIdAndCourseId", async (span) => {
-      const cacheKey = CACHE_KEYS.enrollment.byUserAndCourse(
-        studentId,
-        courseId,
-        {
-          includeCourse,
-          withProgress,
-        },
-      );
-      const cached = await this.cache.get<EnrollmentOrmEntity>(cacheKey);
-      if (cached) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(
-          `Cache hit for enrollment of user ${studentId} in course ${courseId}`,
-          { ctx: EnrollmentTypeOrmRepository.name },
-        );
-        return EnrollmentEntityMapper.toDomainEnrollment(cached, {
-          withProgress,
-        });
-      }
-      span.setAttribute("cache.hit", false);
-
       const relations: string[] = [];
       if (includeCourse) relations.push("course");
       if (withProgress) relations.push("progressEntries");
@@ -328,8 +217,6 @@ export class EnrollmentTypeOrmRepository
         return null;
       }
       span.setAttribute("db.found", true);
-
-      await this.cache.set(cacheKey, orm, 3600);
 
       return EnrollmentEntityMapper.toDomainEnrollment(orm, { withProgress });
     });
@@ -361,25 +248,6 @@ export class EnrollmentTypeOrmRepository
             { ctx: EnrollmentTypeOrmRepository.name },
           );
         }
-
-        // Invalidate all related cache keys
-        const patterns = [
-          CACHE_KEYS.enrollment.byEnrollmentId(enrollment.getId()),
-          CACHE_KEYS.enrollment.byUserAndCoursePattern(
-            enrollment.getStudentId(),
-            enrollment.getCourseId(),
-          ),
-          CACHE_KEYS.enrollment.byUserOnly(enrollment.getStudentId()),
-          CACHE_KEYS.enrollment.byCourseOnly(enrollment.getCourseId()),
-        ];
-        await Promise.all(
-          patterns.map((pattern) => this.cache.delByPattern(pattern)),
-        );
-        span.setAttribute("cache.invalidated", true);
-        this.logger.debug(
-          `Invalidated cache for enrollment ${enrollment.getId()}`,
-          { ctx: EnrollmentTypeOrmRepository.name },
-        );
       } catch (error) {
         this.logger.error(
           `Error during soft-delete for enrollment ${enrollment.getId()}: ${error}`,
@@ -417,22 +285,6 @@ export class EnrollmentTypeOrmRepository
     const withProgress = includeProgressSummary;
 
     return this.execute("listEnrollmentsByCourse", async (span) => {
-      const cacheKey = CACHE_KEYS.enrollment.byCourse(courseId, {
-        withCourse: includeCourse,
-        withProgress,
-      });
-      const cached = await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
-      if (cached) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(`Cache hit for enrollments of course ${courseId}`, {
-          ctx: EnrollmentTypeOrmRepository.name,
-        });
-        return cached.map((entity) =>
-          EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
-        );
-      }
-      span.setAttribute("cache.hit", false);
-
       const relations: string[] = [];
       if (includeCourse) {
         relations.push("course");
@@ -453,8 +305,6 @@ export class EnrollmentTypeOrmRepository
       end();
       this.metrics.incrementDBRequestCounter("SELECT");
 
-      await this.cache.set(cacheKey, enrollments, 600);
-
       return enrollments.map((entity) =>
         EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
       );
@@ -470,22 +320,6 @@ export class EnrollmentTypeOrmRepository
     const withProgress = includeProgressSummary;
 
     return this.execute("listEnrollmentsByUser", async (span) => {
-      const cacheKey = CACHE_KEYS.enrollment.byUser(studentId, {
-        withCourse: includeCourse,
-        withProgress,
-      });
-      const cached = await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
-      if (cached) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(`Cache hit for enrollments of user ${studentId}`, {
-          ctx: EnrollmentTypeOrmRepository.name,
-        });
-        return cached.map((entity) =>
-          EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
-        );
-      }
-      span.setAttribute("cache.hit", false);
-
       const relations: string[] = [];
       if (includeCourse) {
         relations.push("course");
@@ -505,8 +339,6 @@ export class EnrollmentTypeOrmRepository
       });
       end();
       this.metrics.incrementDBRequestCounter("SELECT");
-
-      await this.cache.set(cacheKey, enrollments, 600);
 
       return enrollments.map((entity) =>
         EnrollmentEntityMapper.toDomainEnrollment(entity, { withProgress }),
@@ -889,22 +721,6 @@ export class EnrollmentTypeOrmRepository
         "enrollment.course.id": courseId,
       });
 
-      // This one doesn't take course/progress options (legacy api)
-      const cacheKey = `enrollments:course:${courseId}`;
-      const cachedEnrollments =
-        await this.cache.get<EnrollmentOrmEntity[]>(cacheKey);
-
-      if (cachedEnrollments) {
-        span.setAttribute("cache.hit", true);
-        this.logger.debug(`Cache hit for enrollments of course ${courseId}`, {
-          ctx: EnrollmentTypeOrmRepository.name,
-        });
-        return cachedEnrollments.map((entity) =>
-          EnrollmentEntityMapper.toDomainEnrollment(entity),
-        );
-      }
-      span.setAttribute("cache.hit", false);
-
       const end = this.metrics.measureDBOperationDuration(
         "enrollment.findByCourseId",
         "SELECT",
@@ -920,11 +736,6 @@ export class EnrollmentTypeOrmRepository
       );
       span.setAttribute("db.enrollment.course.count", enrollments.length);
 
-      await this.cache.set(cacheKey, ormEntities, 3600);
-      this.logger.debug(`Cached enrollments for course ${courseId}`, {
-        ctx: EnrollmentTypeOrmRepository.name,
-      });
-      span.setAttribute("cache.set", true);
       return enrollments;
     });
   }
